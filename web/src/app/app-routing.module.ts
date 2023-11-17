@@ -113,11 +113,13 @@ const routes: Routes = [
     children: [
       {
         path: 'login',
+        data: { title: 'Login' },
         loadChildren: () =>
           import('./auth/login/login.module').then((m) => m.LoginModule),
       },
       {
         path: 'register',
+        data: { title: 'Register' },
         loadChildren: () =>
           import('./auth/register/register.module').then(
             (m) => m.RegisterModule

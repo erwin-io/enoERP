@@ -80,7 +80,6 @@ export class ItemCategoryDetailsComponent {
   }
 
   itemCategoryGridChange(event) {
-    console.log(event);
     this.itemCategoryForm.form.controls["itemCategoryPages"].setValue(event);
     this.itemCategoryForm.form.markAllAsTouched();
     this.itemCategoryForm.form.markAsDirty();

@@ -39,5 +39,15 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "accessId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumberString)(),
+    (0, class_transformer_1.Transform)(({ obj, key }) => {
+        var _a;
+        return (_a = obj[key]) === null || _a === void 0 ? void 0 : _a.toString();
+    }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "branchId", void 0);
 exports.CreateUserDto = CreateUserDto;
 //# sourceMappingURL=users.create.dto.js.map

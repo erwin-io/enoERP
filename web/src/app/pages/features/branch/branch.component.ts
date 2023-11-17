@@ -114,6 +114,7 @@ export class BranchComponent {
               branchId: d.branchId,
               branchCode: d.branchCode,
               name: d.name,
+              isMainBranch: d.isMainBranch,
               url: `/branch/${d.branchId}`,
             } as BranchTableColumn
           });

@@ -5,5 +5,6 @@ export class Branch {
   branchCode: string;
   name: string;
   active: boolean;
+  isMainBranch: boolean;
   itemBranches: ItemBranch[];
 }

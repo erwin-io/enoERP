@@ -36,4 +36,12 @@ export class CreateUserDto extends DefaultUserDto {
     return obj[key]?.toString();
   })
   accessId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumberString()
+  @Transform(({ obj, key }) => {
+    return obj[key]?.toString();
+  })
+  branchId: string;
 }

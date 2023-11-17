@@ -80,7 +80,6 @@ export class BranchDetailsComponent {
   }
 
   branchGridChange(event) {
-    console.log(event);
     this.branchForm.form.controls["branchPages"].setValue(event);
     this.branchForm.form.markAllAsTouched();
     this.branchForm.form.markAsDirty();

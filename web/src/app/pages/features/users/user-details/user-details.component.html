@@ -16,7 +16,7 @@
       mat-raised-button
       color="primary"
       matTooltip="Save"
-      [disabled]="!formIsReady"
+      [disabled]="!formIsReady && !formIsValid"
       form="userForm"
       type="submit">
       {{isNew ? 'Save' : 'Update'}}
@@ -385,6 +385,49 @@
         </div>
       </mat-card-content>
     </mat-card>
+    <h4 class="inner-content-title" [ngClass]="{'hidden': !isNew && !isReadOnly}">Branch</h4>
+    <mat-card [ngClass]="{'hidden': !isNew && !isReadOnly}">
+      <mat-card-content>
+        <div fxFlex="100" class="content-inner" fxLayout="column"
+        [ngClass]="{'readonly' : isReadOnly}" >
+          <mat-form-field class="example-full-width" appearance="outline" style="position: relative!important;">
+            <mat-label>Branch</mat-label>
+            <input type="text"
+                   placeholder="Select branch"
+                   aria-label="Select branch"
+                   matInput
+                   [formControl]="branchSearchCtrl"
+                   [matAutocomplete]="autoBranch"
+                   (focusout)="mapSearchBranch();"
+                   #branchSearchInput
+                   (input)="isOptionsBranchLoading = true;mapSearchBranch()">
+            <mat-autocomplete #autocompleteAccess #autoBranch="matAutocomplete" [displayWith]="displayBranchName.bind(this)" (optionSelected)="f['branchId'].setValue($event.option.value)">
+              <mat-option *ngFor="let option of optionsBranch" [value]="option.id">
+                {{option.name}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error
+              *ngIf="getError('branchId') !== (null || undefined) || branchSearchCtrl.errors !== (null || undefined)"
+            >
+              {{
+                (getError("branchId") && getError("branchId").required
+                  ? "Please select branch"
+                  : "") ||
+                (branchSearchCtrl.errors && branchSearchCtrl.errors.required
+                  ? "Please select branch"
+                  : "")
+              }}
+            </mat-error>
+            <mat-spinner *ngIf="isOptionsBranchLoading" style="position: absolute;
+            width: calc(48px / 2);
+            height: calc(48px / 2);
+            display: block;
+            top: calc(48px /3);
+            right: 0;"></mat-spinner>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
     <h4 class="inner-content-title">Access</h4>
     <mat-card>
       <mat-card-content>
@@ -397,11 +440,11 @@
                    aria-label="Select access"
                    matInput
                    [formControl]="accessSearchCtrl"
-                   [matAutocomplete]="auto"
+                   [matAutocomplete]="autoAccess"
                    (focusout)="mapSearchAccess();"
                    #accessSearchInput
                    (input)="isOptionsAccessLoading = true;mapSearchAccess()">
-            <mat-autocomplete #autocompleteAccess #auto="matAutocomplete" [displayWith]="displayFn.bind(this)" (optionSelected)="f['accessId'].setValue($event.option.value)">
+            <mat-autocomplete #autocompleteAccess #autoAccess="matAutocomplete" [displayWith]="displayAccessName.bind(this)" (optionSelected)="f['accessId'].setValue($event.option.value)">
               <mat-option *ngFor="let option of optionsAccess" [value]="option.id">
                 {{option.name}}
               </mat-option>

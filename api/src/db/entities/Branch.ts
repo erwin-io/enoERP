@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { ItemBranch } from "./ItemBranch";
+import { Users } from "./Users";
 
 @Index("u_branch_branchCode", ["active", "branchCode"], { unique: true })
 @Index("u_branch_name", ["active", "name"], { unique: true })
@@ -24,6 +25,12 @@ export class Branch {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("boolean", { name: "IsMainBranch", default: () => "false" })
+  isMainBranch: boolean;
+
   @OneToMany(() => ItemBranch, (itemBranch) => itemBranch.branch)
   itemBranches: ItemBranch[];
+
+  @OneToMany(() => Users, (users) => users.branch)
+  users: Users[];
 }

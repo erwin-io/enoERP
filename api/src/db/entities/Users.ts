@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Access } from "./Access";
+import { Branch } from "./Branch";
 
 @Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user_email", ["active", "email"], { unique: true })
@@ -53,4 +54,8 @@ export class Users {
   @ManyToOne(() => Access, (access) => access.users)
   @JoinColumn([{ name: "AccessId", referencedColumnName: "accessId" }])
   access: Access;
+
+  @ManyToOne(() => Branch, (branch) => branch.users)
+  @JoinColumn([{ name: "BranchId", referencedColumnName: "branchId" }])
+  branch: Branch;
 }

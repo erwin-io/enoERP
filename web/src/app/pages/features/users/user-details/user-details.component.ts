@@ -28,6 +28,7 @@ import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.c
 import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.matcher';
 import { AccessPagesTableComponent } from '../../../../shared/access-pages-table/access-pages-table.component';
 import { SpinnerVisibilityService } from 'ng-http-loader';
+import { BranchService } from 'src/app/services/branch.service';
 
 @Component({
   selector: 'app-user-details',
@@ -52,7 +53,6 @@ export class UserDetailsComponent implements OnInit {
   isLoading = false;
 
   userForm: FormGroup;
-  accessSearchCtrl = new FormControl()
   mediaWatcher: Subscription;
   matcher = new MyErrorStateMatcher();
   isProcessing = false;
@@ -62,6 +62,12 @@ export class UserDetailsComponent implements OnInit {
   displayedColumns = ['page', 'view', 'modify', 'rights'];
   accessDataSource = new MatTableDataSource<Access>();
 
+  branchSearchCtrl = new FormControl()
+  isOptionsBranchLoading = false;
+  optionsBranch: { name: string; id: string}[] = [];
+  @ViewChild('branchSearchInput', { static: true}) branchSearchInput: ElementRef<HTMLInputElement>;
+
+  accessSearchCtrl = new FormControl()
   isOptionsAccessLoading = false;
   optionsAccess: { name: string; id: string}[] = [];
   @ViewChild('accessPagesTable', { static: true}) accessPagesTable: AccessPagesTableComponent;
@@ -69,6 +75,7 @@ export class UserDetailsComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private branchService: BranchService,
     private accessService: AccessService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
@@ -110,10 +117,12 @@ export class UserDetailsComponent implements OnInit {
     return this.userForm.controls;
   }
   get formIsValid() {
-    return this.userForm.valid && this.accessSearchCtrl.valid;
+    return this.userForm.valid && this.branchSearchCtrl.valid && this.accessSearchCtrl.valid;
   }
   get formIsReady() {
-    return (this.userForm.valid && this.userForm.dirty) || (this.accessSearchCtrl.valid && this.accessSearchCtrl.dirty);
+    return (this.userForm.valid && this.userForm.dirty) ||
+    (this.branchSearchCtrl.valid && this.branchSearchCtrl.dirty) ||
+    (this.accessSearchCtrl.valid && this.accessSearchCtrl.dirty);
   }
   get formData() {
     return this.userForm.value;
@@ -155,6 +164,7 @@ export class UserDetailsComponent implements OnInit {
           ],
           confirmPassword: '',
           accessId: ['', Validators.required],
+          branchId: ['', Validators.required],
         },
         { validators: this.checkPasswords }
       );
@@ -181,15 +191,30 @@ export class UserDetailsComponent implements OnInit {
           Validators.email]],
         address: ['',[Validators.required]],
         accessId: ['', Validators.required],
+        branchId: ['', Validators.required],
       });
 
 
-      const [user, accessOptions] = await forkJoin([this.userService.getByCode(this.userCode).toPromise(), this.accessService.getByAdvanceSearch({
+      const [user, branchOptions, accessOptions] = await forkJoin([
+        this.userService.getByCode(this.userCode).toPromise(),
+        this.branchService.getByAdvanceSearch({
         order: {},
         columnDef: [],
         pageIndex: 0,
         pageSize: 10
-      })]).toPromise();
+      }),
+        this.accessService.getByAdvanceSearch({
+        order: {},
+        columnDef: [],
+        pageIndex: 0,
+        pageSize: 10
+      })
+    ]).toPromise();
+      if(branchOptions.success) {
+        this.optionsBranch = branchOptions.data.results.map(x=> {
+          return { name: x.name, id: x.branchId }
+        });
+      }
       if(accessOptions.success) {
         this.optionsAccess = accessOptions.data.results.map(x=> {
           return { name: x.name, id: x.accessId }
@@ -203,15 +228,18 @@ export class UserDetailsComponent implements OnInit {
         this.f['mobileNumber'].setValue(user.data.mobileNumber);
         this.f['email'].setValue(user.data.email);
         this.f['address'].setValue(user.data.address);
+        this.f['branchId'].setValue(user.data.branch?.branchId);
         this.f['accessId'].setValue(user.data.access?.accessId);
         if(user.data.access?.accessPages) {
           this.accessPagesTable.setDataSource(user.data.access?.accessPages);
         }
         this.f['userName'].disable();
+        this.branchSearchCtrl.disable();
         if (this.isReadOnly) {
           this.userForm.disable();
           this.accessSearchCtrl.disable();
         }
+        this.branchSearchCtrl.setValue(user.data.branch?.branchId);
         this.accessSearchCtrl.setValue(user.data.access?.accessId);
       } else {
         this.error = Array.isArray(user.message) ? user.message[0] : user.message;
@@ -237,16 +265,63 @@ export class UserDetailsComponent implements OnInit {
         this.spinner.hide();
       }
     })
+    this.branchSearchCtrl.valueChanges
+    .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+    )
+    .subscribe(async value => {
+        await this.initBranchOptions();
+    });
     this.accessSearchCtrl.valueChanges
     .pipe(
         debounceTime(2000),
         distinctUntilChanged()
     )
     .subscribe(async value => {
-        //your API call
         await this.initAccessOptions();
     });
-    this.initAccessOptions();
+    await this.initBranchOptions();
+    await this.initAccessOptions();
+  }
+
+  async initBranchOptions() {
+    this.isOptionsBranchLoading = true;
+    const res = await this.branchService.getByAdvanceSearch({
+      order: {},
+      columnDef: [{
+        apiNotation: "name",
+        filter: this.branchSearchInput.nativeElement.value
+      }],
+      pageIndex: 0,
+      pageSize: 10
+    }).toPromise();
+    this.optionsBranch = res.data.results.map(a=> { return { name: a.name, id: a.branchId }});
+    this.mapSearchBranch();
+    this.isOptionsBranchLoading = false;
+  }
+
+  displayBranchName(value?: number) {
+    return value ? this.optionsBranch.find(_ => _.id === value?.toString())?.name : undefined;
+  }
+
+  mapSearchBranch() {
+    if(this.f['branchId'].value !== this.branchSearchCtrl.value) {
+      this.f['branchId'].setErrors({ required: true});
+      const selected = this.optionsBranch.find(x=>x.id === this.branchSearchCtrl.value);
+      if(selected) {
+        this.f["branchId"].setValue(selected.id);
+      } else {
+        this.f["branchId"].setValue(null);
+      }
+      if(!this.f["branchId"].value) {
+        this.f["branchId"].setErrors({required: true});
+      } else {
+        this.f['branchId'].setErrors(null);
+        this.f['branchId'].markAsPristine();
+      }
+    }
+    this.branchSearchCtrl.setErrors(this.f["branchId"].errors);
   }
 
   async initAccessOptions() {
@@ -265,16 +340,7 @@ export class UserDetailsComponent implements OnInit {
     this.isOptionsAccessLoading = false;
   }
 
-  getError(key: string) {
-    if (key === 'confirmPassword') {
-      this.formData.confirmPassword !== this.formData.password
-        ? this.f[key].setErrors({ notMatched: true })
-        : this.f[key].setErrors(null);
-    }
-    return this.f[key].errors;
-  }
-
-  displayFn(value?: number) {
+  displayAccessName(value?: number) {
     return value ? this.optionsAccess.find(_ => _.id === value?.toString())?.name : undefined;
   }
 
@@ -297,6 +363,15 @@ export class UserDetailsComponent implements OnInit {
     this.accessSearchCtrl.setErrors(this.f["accessId"].errors);
   }
 
+  getError(key: string) {
+    if (key === 'confirmPassword') {
+      this.formData.confirmPassword !== this.formData.password
+        ? this.f[key].setErrors({ notMatched: true })
+        : this.f[key].setErrors(null);
+    }
+    return this.f[key].errors;
+  }
+
   checkPasswords: ValidatorFn = (
     group: AbstractControl
   ): ValidationErrors | null => {
@@ -306,7 +381,6 @@ export class UserDetailsComponent implements OnInit {
   };
 
   onSubmit() {
-    console.log(this.formData);
     if (this.userForm.invalid || this.accessSearchCtrl.invalid) {
       return;
     }

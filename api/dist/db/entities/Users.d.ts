@@ -1,4 +1,5 @@
 import { Access } from "./Access";
+import { Branch } from "./Branch";
 export declare class Users {
     userId: string;
     userName: string;
@@ -13,4 +14,5 @@ export declare class Users {
     userCode: string | null;
     address: string;
     access: Access;
+    branch: Branch;
 }

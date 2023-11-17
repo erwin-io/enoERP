@@ -18,4 +18,16 @@ export class DefaultBranchDto {
   @ApiProperty()
   @IsNotEmpty()
   branchCode: string;
+
+  @ApiProperty({
+    default: false,
+    type: Boolean
+  })
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  @Transform(({ obj, key }) => {
+    return obj[key].toString();
+  })
+  @IsBooleanString()
+  isMainBranch = false;
 }

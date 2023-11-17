@@ -397,10 +397,6 @@ mat-mdc-dialog-container {
     .mat-mdc-table-sticky-border-elem-left {
         border-right: 1px solid #e0e0e0;
     }
-
-    .hidden {
-      display: none !important;
-    }
   }
 
   .table-no-data {
@@ -415,4 +411,10 @@ mat-mdc-dialog-container {
       text-align: center;
       font-size: 15px !important;
     }
+  }
+
+
+
+  ::ng-deep .hidden {
+    display: none !important;
   }

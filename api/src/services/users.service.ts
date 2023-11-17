@@ -7,12 +7,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import moment from "moment";
 import { ACCESS_ERROR_NOT_FOUND } from "src/common/constant/access.constant";
+import { BRANCH_ERROR_NOT_FOUND } from "src/common/constant/branch.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
 import { CreateUserDto } from "src/core/dto/user/users.create.dto";
 import { UpdateUserDto } from "src/core/dto/user/users.update.dto";
 import { FirebaseProvider } from "src/core/provider/firebase/firebase-provider";
 import { Access } from "src/db/entities/Access";
+import { Branch } from "src/db/entities/Branch";
 import { Users } from "src/db/entities/Users";
 import { Repository } from "typeorm";
 
@@ -28,6 +30,11 @@ const defaultUserSelect = {
   accessGranted: true,
   active: true,
   userCode: true,
+  branch: {
+    branchId: true,
+    branchCode: true,
+    name: true,
+  },
   access: {
     accessId: true,
     name: true,
@@ -57,6 +64,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
         skip,
         take,
@@ -84,6 +92,7 @@ export class UsersService {
       },
       relations: {
         access: true,
+        branch: true,
       },
     });
 
@@ -121,6 +130,7 @@ export class UsersService {
       },
       relations: {
         access: true,
+        branch: true,
       },
     });
 
@@ -152,6 +162,19 @@ export class UsersService {
   async create(dto: CreateUserDto) {
     return await this.userRepo.manager.transaction(async (entityManager) => {
       let user = new Users();
+      if (!dto.branchId) {
+      }
+      const branch = await entityManager.findOne(Branch, {
+        where: {
+          branchId: dto.branchId,
+          active: true,
+        },
+      });
+
+      if (!branch) {
+        throw Error(BRANCH_ERROR_NOT_FOUND);
+      }
+      user.branch = branch;
       user.userName = dto.userName;
       user.password = await hash(dto.password);
       user.accessGranted = true;
@@ -183,6 +206,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
       delete user.password;
@@ -218,6 +242,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
 
@@ -252,6 +277,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
       delete user.password;
@@ -269,6 +295,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
 
@@ -293,6 +320,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
 
@@ -317,6 +345,7 @@ export class UsersService {
         },
         relations: {
           access: true,
+          branch: true,
         },
       });
 

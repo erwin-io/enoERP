@@ -62,6 +62,7 @@ let BranchService = class BranchService {
             let branch = new Branch_1.Branch();
             branch.branchCode = dto.branchCode;
             branch.name = dto.name;
+            branch.isMainBranch = dto.isMainBranch;
             branch = await entityManager.save(branch);
             const items = await entityManager.find(Item_1.Item);
             const itemWarehouses = [];
@@ -88,6 +89,7 @@ let BranchService = class BranchService {
             }
             branch.branchCode = dto.branchCode;
             branch.name = dto.name;
+            branch.isMainBranch = dto.isMainBranch;
             return await entityManager.save(Branch_1.Branch, branch);
         });
     }

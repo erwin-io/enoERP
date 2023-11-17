@@ -21,9 +21,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const moment_1 = __importDefault(require("moment"));
 const access_constant_1 = require("../common/constant/access.constant");
+const branch_constant_1 = require("../common/constant/branch.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const firebase_provider_1 = require("../core/provider/firebase/firebase-provider");
 const Access_1 = require("../db/entities/Access");
+const Branch_1 = require("../db/entities/Branch");
 const Users_1 = require("../db/entities/Users");
 const typeorm_2 = require("typeorm");
 const defaultUserSelect = {
@@ -38,6 +40,11 @@ const defaultUserSelect = {
     accessGranted: true,
     active: true,
     userCode: true,
+    branch: {
+        branchId: true,
+        branchCode: true,
+        name: true,
+    },
     access: {
         accessId: true,
         name: true,
@@ -60,6 +67,7 @@ let UsersService = class UsersService {
                 where: Object.assign(Object.assign({}, condition), { active: true }),
                 relations: {
                     access: true,
+                    branch: true,
                 },
                 skip,
                 take,
@@ -84,6 +92,7 @@ let UsersService = class UsersService {
             },
             relations: {
                 access: true,
+                branch: true,
             },
         });
         if (!res) {
@@ -114,6 +123,7 @@ let UsersService = class UsersService {
             },
             relations: {
                 access: true,
+                branch: true,
             },
         });
         if (!res) {
@@ -138,6 +148,18 @@ let UsersService = class UsersService {
         return await this.userRepo.manager.transaction(async (entityManager) => {
             var _a, _b;
             let user = new Users_1.Users();
+            if (!dto.branchId) {
+            }
+            const branch = await entityManager.findOne(Branch_1.Branch, {
+                where: {
+                    branchId: dto.branchId,
+                    active: true,
+                },
+            });
+            if (!branch) {
+                throw Error(branch_constant_1.BRANCH_ERROR_NOT_FOUND);
+            }
+            user.branch = branch;
             user.userName = dto.userName;
             user.password = await (0, utils_1.hash)(dto.password);
             user.accessGranted = true;
@@ -168,6 +190,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             delete user.password;
@@ -195,6 +218,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             if (!user) {
@@ -226,6 +250,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             delete user.password;
@@ -242,6 +267,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             if (!user) {
@@ -263,6 +289,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             if (!user) {
@@ -284,6 +311,7 @@ let UsersService = class UsersService {
                 },
                 relations: {
                     access: true,
+                    branch: true,
                 },
             });
             if (!user) {

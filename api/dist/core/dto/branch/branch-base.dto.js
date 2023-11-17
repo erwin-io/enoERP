@@ -11,8 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultBranchDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class DefaultBranchDto {
+    constructor() {
+        this.isMainBranch = false;
+    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)(),
@@ -24,5 +28,18 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], DefaultBranchDto.prototype, "branchCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        default: false,
+        type: Boolean
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_transformer_1.Transform)(({ obj, key }) => {
+        return obj[key].toString();
+    }),
+    (0, class_validator_1.IsBooleanString)(),
+    __metadata("design:type", Object)
+], DefaultBranchDto.prototype, "isMainBranch", void 0);
 exports.DefaultBranchDto = DefaultBranchDto;
 //# sourceMappingURL=branch-base.dto.js.map

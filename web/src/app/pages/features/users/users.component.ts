@@ -118,6 +118,7 @@ export class UsersComponent implements OnInit {
               mobileNumber: d.mobileNumber,
               enable: d.accessGranted,
               access: d.access.name,
+              branch: d.branch.name,
               url: `/users/${d.userCode}`,
             } as UsersTableColumn
           });

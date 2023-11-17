@@ -17,6 +17,7 @@ export class BranchFormComponent {
     this.form = this.formBuilder.group({
       branchCode: ['',[Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
       name: ['',[Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
+      isMainBranch: [false],
     });
   }
 
@@ -24,6 +25,7 @@ export class BranchFormComponent {
     if(this.form) {
       this.form.controls["branchCode"].setValue(value.branchCode);
       this.form.controls["name"].setValue(value.name);
+      this.form.controls["isMainBranch"].setValue(value.isMainBranch);
     }
   }
 

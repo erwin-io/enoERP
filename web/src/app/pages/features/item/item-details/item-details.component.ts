@@ -73,10 +73,6 @@ export class ItemDetailsComponent {
   }
 
   ngOnInit(): void {
-    // setTimeout(()=> {
-    //   console.log(this.itemForm.form.valid)
-    //   console.log(this.itemForm.form.valid)
-    // }, 1000)
   }
 
   ngAfterViewInit() {

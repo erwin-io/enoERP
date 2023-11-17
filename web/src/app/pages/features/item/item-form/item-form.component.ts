@@ -35,8 +35,20 @@ export class ItemFormComponent {
     });
   }
 
-  async init(detais: Item) {
+  async ngOnInit(): Promise<void> {
     await this.initItemCategoryOptions();
+    this.itemCategorySearchCtrl.valueChanges
+    .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+    )
+    .subscribe(async value => {
+        //your API call
+        await this.initItemCategoryOptions();
+    });
+  }
+
+  async init(detais: Item) {
     if(this.form) {
       this.form.controls["itemCode"].setValue(detais.itemCode);
       this.form.controls["itemName"].setValue(detais.itemName);
@@ -48,15 +60,6 @@ export class ItemFormComponent {
   }
 
   async initItemCategoryOptions() {
-    this.itemCategorySearchCtrl.valueChanges
-    .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-    )
-    .subscribe(async value => {
-        //your API call
-        await this.initItemCategoryOptions();
-    });
     this.isOptionsItemCategoryLoading = true;
     const res = await this.itemCategoryService.getByAdvanceSearch({
       order: {},
@@ -73,20 +76,22 @@ export class ItemFormComponent {
   }
 
   mapSearchItemCategory() {
-    this.form.controls['itemCategoryId'].setErrors({ required: true});
-    const selected = this.optionsItemCategory.find(x=>x.id === this.itemCategorySearchCtrl.value);
-    if(selected) {
-      this.form.controls["itemCategoryId"].setValue(selected.id);
-      this.form.controls['itemCategoryId'].markAsDirty();
-      this.form.controls['itemCategoryId'].markAsTouched();
-    } else {
-      this.form.controls["itemCategoryId"].setValue(null);
-    }
-    if(!this.form.controls["itemCategoryId"].value) {
-      this.form.controls["itemCategoryId"].setErrors({required: true});
-    } else {
-      this.form.controls['itemCategoryId'].setErrors(null);
-      this.form.controls['itemCategoryId'].markAsPristine();
+    if(this.form.controls['itemCategoryId'] !== this.itemCategorySearchCtrl.value){
+      this.form.controls['itemCategoryId'].setErrors({ required: true});
+      const selected = this.optionsItemCategory.find(x=>x.id === this.itemCategorySearchCtrl.value);
+      if(selected) {
+        this.form.controls["itemCategoryId"].setValue(selected.id);
+        this.form.controls['itemCategoryId'].markAsDirty();
+        this.form.controls['itemCategoryId'].markAsTouched();
+      } else {
+        this.form.controls["itemCategoryId"].setValue(null);
+      }
+      if(!this.form.controls["itemCategoryId"].value) {
+        this.form.controls["itemCategoryId"].setErrors({required: true});
+      } else {
+        this.form.controls['itemCategoryId'].setErrors(null);
+        this.form.controls['itemCategoryId'].markAsPristine();
+      }
     }
     this.itemCategorySearchCtrl.setErrors(this.form.controls["itemCategoryId"].errors);
   }

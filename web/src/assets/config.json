@@ -123,6 +123,17 @@
           "enable": true,
           "placeholder": "Branch name"
         }
+      },
+      {
+        "name": "isMainBranch",
+        "label": "Main branch",
+        "apiNotation": "isMainBranch",
+        "type": "boolean",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Main branch",
+          "type": "option-yes-no"
+        }
       }
     ],
     "item": [
@@ -237,6 +248,16 @@
         "filterOptions": {
           "enable": true,
           "placeholder": "Access"
+        }
+      },
+      {
+        "name": "branch",
+        "label": "Branch",
+        "apiNotation": "branch.name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Branch name"
         }
       }
     ]

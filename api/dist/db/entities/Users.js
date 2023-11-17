@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
 const typeorm_1 = require("typeorm");
 const Access_1 = require("./Access");
+const Branch_1 = require("./Branch");
 let Users = class Users {
 };
 __decorate([
@@ -67,6 +68,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)([{ name: "AccessId", referencedColumnName: "accessId" }]),
     __metadata("design:type", Access_1.Access)
 ], Users.prototype, "access", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Branch_1.Branch, (branch) => branch.users),
+    (0, typeorm_1.JoinColumn)([{ name: "BranchId", referencedColumnName: "branchId" }]),
+    __metadata("design:type", Branch_1.Branch)
+], Users.prototype, "branch", void 0);
 Users = __decorate([
     (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user_email", ["active", "email"], { unique: true }),

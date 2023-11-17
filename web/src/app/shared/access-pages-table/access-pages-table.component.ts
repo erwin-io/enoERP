@@ -77,7 +77,6 @@ export class AccessPagesTableComponent {
   }
 
   ngAfterViewInit() {
-    console.log(this.accessPagesDataSource.data)
   }
 
   setDataSource(accessPages: AccessPages[]) {

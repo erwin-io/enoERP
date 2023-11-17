@@ -63,6 +63,7 @@ export class BranchService {
       let branch = new Branch();
       branch.branchCode = dto.branchCode;
       branch.name = dto.name;
+      branch.isMainBranch = dto.isMainBranch;
       branch = await entityManager.save(branch);
 
       //create itemWarehouse entries
@@ -92,6 +93,7 @@ export class BranchService {
       }
       branch.branchCode = dto.branchCode;
       branch.name = dto.name;
+      branch.isMainBranch = dto.isMainBranch;
       return await entityManager.save(Branch, branch);
     });
   }

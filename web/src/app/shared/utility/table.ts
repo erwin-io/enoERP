@@ -32,6 +32,7 @@ export class UsersTableColumn {
   fullName: string;
   email: string;
   mobileNumber: string;
+  branch: string;
   enable: boolean;
   url?: string;
 }
@@ -69,5 +70,6 @@ export class BranchTableColumn {
   branchId?: string;
   branchCode?: string;
   name?: string;
+  isMainBranch?: boolean;
   url?: string;
 }

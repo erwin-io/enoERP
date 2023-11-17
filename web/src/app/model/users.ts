@@ -1,4 +1,5 @@
 import { Access } from "./access";
+import { Branch } from "./branch";
 import { Files } from "./files";
 
 export class Users {
@@ -14,4 +15,5 @@ export class Users {
     userCode: string;
     address: string;
     access: Access;
+    branch: Branch;
   }

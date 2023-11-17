@@ -80,7 +80,6 @@ export class WarehouseDetailsComponent {
   }
 
   warehouseGridChange(event) {
-    console.log(event);
     this.warehouseForm.form.controls["warehousePages"].setValue(event);
     this.warehouseForm.form.markAllAsTouched();
     this.warehouseForm.form.markAsDirty();

@@ -82,7 +82,6 @@ export class AccessDetailsComponent {
   }
 
   accessGridChange(event) {
-    console.log(event);
     this.accessForm.form.controls["accessPages"].setValue(event);
     this.accessForm.form.markAllAsTouched();
     this.accessForm.form.markAsDirty();

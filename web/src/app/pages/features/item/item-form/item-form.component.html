@@ -1,0 +1,158 @@
+
+<div class="inner-content" fxLayout="column" style="row-gap: 16px">
+  <form
+  [formGroup]="form"
+  fxLayout="row wrap"
+  id="form"
+  [ngClass]="{'readonly' : isReadOnly}">
+  <fieldset fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="50%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Item code</mat-label>
+        <input
+          matInput
+          placeholder="Item code"
+          formControlName="itemCode"/>
+        <mat-error *ngIf="getError('itemCode') !== (null || undefined)">
+        {{
+          (getError("itemCode") &&
+          getError("itemCode")["required"]
+            ? "Please enter Item code"
+            : "") ||
+            (getError("itemCode") &&
+            getError("itemCode")["pattern"]
+              ? "Invalid input"
+              : "")
+        }}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field
+        fxFlex="50%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Item name</mat-label>
+        <input
+          matInput
+          placeholder="Item name"
+          formControlName="itemName"/>
+        <mat-error *ngIf="getError('itemName') !== (null || undefined)">
+        {{
+          (getError("itemName") &&
+          getError("itemName")["required"]
+            ? "Please enter Item name"
+            : "") ||
+            (getError("itemName") &&
+            getError("itemName")["pattern"]
+              ? "Invalid input"
+              : "")
+        }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="100"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Item description</mat-label>
+        <textarea
+          matInput
+          placeholder="Item description"
+          formControlName="itemDescription">
+        </textarea>
+        <mat-error
+          *ngIf="getError('itemDescription') !== (null || undefined)">
+          {{
+            (getError("itemDescription") && getError("itemDescription").required
+              ? "Please enter Item description"
+              : "")
+          }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="50%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Price</mat-label>
+        <input
+          matInput
+          placeholder="Price"
+          formControlName="price"/>
+        <mat-error *ngIf="getError('price') !== (null || undefined)">
+        {{
+          (getError("price") &&
+          getError("price")["required"]
+            ? "Please enter price"
+            : "") ||
+            (getError("price") &&
+            getError("price")["pattern"]
+              ? "Invalid input"
+              : "")
+        }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
+  </form>
+  <div fxFlex="100" fxLayout="row wrap" style="row-gap: 16px"
+  [ngClass]="{'readonly' : isReadOnly}">
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field class="example-full-width" appearance="outline" style="position: relative!important;">
+        <mat-label>Item category</mat-label>
+        <input type="text"
+               placeholder="Select item category"
+               aria-label="Select item category"
+               matInput
+               [formControl]="itemCategorySearchCtrl"
+               [matAutocomplete]="auto"
+               (focusout)="mapSearchItemCategory();"
+               #itemCategorySearchInput
+               (input)="isOptionsItemCategoryLoading = true;mapSearchItemCategory()">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)" (optionSelected)="form.controls['itemCategoryId'].setValue($event.option.value)">
+          <mat-option *ngFor="let option of optionsItemCategory" [value]="option.id">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+        <mat-error
+          *ngIf="getError('itemCategoryId') !== (null || undefined) || itemCategorySearchCtrl.errors !== (null || undefined)"
+        >
+          {{
+            (getError("itemCategoryId") && getError("itemCategoryId").required
+              ? "Please select valid item category"
+              : "") ||
+            (itemCategorySearchCtrl.errors && itemCategorySearchCtrl.errors.required
+              ? "Please select valid item category"
+              : "")
+          }}
+        </mat-error>
+        <mat-spinner *ngIf="isOptionsItemCategoryLoading" style="position: absolute;
+        width: calc(48px / 2);
+        height: calc(48px / 2);
+        display: block;
+        top: calc(48px /3);
+        right: 0;"></mat-spinner>
+      </mat-form-field>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  .login-grid {
+    max-width: 720px!important;
+    width: 100%;
+    align-items: center!important;
+    overflow: auto;
+    .login-grid-cell {
+      display: flex;
+      width: 50%!important;
+    }
+    .form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      box-sizing: border-box;
+      width: 100%;
+      .fieldset {
+        border: none;
+        width: 100%;
+        min-width: 0!important;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        row-gap: 10px;
+        .forgot-password {
+          display: flex;
+          width: 100%;
+          flex-grow: 1;
+          flex-direction: column;
+          align-items: flex-end;
+          row-gap: 10px;
+          margin-bottom: 10px!important;
+        }
+      }
+    }
+    @media only screen and (max-width: 800px) {
+      .login-grid-cell {
+        width: 100%!important;
+      }
+      .form {
+        margin-bottom: 60px!important;
+      }
+    }
+  }
+  }

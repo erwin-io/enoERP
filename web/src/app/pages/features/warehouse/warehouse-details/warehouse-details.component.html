@@ -1,0 +1,54 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <button [disabled]="isLoading" style="margin-right: 10px!important;" mat-icon-button
+    matTooltip="{{ isReadOnly? 'Back' : 'Cancel'}}"
+    [routerLink]="isReadOnly ? '/warehouse/' : isNew ? '/warehouse/': '/warehouse/' + id">
+    <mat-icon>
+      {{
+        isReadOnly? 'keyboard_arrow_left' : 'close'
+      }}
+    </mat-icon>
+  </button>
+  <span id="title">{{warehouseForm.getFormData.warehouseCode}}</span>
+  <span class="toolbar-item-spacer"></span>
+  <div class="toolbar-action">
+    <button
+      *ngIf="isReadOnly"
+      mat-raised-button
+      color="primary"
+      matTooltip="Save"
+      routerLink="/warehouse/{{id}}/edit"
+      replaceUrl="true"
+    >
+      Edit
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      matTooltip="Save"
+      (click)="onDelete()"
+      replaceUrl="true"
+    >
+      Delete
+    </button>
+    <button
+      *ngIf="!isReadOnly"
+      mat-flat-button
+      [disabled]="!warehouseForm.valid || !warehouseForm.ready"
+      color="primary"
+      (click)="onUpdate(warehouseForm.getFormData)">
+      Update
+    </button>
+  </div>
+</mat-toolbar>
+<div class="content">
+  <div class="inner-content">
+    <h4 class="inner-content-title">Item category details</h4>
+    <mat-card>
+      <mat-card-content>
+        <div fxFlex="100" fxLayout="column">
+          <app-warehouse-form [isReadOnly]="isReadOnly" #warehouseForm></app-warehouse-form>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

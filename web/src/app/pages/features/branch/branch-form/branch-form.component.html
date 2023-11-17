@@ -1,0 +1,59 @@
+
+<div class="inner-content">
+  <form
+  [formGroup]="form"
+  fxLayout="row wrap"
+  id="form"
+  [ngClass]="{'readonly' : isReadOnly}">
+  <fieldset fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
+    <mat-form-field
+      fxFlex="100"
+      fxLayout="column"
+      appearance="outline"
+    >
+      <mat-label>Branch code</mat-label>
+      <input
+        matInput
+        placeholder="Branch code"
+        formControlName="branchCode"
+      />
+      <mat-error
+        *ngIf="getError('branchCode') !== (null || undefined)"
+        >{{
+          (getError("branchCode") &&
+          getError("branchCode")["required"]
+            ? "Please enter branch code"
+            : "") ||
+            (getError("branchCode") &&
+            getError("branchCode")["pattern"]
+              ? "Invalid input"
+              : "")
+        }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field
+    fxFlex="100"
+    fxLayout="column"
+    appearance="outline"
+    >
+    <mat-label>Branch name</mat-label>
+    <textarea
+      matInput
+      placeholder="Branch name"
+      formControlName="name">
+    </textarea>
+      <mat-error
+        *ngIf="getError('name') !== (null || undefined)"
+        >{{
+          (getError("name") && getError("name").required
+            ? "Please enter name"
+            : "") ||
+            (getError("name") &&
+            getError("name")["pattern"]
+              ? "Invalid input"
+              : "")}}</mat-error
+      >
+    </mat-form-field>
+  </fieldset>
+  </form>
+</div>

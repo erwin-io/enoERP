@@ -1,0 +1,52 @@
+<div class="page-container container-center container-full">
+  <div fxLayout="column" fxLayout.gt-xs="row" class="login-grid" fxLayoutGap="50px">
+    <div class="login-gid-cell">
+      <img style="max-width: 300px!important;" src="../../../assets/img/banner.png">
+      <h1 style="text-align: center;">enoERP</h1>
+    </div>
+    <div class="login-gid-cell">
+      <form [formGroup]="logInForm" (ngSubmit)="onSubmit()" class="form">
+          <fieldset [disabled]="isProcessing" class="fieldset">
+            <h4>Login</h4>
+              <mat-form-field appearance="outline">
+                  <mat-label>Username</mat-label>
+                  <input
+                  matInput
+                  placeholder="Username"
+                  formControlName="userName">
+                  <mat-error *ngIf="logInForm.controls.userName.errors !== (null || undefined)">{{
+                      (logInForm.controls.userName.errors && logInForm.controls.userName.errors['required'] ? 'Please enter your mobile number' : '')
+                  }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                  <mat-label>Password</mat-label>
+                  <input
+                  #password
+                  matInput
+                  type="password"
+                  placeholder="Password"
+                  formControlName="password">
+                  <mat-icon
+                  class="icon-right"
+                  (click)="password.type = (password.type === 'password' ? 'text' : 'password')"
+                  style="cursor: pointer;"
+                  matSuffix>{{ password.type === 'password' ? 'visibility' : 'visibility_off' }}</mat-icon>
+                  <mat-error *ngIf="logInForm.controls.password.errors !== (null || undefined)">{{
+                      (logInForm.controls.password.errors && logInForm.controls.password.errors['required'] ? 'Please enter your password' : '')
+                  }}</mat-error>
+              </mat-form-field>
+              <div class="forgot-password">
+                  <span>
+                      <a [routerLink]="'/auth/forgot-password'">Forgot password?</a>
+                  </span>
+                  <!-- <span *ngIf="!admin" >
+                      <a routerLink="/auth/member/register">Create account</a>
+                  </span> -->
+              </div>
+              <button mat-raised-button color="primary" type="submit" [disabled]="isProcessing">Login</button>
+              <mat-error class="form-error" *ngIf="error">{{ error }}</mat-error>
+          </fieldset>
+      </form>
+    </div>
+  </div>
+</div>

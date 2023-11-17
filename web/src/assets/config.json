@@ -1,0 +1,346 @@
+{
+  "appName": "enoERP",
+  "reservationConfig": {
+    "maxCancellation": "3",
+    "daysCancellationLimitReset": "5",
+    "timeSlotHours": {
+      "start": "08:00",
+      "end": "17:00"
+    },
+    "timeSlotNotAvailableHours": [
+      "12:00"
+    ],
+    "dayOfWeekNotAvailable": [
+      "Sunday",
+      "Wednesday",
+      "Saturday"
+    ]
+  },
+  "tableColumns": {
+    "access": [
+      {
+        "name": "accessId",
+        "label": "Access #",
+        "apiNotation": "accessId",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Access #"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "name",
+        "label": "Access name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Access name"
+        }
+      }
+    ],
+    "itemCategory": [
+      {
+        "name": "itemCategoryId",
+        "label": "Item category #",
+        "apiNotation": "itemCategoryId",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item category #"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "name",
+        "label": "Item category name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item category name"
+        }
+      }
+    ],
+    "warehouse": [
+      {
+        "name": "warehouseCode",
+        "label": "Warehouse code",
+        "apiNotation": "warehouseCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Warehouse code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "name",
+        "label": "Warehouse name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Warehouse name"
+        }
+      }
+    ],
+    "branch": [
+      {
+        "name": "branchCode",
+        "label": "Branch code",
+        "apiNotation": "branchCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Branch code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "name",
+        "label": "Branch name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Branch name"
+        }
+      }
+    ],
+    "item": [
+      {
+        "name": "itemCode",
+        "label": "Item code",
+        "apiNotation": "itemCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "itemName",
+        "label": "Item name",
+        "apiNotation": "itemName",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item name"
+        }
+      },
+      {
+        "name": "itemDescription",
+        "label": "Item description",
+        "apiNotation": "itemDescription",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item description"
+        }
+      },
+      {
+        "name": "price",
+        "label": "Item price",
+        "apiNotation": "price",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item price"
+        }
+      },
+      {
+        "name": "itemCategory",
+        "label": "Item category",
+        "apiNotation": "itemCategory.name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item category"
+        }
+      }
+    ],
+    "users": [
+      {
+        "name": "fullName",
+        "label": "Name",
+        "apiNotation": "fullName",
+        "sticky": true,
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Full name"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "userName",
+        "label": "Username",
+        "apiNotation": "user.userName",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Username"
+        }
+      },
+      {
+        "name": "mobileNumber",
+        "label": "Mobile number",
+        "apiNotation": "mobileNumber",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Mobile number"
+        }
+      },
+      {
+        "name": "email",
+        "label": "Email",
+        "apiNotation": "email",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Email"
+        }
+      },
+      {
+        "name": "access",
+        "label": "Access",
+        "apiNotation": "access.name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Access"
+        }
+      }
+    ]
+  },
+  "sessionConfig": {
+    "sessionTimeout": "60"
+  },
+  "lookup": {
+    "accessPages": [
+      {
+        "page": "Dashboard",
+        "view": true,
+        "modify": true,
+        "rights": []
+      },
+      {
+        "page": "Item",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Item Category",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Warehouse",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Branch",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Users",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Access",
+        "view": false,
+        "modify": false,
+        "rights": []
+      }
+    ]
+  },
+  "apiEndPoints": {
+    "auth": {
+      "login": "/auth/login",
+      "register": "/auth/register"
+    },
+    "user": {
+      "getByCode": "/users/",
+      "createUsers": "/users/",
+      "updateUsers": "/users/",
+      "getUsersByAdvanceSearch": "/users/page/",
+      "resetUserPassword": "/users/",
+      "approveAccessRequest": "/users/"
+    },
+    "access": {
+      "getByAdvanceSearch": "/access/page/",
+      "getById": "/access/",
+      "create": "/access/",
+      "update": "/access/",
+      "delete": "/access/"
+    },
+    "itemCategory": {
+      "getByAdvanceSearch": "/itemCategory/page/",
+      "getById": "/itemCategory/",
+      "create": "/itemCategory/",
+      "update": "/itemCategory/",
+      "delete": "/itemCategory/"
+    },
+    "item": {
+      "getByAdvanceSearch": "/item/page/",
+      "getById": "/item/",
+      "create": "/item/",
+      "update": "/item/",
+      "delete": "/item/"
+    },
+    "warehouse": {
+      "getByAdvanceSearch": "/warehouse/page/",
+      "getById": "/warehouse/",
+      "create": "/warehouse/",
+      "update": "/warehouse/",
+      "delete": "/warehouse/"
+    },
+    "branch": {
+      "getByAdvanceSearch": "/branch/page/",
+      "getById": "/branch/",
+      "create": "/branch/",
+      "update": "/branch/",
+      "delete": "/branch/"
+    },
+    "dashboard": {},
+    "message": {
+      "create": "/message/"
+    }
+  }
+}

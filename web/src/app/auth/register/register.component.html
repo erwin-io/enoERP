@@ -1,0 +1,50 @@
+<div class="page-container container-center container-full">
+    <div class="login-container">
+        <mat-card class="cards">
+            <mat-toolbar color="primary" class="mat-elevation-z2" >
+                Register
+            </mat-toolbar>
+            
+            <mat-card-content>
+                <form [formGroup]="logInForm" (ngSubmit)="onSubmit()" class="form">
+                    <fieldset [disabled]="isProcessing" class="fieldset">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Mobile number</mat-label>
+                            <input
+                            matInput
+                            placeholder="Mobile number"
+                            formControlName="mobileNumber">
+                            <mat-error *ngIf="logInForm.controls.mobileNumber.errors !== (null || undefined)">{{
+                                (logInForm.controls.mobileNumber.errors && logInForm.controls.mobileNumber.errors['required'] ? 'Please enter your mobile number' : '')
+                            }}</mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Password</mat-label>
+                            <input
+                            #password
+                            matInput
+                            type="password"
+                            placeholder="Password"
+                            formControlName="password">
+                            <mat-icon
+                            class="icon-right"
+                            (click)="password.type = (password.type === 'password' ? 'text' : 'password')"
+                            style="cursor: pointer;"
+                            matSuffix>{{ password.type === 'password' ? 'visibility' : 'visibility_off' }}</mat-icon>
+                            <mat-error *ngIf="logInForm.controls.password.errors !== (null || undefined)">{{
+                                (logInForm.controls.password.errors && logInForm.controls.password.errors['required'] ? 'Please enter your password' : '')
+                            }}</mat-error>
+                        </mat-form-field>
+                        <button mat-raised-button color="primary" type="submit" [disabled]="isProcessing">Login</button>
+                        <mat-error class="form-error" *ngIf="error">{{ error }}</mat-error>
+                        <div class="forgot-password">
+                            <span>Already have an account?  
+                                <a routerLink="/auth/member/login">Log In</a>
+                            </span>
+                        </div>
+                    </fieldset>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+::ng-deep .table-container {
+    overflow: auto;
+    padding-bottom: 16px;
+    ::ng-deep .table {
+      min-width: 860px !important;
+      .mat-sort-header {
+          height: 30px;
+          width: max-content;
+          flex-direction: row;
+          display: flex;
+          margin: 10px 0!important;
+      }
+      .mat-column-fullName {
+        flex: 0 0 30% !important;
+        width: 30% !important;
+      }
+      mat-form-field {
+        width: 100%!important;
+      }
+      .hidden {
+        display: none!important;
+      }
+    }
+  }
+

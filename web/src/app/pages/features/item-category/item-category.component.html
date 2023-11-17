@@ -1,0 +1,57 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <span id="title">Item Category</span>
+  <span class="toolbar-item-spacer"></span>
+</mat-toolbar>
+<div class="component-floating-actions vertical-actions">
+  <button mat-fab color="primary" aria-label="New itemCategory" matTooltip="New itemCategory" (click)="showAddDialog()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+<div class="content">
+<div class="inner-content">
+  <mat-card [ngClass]="{ 'hidden': isLoading }">
+      <mat-card-content fxLayout="column" >
+        <app-data-table
+        [isLoading]="isLoading"
+        [dataSource]="dataSource"
+        [columnDefs]="appConfig.config.tableColumns.itemCategory"
+        [total]="total"
+        (pageChange)="pageChange($event)"
+        (sortChange)="sortChange($event)"
+        (filterChange)="filterChange($event)"
+        ></app-data-table>
+      </mat-card-content>
+  </mat-card>
+  </div>
+</div>
+
+<ng-template #itemCategoryFormDialog>
+  <h4 mat-dialog-title>Add itemCategory</h4>
+
+<div mat-dialog-content>
+  <app-item-category-form #itemCategoryForm></app-item-category-form>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      (click)="closeNewItemCategoryDialog()"
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!itemCategoryForm.valid || !itemCategoryForm.ready"
+      color="primary"
+      type="submit"
+      (click)="saveNewItemCategory(itemCategoryForm.getFormData)"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>
+

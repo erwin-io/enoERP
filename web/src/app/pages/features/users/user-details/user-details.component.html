@@ -400,7 +400,7 @@
                    [matAutocomplete]="autoBranch"
                    (focusout)="mapSearchBranch();"
                    #branchSearchInput
-                   (input)="isOptionsBranchLoading = true;mapSearchBranch()">
+                   (input)="isOptionsBranchLoading = true;">
             <mat-autocomplete #autocompleteAccess #autoBranch="matAutocomplete" [displayWith]="displayBranchName.bind(this)" (optionSelected)="f['branchId'].setValue($event.option.value)">
               <mat-option *ngFor="let option of optionsBranch" [value]="option.id">
                 {{option.name}}
@@ -443,7 +443,7 @@
                    [matAutocomplete]="autoAccess"
                    (focusout)="mapSearchAccess();"
                    #accessSearchInput
-                   (input)="isOptionsAccessLoading = true;mapSearchAccess()">
+                   (input)="isOptionsAccessLoading = true;">
             <mat-autocomplete #autocompleteAccess #autoAccess="matAutocomplete" [displayWith]="displayAccessName.bind(this)" (optionSelected)="f['accessId'].setValue($event.option.value)">
               <mat-option *ngFor="let option of optionsAccess" [value]="option.id">
                 {{option.name}}

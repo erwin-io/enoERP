@@ -279,18 +279,20 @@ export class UserDetailsComponent implements OnInit {
   }
 
   mapSearchAccess() {
-    this.f['accessId'].setErrors({ required: true});
-    const selected = this.optionsAccess.find(x=>x.id === this.accessSearchCtrl.value);
-    if(selected) {
-      this.f["accessId"].setValue(selected.id);
-    } else {
-      this.f["accessId"].setValue(null);
-    }
-    if(!this.f["accessId"].value) {
-      this.f["accessId"].setErrors({required: true});
-    } else {
-      this.f['accessId'].setErrors(null);
-      this.f['accessId'].markAsPristine();
+    if(this.f['accessId'].value !== this.accessSearchCtrl.value) {
+      this.f['accessId'].setErrors({ required: true});
+      const selected = this.optionsAccess.find(x=>x.id === this.accessSearchCtrl.value);
+      if(selected) {
+        this.f["accessId"].setValue(selected.id);
+      } else {
+        this.f["accessId"].setValue(null);
+      }
+      if(!this.f["accessId"].value) {
+        this.f["accessId"].setErrors({required: true});
+      } else {
+        this.f['accessId'].setErrors(null);
+        this.f['accessId'].markAsPristine();
+      }
     }
     this.accessSearchCtrl.setErrors(this.f["accessId"].errors);
   }

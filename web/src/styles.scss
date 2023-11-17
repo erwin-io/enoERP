@@ -13,8 +13,8 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
 
-$enoerp-web-primary: mat.define-palette(mat.$blue-palette, 800);
-$enoerp-web-accent: mat.define-palette(mat.$blue-palette, A200, A100, A400);
+$enoerp-web-primary: mat.define-palette(mat.$gray-palette, 800);
+$enoerp-web-accent: mat.define-palette(mat.$gray-palette, 200, 100, 400);
 
 // The warn palette is optional (defaults to red).
 $enoerp-web-warn: mat.define-palette(mat.$red-palette);
@@ -120,13 +120,13 @@ p, label, input, textarea, span, div, button {
                     }
                 }
                 &.active-link {
-                    background-color: rgba($color: (#2962FF), $alpha: 0.12)!important;
+                    background-color: rgba($color: (#212121), $alpha: 0.12)!important;
                     .mdc-list-item__primary-text {
-                        color: #2962FF;
+                        color: #212121;
                     }
                 }
                 &:hover,&:focus {
-                    background-color: rgba($color: (#2962FF), $alpha: 0.07)!important;
+                    background-color: rgba($color: (#212121), $alpha: 0.07)!important;
                 }
             }
             .mat-expansion-panel {
@@ -141,13 +141,13 @@ p, label, input, textarea, span, div, button {
               &.mat-expansion-active {
                 .mat-expansion-panel-header {
                   &:not(.mat-expanded) {
-                    background-color: rgba($color: (#2962FF), $alpha: 0.12)!important;
+                    background-color: rgba($color: (#212121), $alpha: 0.12)!important;
                     .mat-content {
-                      color: #2962FF;
+                      color: #212121;
                     }
                   }
                   .mat-content {
-                      color: #2962FF;
+                      color: #212121;
                   }
                 }
               }

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: "https://enoerp-api.vercel.app/api/v1",
+  apiBaseUrl: "https://eno-erp-api.vercel.app/api/v1",
 };

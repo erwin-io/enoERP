@@ -1,10 +1,10 @@
 <div class="page-container container-center container-full">
-  <div fxLayout="column" fxLayout.gt-xs="row" class="login-grid" fxLayoutGap="50px">
-    <div class="login-gid-cell">
+  <div fxLayout="column" fxLayout.gt-xs="row" class="login-grid">
+    <div class="login-grid-cell">
       <img style="max-width: 300px!important;" src="../../../assets/img/banner.png">
       <h1 style="text-align: center;">enoERP</h1>
     </div>
-    <div class="login-gid-cell">
+    <div class="login-grid-cell">
       <form [formGroup]="logInForm" (ngSubmit)="onSubmit()" class="form">
           <fieldset [disabled]="isProcessing" class="fieldset">
             <h4>Login</h4>

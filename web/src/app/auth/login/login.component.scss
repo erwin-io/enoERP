@@ -5,10 +5,11 @@
     max-width: 720px!important;
     width: 100%;
     align-items: center!important;
-    overflow: auto;
     .login-grid-cell {
       display: flex;
       width: 50%!important;
+      flex-direction: column;
+      align-items: center;
     }
     .form {
       display: flex;
@@ -35,7 +36,9 @@
         }
       }
     }
-    @media only screen and (max-width: 800px) {
+    @media only screen and (max-width: 599px) {
+      overflow-y: auto!important;
+      overflow-x: hidden!important;
       .login-grid-cell {
         width: 100%!important;
       }

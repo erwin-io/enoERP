@@ -234,7 +234,7 @@ export class InventoryRequestItemComponent {
     }
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = this.isNew ? "Add item?" : "Update item?";
+    dialogData.message = this.isNew ? "New item?" : "Update item?";
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

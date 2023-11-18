@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'new',
     component: InventoryRequestDetailsComponent,
-    data: { title: "Add Inventory Request", details: true, isNew: true}
+    data: { title: "New Inventory Request", details: true, isNew: true}
   },
   {
     path: ':inventoryRequestCode',

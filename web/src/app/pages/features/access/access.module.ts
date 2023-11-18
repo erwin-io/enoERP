@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'add',
     component: AccessDetailsComponent,
-    data: { title: "Add Access", details: true, isNew: true}
+    data: { title: "New Access", details: true, isNew: true}
   },
   {
     path: ':accessId',

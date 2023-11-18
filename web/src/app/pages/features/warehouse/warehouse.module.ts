@@ -20,7 +20,7 @@ export const routes: Routes = [
   {
     path: 'add',
     component: WarehouseDetailsComponent,
-    data: { title: "Add Warehouse", details: true, isNew: true}
+    data: { title: "New Warehouse", details: true, isNew: true}
   },
   {
     path: ':warehouseId',

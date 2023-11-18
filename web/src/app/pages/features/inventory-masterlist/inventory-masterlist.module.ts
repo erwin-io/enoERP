@@ -12,7 +12,7 @@ export const routes: Routes = [
     path: '',
     component: InventoryMasterlistComponent,
     pathMatch: 'full',
-    data: { title: "InventoryMasterlist" }
+    data: { title: "Inventory Masterlist" }
   }
 ];
 

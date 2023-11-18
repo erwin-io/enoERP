@@ -193,6 +193,74 @@
         }
       }
     ],
+    "inventoryMasterlist": [
+      {
+        "name": "itemCode",
+        "label": "Item code",
+        "apiNotation": "item.itemCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item code"
+        }
+      },
+      {
+        "name": "itemName",
+        "label": "Item name",
+        "apiNotation": "item.itemName",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item name"
+        }
+      },
+      {
+        "name": "quantity",
+        "label": "Stocks",
+        "apiNotation": "quantity",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Stocks",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "itemDescription",
+        "label": "Item description",
+        "apiNotation": "item.itemDescription",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item description"
+        }
+      },
+      {
+        "name": "price",
+        "label": "Item price",
+        "apiNotation": "item.price",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item price",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "itemCategory",
+        "label": "Item category",
+        "apiNotation": "item.itemCategory.name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item category"
+        }
+      }
+    ],
     "users": [
       {
         "name": "fullName",
@@ -271,6 +339,12 @@
         "page": "Dashboard",
         "view": true,
         "modify": true,
+        "rights": []
+      },
+      {
+        "page": "Inventory Masterlist",
+        "view": false,
+        "modify": false,
         "rights": []
       },
       {
@@ -358,6 +432,9 @@
       "create": "/branch/",
       "update": "/branch/",
       "delete": "/branch/"
+    },
+    "inventoryMasterlist": {
+      "getByAdvanceSearch": "/inventoryMasterlist/page/"
     },
     "dashboard": {},
     "message": {

@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmConfigService } from "./db/typeorm/typeorm.service";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./controller/auth/auth.module";
-import { FirebaseProviderModule } from "./core/provider/firebase/firebase-provider.module";
 import * as Joi from "@hapi/joi";
 import { getEnvPath } from "./common/utils/utils";
 import { UsersModule } from "./controller/users/users.module";
@@ -13,6 +12,8 @@ import { ItemCategoryModule } from "./controller/item-category/item-category.mod
 import { ItemModule } from "./controller/item/item.module";
 import { WarehouseModule } from "./controller/warehouse/warehouse.module";
 import { BranchModule } from "./controller/branch/branch.module";
+import { InventoryMasterlistModule } from "./controller/inventory-masterlist/inventory-masterlist.module";
+import { FirebaseProviderModule } from "./core/provider/firebase/firebase-provider.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 @Module({
   imports: [
@@ -31,6 +32,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ItemModule,
     WarehouseModule,
     BranchModule,
+    InventoryMasterlistModule,
     FirebaseProviderModule,
   ],
   providers: [AppService],

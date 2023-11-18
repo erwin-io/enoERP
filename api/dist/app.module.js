@@ -36,7 +36,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_service_1 = require("./db/typeorm/typeorm.service");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./controller/auth/auth.module");
-const firebase_provider_module_1 = require("./core/provider/firebase/firebase-provider.module");
 const Joi = __importStar(require("@hapi/joi"));
 const utils_1 = require("./common/utils/utils");
 const users_module_1 = require("./controller/users/users.module");
@@ -45,6 +44,8 @@ const item_category_module_1 = require("./controller/item-category/item-category
 const item_module_1 = require("./controller/item/item.module");
 const warehouse_module_1 = require("./controller/warehouse/warehouse.module");
 const branch_module_1 = require("./controller/branch/branch.module");
+const inventory_masterlist_module_1 = require("./controller/inventory-masterlist/inventory-masterlist.module");
+const firebase_provider_module_1 = require("./core/provider/firebase/firebase-provider.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -66,6 +67,7 @@ AppModule = __decorate([
             item_module_1.ItemModule,
             warehouse_module_1.WarehouseModule,
             branch_module_1.BranchModule,
+            inventory_masterlist_module_1.InventoryMasterlistModule,
             firebase_provider_module_1.FirebaseProviderModule,
         ],
         providers: [app_service_1.AppService],

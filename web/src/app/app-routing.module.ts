@@ -34,6 +34,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'inventory-masterlist',
+        canActivate: [AuthGuard],
+        data: { title: 'Inventory Masterlist', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/inventory-masterlist/inventory-masterlist.module').then(
+            (m) => m.InventoryMasterlistModule
+          ),
+      },
+      {
         path: 'item-category',
         canActivate: [AuthGuard],
         data: { title: 'Item Category', group: 'Configuration' },

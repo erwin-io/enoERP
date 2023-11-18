@@ -150,12 +150,26 @@ const columnDefToTypeORMCondition = (columnDef) => {
             conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.Between)(range[0], range[1])));
         }
         else {
-            conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.Raw)((alias) => {
-                return `CAST(${alias} as varchar) ILike '%${col.filter}%'`;
-            })));
+            conditionMapping.push((0, exports.convertColumnNotationToObject)(col.apiNotation, (0, typeorm_1.ILike)(`%${col.filter}%`)));
         }
     }
-    return Object.assign({}, ...conditionMapping);
+    const newArr = [];
+    for (const item of conditionMapping) {
+        const name = Object.keys(item)[0];
+        if (newArr.some((x) => x[name])) {
+            const index = newArr.findIndex((x) => x[name]);
+            const res = Object.keys(newArr[index]).map((key) => newArr[index][key]);
+            res.push(item[name]);
+            newArr[index] = {
+                [name]: Object.assign({}, ...res),
+            };
+            res.push(newArr[index]);
+        }
+        else {
+            newArr.push(item);
+        }
+    }
+    return Object.assign({}, ...newArr);
 };
 exports.columnDefToTypeORMCondition = columnDefToTypeORMCondition;
 const generateIndentityCode = (id) => {

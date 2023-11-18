@@ -81,8 +81,8 @@ p, label, input, textarea, span, div, button {
         column-gap: 10px;
     }
     &.side-bar-open {
-        margin-left: 250px!important;
-        width: calc(100% - 250px)!important;
+        margin-left: 290px!important;
+        width: calc(100% - 290px)!important;
     }
 }
 
@@ -97,7 +97,7 @@ p, label, input, textarea, span, div, button {
     position: static!important;
     z-index: 9!important;
     .mat-sidenav {
-        width: 250px!important;
+        width: 290px!important;
         z-index: 999;
         &.mat-drawer-opened {
             &:not(.mat-drawer-over) {

@@ -167,16 +167,26 @@ export const columnDefToTypeORMCondition = (columnDef) => {
       );
     } else {
       conditionMapping.push(
-        convertColumnNotationToObject(
-          col.apiNotation,
-          Raw((alias) => {
-            return `CAST(${alias} as varchar) ILike '%${col.filter}%'`;
-          })
-        )
+        convertColumnNotationToObject(col.apiNotation, ILike(`%${col.filter}%`))
       );
     }
   }
-  return Object.assign({}, ...conditionMapping);
+  const newArr = [];
+  for (const item of conditionMapping) {
+    const name = Object.keys(item)[0];
+    if (newArr.some((x) => x[name])) {
+      const index = newArr.findIndex((x) => x[name]);
+      const res = Object.keys(newArr[index]).map((key) => newArr[index][key]);
+      res.push(item[name]);
+      newArr[index] = {
+        [name]: Object.assign({}, ...res),
+      };
+      res.push(newArr[index]);
+    } else {
+      newArr.push(item);
+    }
+  }
+  return Object.assign({}, ...newArr);
 };
 
 export const generateIndentityCode = (id) => {

@@ -58,7 +58,8 @@ let AuthService = class AuthService {
                     active: true,
                 },
                 relations: {
-                    access: true
+                    access: true,
+                    branch: true
                 }
             });
             if (!user) {

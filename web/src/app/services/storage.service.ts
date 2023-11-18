@@ -10,13 +10,21 @@ export class StorageService {
   getLoginProfile(): Users {
     let profile: any = this.get('loginProfile');
     if(JSON.parse(profile) !== null && profile !== ''){
-      profile = JSON.parse(profile) as Users;
-      profile.access.accessPages = profile.access?.accessPages?.map(x=> {
-        x.modify = x.modify.toString().trim() === "true";
-        x.view = x.view.toString().trim() === "true";
-        return x;
-      })
-      return profile as Users;
+      const user: Users = JSON.parse(profile);
+      if(!user) {
+        return null;
+      }
+      if(user.access && user.access.accessPages) {
+        user.access.accessPages = user.access?.accessPages?.map(x=> {
+          x.modify = x.modify.toString().trim() === "true";
+          x.view = x.view.toString().trim() === "true";
+          return x;
+        })
+      }
+      if(user.branch) {
+        user.branch.isMainBranch = user.branch.isMainBranch && user.branch.isMainBranch.toString().trim() === "true";
+      }
+      return user;
     }
     else {return null;}
   }

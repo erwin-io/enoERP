@@ -73,3 +73,15 @@ export class BranchTableColumn {
   isMainBranch?: boolean;
   url?: string;
 }
+
+export class InventoryMasterlistTableColumn {
+  itemId?: string;
+  itemCode?: string;
+  itemName?: string;
+  itemDescription?: string;
+  price?: string;
+  itemCategory?: string;
+  branch?: string;
+  quantity?: string;
+}
+

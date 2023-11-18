@@ -29,6 +29,21 @@
             <mat-list-item routerLink="dashboard" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                 <mat-icon>dashboard</mat-icon><span>Dashboard</span>
             </mat-list-item>
+            <mat-expansion-panel
+              *ngIf="showGroupMenu(['Inventory Masterlist', 'Inventory Request','Incoming Inventory Request'])"
+              [@.disabled]="disableGroupAnimation"
+              (afterExpand)="disableGroupAnimation = false"
+              [expanded]="expand('Inventory')"
+              [ngClass]="{'mat-expansion-active':expand('Inventory') }" [class.mat-elevation-z0]="true" >
+              <mat-expansion-panel-header>
+                  <mat-icon>assignment</mat-icon><span>Inventory</span>
+              </mat-expansion-panel-header>
+              <mat-nav-list>
+                <mat-list-item *ngIf="showMenu('Inventory Masterlist')" routerLink="inventory-masterlist" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>list_alt</mat-icon><span>Inventory Masterlist</span>
+                </mat-list-item>
+              </mat-nav-list>
+            </mat-expansion-panel>
             <mat-expansion-panel *ngIf="showGroupMenu(['Item', 'Item Category','Warehouse', 'Branch'])" [@.disabled]="disableGroupAnimation" (afterExpand)="disableGroupAnimation = false" [expanded]="expand('Configuration')" [ngClass]="{'mat-expansion-active':expand('Configuration') }" [class.mat-elevation-z0]="true" >
               <mat-expansion-panel-header>
                   <mat-icon>settings</mat-icon><span>Configuration</span>

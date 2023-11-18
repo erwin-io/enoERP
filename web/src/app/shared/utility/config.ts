@@ -21,6 +21,8 @@ export interface AppConfig {
       warehouse: ColumnDefinition[];
       branch: ColumnDefinition[];
       inventoryMasterlist: ColumnDefinition[];
+      inventoryRequest: ColumnDefinition[];
+      incomingInventoryRequest: ColumnDefinition[];
     };
     sessionConfig: {
       sessionTimeout: string;
@@ -79,6 +81,13 @@ export interface AppConfig {
       inventoryMasterlist: {
         getByAdvanceSearch: string;
       };
+      inventoryRequest: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        updateStatus: string;
+      }
       dashboard: {};
       message: { create: string };
     };

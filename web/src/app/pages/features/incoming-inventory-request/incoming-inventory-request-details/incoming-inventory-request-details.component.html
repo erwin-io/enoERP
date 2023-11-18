@@ -1,0 +1,48 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <button [disabled]="isLoading" style="margin-right: 10px!important;" mat-icon-button
+    matTooltip="Back"
+    routerLink="/incoming-inventory-request/">
+    <mat-icon>keyboard_arrow_left
+    </mat-icon>
+  </button>
+  <span inventoryRequestCode="title">{{ '#' + inventoryRequestCode }}</span>
+  <span class="toolbar-item-spacer"></span>
+  <div class="toolbar-action">
+  </div>
+</mat-toolbar>
+<div class="content">
+  <div class="inner-content">
+    <div fxFlex="100" fxLayout="row">
+      <div style=" display: flex; width: 100%; justify-content: flex-end;">
+        <button class="request-status {{inventoryRequest?.requestStatus?.toLowerCase()}}" aria-label="Close request" matTooltip="Pending" mat-fab extended disableRipple>
+          <mat-icon>{{
+          inventoryRequest?.requestStatus === 'PENDING' ? 'schedule' : '' ||
+          inventoryRequest?.requestStatus === 'REJECTED' ? 'cancel' : '' ||
+          inventoryRequest?.requestStatus === 'PROCESSING' ? 'history' : '' ||
+          inventoryRequest?.requestStatus === 'IN-TRANSIT' ? 'local_shipping' : '' ||
+          inventoryRequest?.requestStatus === 'COMPLETED' ? 'check_circle' : '' ||
+          inventoryRequest?.requestStatus === 'CANCELLED' ? 'not_interested' : '' ||
+          inventoryRequest?.requestStatus === 'PARTIALLY-FULFILLED' ? 'error' : '' }}</mat-icon>
+          {{
+            inventoryRequest?.requestStatus === 'PENDING' ? 'Pending' : '' ||
+            inventoryRequest?.requestStatus === 'REJECTED' ? 'Rejected' : '' ||
+            inventoryRequest?.requestStatus === 'PROCESSING' ? 'Processing' : '' ||
+            inventoryRequest?.requestStatus === 'IN-TRANSIT' ? 'In transit' : '' ||
+            inventoryRequest?.requestStatus === 'COMPLETED' ? 'Completed' : '' ||
+            inventoryRequest?.requestStatus === 'CANCELLED' ? 'Cancelled' : '' ||
+            inventoryRequest?.requestStatus === 'PARTIALLY-FULFILLED' ? 'Partially fulfilled' : '' }}
+        </button>
+      </div>
+    </div>
+    <h4 class="inner-content-title">Inventory request details</h4>
+    <mat-card>
+      <mat-card-content>
+        <div fxFlex="100" fxLayout="column">
+          <app-incoming-inventory-request-form [isReadOnly]="true" #inventoryRequestForm></app-incoming-inventory-request-form>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <h4 class="inner-content-title">Items</h4>
+    <app-incoming-inventory-request-items (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="true" #inventoryRequestItems></app-incoming-inventory-request-items>
+  </div>
+</div>

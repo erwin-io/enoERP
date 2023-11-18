@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
 const typeorm_1 = require("typeorm");
+const InventoryRequest_1 = require("./InventoryRequest");
 const Access_1 = require("./Access");
 const Branch_1 = require("./Branch");
 let Users = class Users {
@@ -63,6 +64,10 @@ __decorate([
     (0, typeorm_1.Column)("character varying", { name: "Address", default: () => "'NA'" }),
     __metadata("design:type", String)
 ], Users.prototype, "address", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.requestedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "inventoryRequests", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Access_1.Access, (access) => access.users),
     (0, typeorm_1.JoinColumn)([{ name: "AccessId", referencedColumnName: "accessId" }]),

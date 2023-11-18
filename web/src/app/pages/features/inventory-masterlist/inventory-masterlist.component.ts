@@ -44,7 +44,6 @@ export class InventoryMasterlistComponent {
     type: string;
   }[] = [];
 
-  ;
   branchCode = new FormControl();
   isOptionsBranchLoading = false;
   optionBranch: {code: string; name: string}[] = [];

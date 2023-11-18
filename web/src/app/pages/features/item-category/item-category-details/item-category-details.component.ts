@@ -79,12 +79,6 @@ export class ItemCategoryDetailsComponent {
     this.initDetails();
   }
 
-  itemCategoryGridChange(event) {
-    this.itemCategoryForm.form.controls["itemCategoryPages"].setValue(event);
-    this.itemCategoryForm.form.markAllAsTouched();
-    this.itemCategoryForm.form.markAsDirty();
-  }
-
   async initDetails() {
     const res = await this.itemCategoryService.getById(this.id).toPromise();
     if (res.success) {
@@ -100,14 +94,6 @@ export class ItemCategoryDetailsComponent {
       });
     }
   }
-
-  checkPasswords: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const pass = group.get('password').value;
-    const confirmPass = group.get('confirmPassword').value;
-    return pass === confirmPass ? null : { notMatched: true };
-  };
 
   onDelete() {
     const dialogData = new AlertDialogModel();

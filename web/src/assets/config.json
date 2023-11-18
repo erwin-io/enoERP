@@ -21,6 +21,7 @@
       {
         "name": "accessId",
         "label": "Access #",
+        "sticky": true,
         "apiNotation": "accessId",
         "type": "string",
         "style": {
@@ -46,6 +47,7 @@
     ],
     "itemCategory": [
       {
+        "sticky": true,
         "name": "itemCategoryId",
         "label": "Item category #",
         "apiNotation": "itemCategoryId",
@@ -73,6 +75,7 @@
     ],
     "warehouse": [
       {
+        "sticky": true,
         "name": "warehouseCode",
         "label": "Warehouse code",
         "apiNotation": "warehouseCode",
@@ -100,6 +103,7 @@
     ],
     "branch": [
       {
+        "sticky": true,
         "name": "branchCode",
         "label": "Branch code",
         "apiNotation": "branchCode",
@@ -138,6 +142,7 @@
     ],
     "item": [
       {
+        "sticky": true,
         "name": "itemCode",
         "label": "Item code",
         "apiNotation": "itemCode",
@@ -195,6 +200,7 @@
     ],
     "inventoryMasterlist": [
       {
+        "sticky": true,
         "name": "itemCode",
         "label": "Item code",
         "apiNotation": "item.itemCode",
@@ -258,6 +264,142 @@
         "filterOptions": {
           "enable": true,
           "placeholder": "Item category"
+        }
+      }
+    ],
+    "inventoryRequest": [
+      {
+        "sticky": true,
+        "name": "inventoryRequestCode",
+        "label": "Request code",
+        "apiNotation": "inventoryRequestCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Request code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "dateRequested",
+        "label": "Date requested",
+        "apiNotation": "dateRequested",
+        "type": "date",
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date requested",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "requestStatus",
+        "label": "Request status",
+        "apiNotation": "requestStatus",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Request status"
+        }
+      },
+      {
+        "name": "requestedByUser",
+        "label": "Requested by",
+        "apiNotation": "requestedByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Requested by"
+        }
+      }
+    ],
+    "incomingInventoryRequest": [
+      {
+        "sticky": true,
+        "name": "inventoryRequestCode",
+        "label": "Request code",
+        "apiNotation": "inventoryRequestCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Request code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "dateRequested",
+        "label": "Date requested",
+        "apiNotation": "dateRequested",
+        "type": "date",
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date requested",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "requestStatus",
+        "label": "Request status",
+        "apiNotation": "requestStatus",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Request status"
+        }
+      },
+      {
+        "name": "branch",
+        "label": "From branch",
+        "apiNotation": "branch.name",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "From branch"
+        }
+      },
+      {
+        "name": "requestedByUser",
+        "label": "Requested by",
+        "apiNotation": "requestedByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Requested by"
         }
       }
     ],
@@ -343,6 +485,18 @@
       },
       {
         "page": "Inventory Masterlist",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Inventory Request",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Incoming Inventory Request",
         "view": false,
         "modify": false,
         "rights": []
@@ -435,6 +589,13 @@
     },
     "inventoryMasterlist": {
       "getByAdvanceSearch": "/inventoryMasterlist/page/"
+    },
+    "inventoryRequest": {
+      "getByAdvanceSearch": "/inventoryRequest/page/",
+      "getByCode": "/inventoryRequest/",
+      "create": "/inventoryRequest/",
+      "update": "/inventoryRequest/",
+      "delete": "/inventoryRequest/"
     },
     "dashboard": {},
     "message": {

@@ -1,3 +1,4 @@
+import { InventoryRequest } from "./InventoryRequest";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 export declare class Users {
@@ -13,6 +14,7 @@ export declare class Users {
     active: boolean;
     userCode: string | null;
     address: string;
+    inventoryRequests: InventoryRequest[];
     access: Access;
     branch: Branch;
 }

@@ -96,14 +96,6 @@ export class ItemDetailsComponent {
     }
   }
 
-  checkPasswords: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const pass = group.get('password').value;
-    const confirmPass = group.get('confirmPassword').value;
-    return pass === confirmPass ? null : { notMatched: true };
-  };
-
   onDelete() {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';

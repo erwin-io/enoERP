@@ -46,6 +46,7 @@ const warehouse_module_1 = require("./controller/warehouse/warehouse.module");
 const branch_module_1 = require("./controller/branch/branch.module");
 const inventory_masterlist_module_1 = require("./controller/inventory-masterlist/inventory-masterlist.module");
 const firebase_provider_module_1 = require("./core/provider/firebase/firebase-provider.module");
+const inventory_request_module_1 = require("./controller/inventory-request/inventory-request.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -68,6 +69,7 @@ AppModule = __decorate([
             warehouse_module_1.WarehouseModule,
             branch_module_1.BranchModule,
             inventory_masterlist_module_1.InventoryMasterlistModule,
+            inventory_request_module_1.InventoryRequestModule,
             firebase_provider_module_1.FirebaseProviderModule,
         ],
         providers: [app_service_1.AppService],

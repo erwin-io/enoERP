@@ -10,6 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeOrmConfigService = void 0;
+const InventoryRequestItem_1 = require("./../entities/InventoryRequestItem");
+const InventoryRequest_1 = require("./../entities/InventoryRequest");
 const Users_1 = require("../entities/Users");
 const config_1 = require("@nestjs/config");
 const common_1 = require("@nestjs/common");
@@ -39,6 +41,8 @@ let TypeOrmConfigService = class TypeOrmConfigService {
                 ItemWarehouse_1.ItemWarehouse,
                 Branch_1.Branch,
                 ItemBranch_1.ItemBranch,
+                InventoryRequest_1.InventoryRequest,
+                InventoryRequestItem_1.InventoryRequestItem,
             ],
             synchronize: false,
             ssl: ssl.toLocaleLowerCase().includes("true"),

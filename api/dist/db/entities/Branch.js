@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Branch = void 0;
 const typeorm_1 = require("typeorm");
+const InventoryRequest_1 = require("./InventoryRequest");
 const ItemBranch_1 = require("./ItemBranch");
 const Users_1 = require("./Users");
 let Branch = class Branch {
@@ -36,6 +37,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Branch.prototype, "isMainBranch", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.branch),
+    __metadata("design:type", Array)
+], Branch.prototype, "inventoryRequests", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => ItemBranch_1.ItemBranch, (itemBranch) => itemBranch.branch),
     __metadata("design:type", Array)
 ], Branch.prototype, "itemBranches", void 0);
@@ -44,8 +49,8 @@ __decorate([
     __metadata("design:type", Array)
 ], Branch.prototype, "users", void 0);
 Branch = __decorate([
-    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("u_branch_name", ["active", "name"], { unique: true }),
+    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("Branch_pkey", ["branchId"], { unique: true }),
     (0, typeorm_1.Entity)("Branch", { schema: "dbo" })
 ], Branch);

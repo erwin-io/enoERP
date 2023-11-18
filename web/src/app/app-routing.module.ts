@@ -43,6 +43,24 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'inventory-request',
+        canActivate: [AuthGuard],
+        data: { title: 'Inventory Request', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/inventory-request/inventory-request.module').then(
+            (m) => m.InventoryRequestModule
+          ),
+      },
+      {
+        path: 'incoming-inventory-request',
+        canActivate: [AuthGuard],
+        data: { title: 'Incoming Inventory Request', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/incoming-inventory-request/incoming-inventory-request.module').then(
+            (m) => m.IncomingInventoryRequestModule
+          ),
+      },
+      {
         path: 'item-category',
         canActivate: [AuthGuard],
         data: { title: 'Item Category', group: 'Configuration' },

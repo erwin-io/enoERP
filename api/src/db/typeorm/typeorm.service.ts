@@ -1,3 +1,5 @@
+import { InventoryRequestItem } from "./../entities/InventoryRequestItem";
+import { InventoryRequest } from "./../entities/InventoryRequest";
 import { Users } from "../entities/Users";
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
@@ -33,6 +35,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         ItemWarehouse,
         Branch,
         ItemBranch,
+        InventoryRequest,
+        InventoryRequestItem,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

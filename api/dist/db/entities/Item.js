@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Item = void 0;
 const typeorm_1 = require("typeorm");
+const InventoryRequestItem_1 = require("./InventoryRequestItem");
 const ItemCategory_1 = require("./ItemCategory");
 const ItemBranch_1 = require("./ItemBranch");
 const ItemWarehouse_1 = require("./ItemWarehouse");
@@ -48,6 +49,10 @@ __decorate([
     (0, typeorm_1.Column)("boolean", { name: "Active", default: () => "true" }),
     __metadata("design:type", Boolean)
 ], Item.prototype, "active", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryRequestItem_1.InventoryRequestItem, (inventoryRequestItem) => inventoryRequestItem.item),
+    __metadata("design:type", Array)
+], Item.prototype, "inventoryRequestItems", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => ItemCategory_1.ItemCategory, (itemCategory) => itemCategory.items),
     (0, typeorm_1.JoinColumn)([

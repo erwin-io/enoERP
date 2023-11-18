@@ -4,8 +4,10 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { InventoryRequest } from "./InventoryRequest";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 
@@ -50,6 +52,12 @@ export class Users {
 
   @Column("character varying", { name: "Address", default: () => "'NA'" })
   address: string;
+
+  @OneToMany(
+    () => InventoryRequest,
+    (inventoryRequest) => inventoryRequest.requestedByUser
+  )
+  inventoryRequests: InventoryRequest[];
 
   @ManyToOne(() => Access, (access) => access.users)
   @JoinColumn([{ name: "AccessId", referencedColumnName: "accessId" }])

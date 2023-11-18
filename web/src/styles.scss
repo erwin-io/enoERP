@@ -167,6 +167,11 @@ p, label, input, textarea, span, div, button {
                   align-items: center;
                 }
               }
+              .mat-expansion-panel-content{
+                .mat-expansion-panel-body {
+                  padding: 0!important;
+                }
+              }
             }
         }
     }
@@ -273,7 +278,7 @@ app-auth {
 
 
 
-mat-mdc-dialog-container {
+::ng-deep mat-mdc-dialog-container {
     margin: 20px!important;
 }
 
@@ -413,7 +418,9 @@ mat-mdc-dialog-container {
     }
   }
 
-
+  ::ng-deep .mdc-text-field--invalid:not(form){
+    border: 1px solid red;
+  }
 
   ::ng-deep .hidden {
     display: none !important;

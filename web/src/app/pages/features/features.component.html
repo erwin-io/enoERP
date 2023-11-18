@@ -36,11 +36,17 @@
               [expanded]="expand('Inventory')"
               [ngClass]="{'mat-expansion-active':expand('Inventory') }" [class.mat-elevation-z0]="true" >
               <mat-expansion-panel-header>
-                  <mat-icon>assignment</mat-icon><span>Inventory</span>
+                  <mat-icon>assignment_turned_in</mat-icon><span>Inventory</span>
               </mat-expansion-panel-header>
               <mat-nav-list>
                 <mat-list-item *ngIf="showMenu('Inventory Masterlist')" routerLink="inventory-masterlist" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
-                    <mat-icon>list_alt</mat-icon><span>Inventory Masterlist</span>
+                    <mat-icon>assignment</mat-icon><span>Inventory Masterlist</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Inventory Request')" routerLink="inventory-request" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>assignment_return</mat-icon><span>Inventory Request</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Incoming Inventory Request')" routerLink="incoming-inventory-request" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>assignment_returned</mat-icon><span>Incoming Inventory Request</span>
                 </mat-list-item>
               </mat-nav-list>
             </mat-expansion-panel>

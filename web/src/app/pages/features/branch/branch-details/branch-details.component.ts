@@ -79,12 +79,6 @@ export class BranchDetailsComponent {
     this.initDetails();
   }
 
-  branchGridChange(event) {
-    this.branchForm.form.controls["branchPages"].setValue(event);
-    this.branchForm.form.markAllAsTouched();
-    this.branchForm.form.markAsDirty();
-  }
-
   async initDetails() {
     const res = await this.branchService.getById(this.id).toPromise();
     if (res.success) {
@@ -100,14 +94,6 @@ export class BranchDetailsComponent {
       });
     }
   }
-
-  checkPasswords: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const pass = group.get('password').value;
-    const confirmPass = group.get('confirmPassword').value;
-    return pass === confirmPass ? null : { notMatched: true };
-  };
 
   onDelete() {
     const dialogData = new AlertDialogModel();

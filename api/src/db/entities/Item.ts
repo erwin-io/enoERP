@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { InventoryRequestItem } from "./InventoryRequestItem";
 import { ItemCategory } from "./ItemCategory";
 import { ItemBranch } from "./ItemBranch";
 import { ItemWarehouse } from "./ItemWarehouse";
@@ -39,6 +40,12 @@ export class Item {
 
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
+
+  @OneToMany(
+    () => InventoryRequestItem,
+    (inventoryRequestItem) => inventoryRequestItem.item
+  )
+  inventoryRequestItems: InventoryRequestItem[];
 
   @ManyToOne(() => ItemCategory, (itemCategory) => itemCategory.items)
   @JoinColumn([

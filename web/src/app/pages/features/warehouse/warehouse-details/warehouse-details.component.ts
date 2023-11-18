@@ -79,12 +79,6 @@ export class WarehouseDetailsComponent {
     this.initDetails();
   }
 
-  warehouseGridChange(event) {
-    this.warehouseForm.form.controls["warehousePages"].setValue(event);
-    this.warehouseForm.form.markAllAsTouched();
-    this.warehouseForm.form.markAsDirty();
-  }
-
   async initDetails() {
     const res = await this.warehouseService.getById(this.id).toPromise();
     if (res.success) {
@@ -100,14 +94,6 @@ export class WarehouseDetailsComponent {
       });
     }
   }
-
-  checkPasswords: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const pass = group.get('password').value;
-    const confirmPass = group.get('confirmPassword').value;
-    return pass === confirmPass ? null : { notMatched: true };
-  };
 
   onDelete() {
     const dialogData = new AlertDialogModel();

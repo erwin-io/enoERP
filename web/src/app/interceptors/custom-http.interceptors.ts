@@ -5,7 +5,6 @@ import { HttpRequest } from '@angular/common/http';
 import { HttpHandler } from '@angular/common/http';
 import { HttpEvent } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
-import { SpinnerVisibilityService } from 'ng-http-loader';
 
 @Injectable()
 export class CustomHttpInterceptor implements HttpInterceptor {

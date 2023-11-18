@@ -85,3 +85,34 @@ export class InventoryMasterlistTableColumn {
   quantity?: string;
 }
 
+export class InventoryRequestTableColumn {
+  inventoryRequestId?: string;
+  inventoryRequestCode?: string;
+  dateRequested?: string;
+  requestStatus?: string;
+  branch?: string;
+  requestedByUser?: string;
+  url?: string;
+}
+
+export class InventoryRequestItemTableColumn {
+  quantity: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemDescription: string;
+  itemCategory: string;
+}
+
+export class IncomingInventoryRequestTableColumn {
+  inventoryRequestId?: string;
+  inventoryRequestCode?: string;
+  dateRequested?: string;
+  requestStatus?: string;
+  branch?: string;
+  requestedByUser?: string;
+  url?: string;
+}
+
+
+

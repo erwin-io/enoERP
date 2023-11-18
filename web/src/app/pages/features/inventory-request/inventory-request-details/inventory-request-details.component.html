@@ -40,8 +40,8 @@
 <div class="content">
   <div class="inner-content">
     <div fxFlex="100" fxLayout="row">
-      <div style=" display: flex; width: 100%; justify-content: flex-end;">
-        <button class="request-status {{inventoryRequest?.requestStatus?.toLowerCase()}}" aria-label="Close request" matTooltip="Pending" mat-fab extended disableRipple>
+      <div *ngIf="!isNew" style=" display: flex; width: 100%; justify-content: flex-end;">
+        <button class="request-status {{inventoryRequest?.requestStatus?.toLowerCase()}}" aria-label="{{inventoryRequest?.requestStatus}}" matTooltip="{{inventoryRequest?.requestStatus}}" mat-fab extended disableRipple>
           <mat-icon>{{
           inventoryRequest?.requestStatus === 'PENDING' ? 'schedule' : '' ||
           inventoryRequest?.requestStatus === 'REJECTED' ? 'cancel' : '' ||

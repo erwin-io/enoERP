@@ -53,7 +53,7 @@ export class InventoryRequestService implements IServices {
   }
 
   updateStatus(inventoryRequestCode: string, data: any): Observable<ApiResponse<InventoryRequest>> {
-    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.inventoryRequest.update + inventoryRequestCode, data)
+    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.inventoryRequest.updateStatus + inventoryRequestCode, data)
     .pipe(
       tap(_ => this.log('inventoryRequest')),
       catchError(this.handleError('inventoryRequest', []))

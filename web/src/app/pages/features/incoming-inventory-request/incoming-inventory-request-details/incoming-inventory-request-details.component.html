@@ -8,6 +8,39 @@
   <span inventoryRequestCode="title">{{ '#' + inventoryRequestCode }}</span>
   <span class="toolbar-item-spacer"></span>
   <div class="toolbar-action">
+    <button
+      *ngIf="showAction('CANCELLED')"
+      mat-flat-button
+      (click)="updateStatus('CANCELLED')">
+      Cancel
+    </button>
+    <button
+      *ngIf="showAction('REJECTED')"
+      mat-flat-button
+      (click)="updateStatus('REJECTED')">
+      Reject
+    </button>
+    <button
+      *ngIf="showAction('PROCESSING')"
+      mat-flat-button
+      color="primary"
+      (click)="updateStatus('PROCESSING')">
+      Process
+    </button>
+    <button
+      *ngIf="showAction('IN-TRANSIT')"
+      mat-flat-button
+      color="primary"
+      (click)="updateStatus('IN-TRANSIT')">
+      Mark as in-transit
+    </button>
+    <button
+      *ngIf="showAction('COMPLETED')"
+      mat-flat-button
+      color="primary"
+      (click)="updateStatus('COMPLETED')">
+      Complete
+    </button>
   </div>
 </mat-toolbar>
 <div class="content">

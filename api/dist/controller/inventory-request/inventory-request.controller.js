@@ -123,7 +123,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], InventoryRequestController.prototype, "update", null);
 __decorate([
-    (0, common_1.Put)("/updateStatus/:inventoryRequestCode/:status"),
+    (0, common_1.Put)("/updateStatus/:inventoryRequestCode/"),
     __param(0, (0, common_1.Param)("inventoryRequestCode")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

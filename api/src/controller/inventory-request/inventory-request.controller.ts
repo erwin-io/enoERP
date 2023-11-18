@@ -105,7 +105,7 @@ export class InventoryRequestController {
     }
   }
 
-  @Put("/updateStatus/:inventoryRequestCode/:status")
+  @Put("/updateStatus/:inventoryRequestCode/")
   //   @UseGuards(JwtAuthGuard)
   async updateStatus(
     @Param("inventoryRequestCode") inventoryRequestCode: string,

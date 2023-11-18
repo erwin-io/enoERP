@@ -118,6 +118,34 @@ export class IncomingInventoryRequestDetailsComponent {
     this.inventoryRequestForm.form.controls["inventoryRequestItems"].markAsDirty();
   }
 
+  showAction(status: "PENDING"
+  | "REJECTED"
+  | "PROCESSING"
+  | "IN-TRANSIT"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "PARTIALLY-FULFILLED") {
+    let show = false;
+    if(this.inventoryRequest) {
+      if(status === "PROCESSING" && this.inventoryRequest.requestStatus === "PENDING") {
+        show = true;
+      }
+      if(status === "REJECTED" && this.inventoryRequest.requestStatus === "PENDING") {
+        show = true;
+      }
+      if(status === "IN-TRANSIT" && this.inventoryRequest.requestStatus === "PROCESSING") {
+        show = true;
+      }
+      if(status === "COMPLETED" && this.inventoryRequest.requestStatus === "IN-TRANSIT") {
+        show = true;
+      }
+      if(status === "CANCELLED" && this.inventoryRequest.requestStatus === "PENDING") {
+        show = true;
+      }
+    }
+    return show;
+  }
+
   updateStatus(status: "PENDING"
   | "REJECTED"
   | "PROCESSING"
@@ -127,7 +155,17 @@ export class IncomingInventoryRequestDetailsComponent {
   | "PARTIALLY-FULFILLED") {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Delete inventoryRequest?';
+    if(status === "REJECTED") {
+      dialogData.message = 'Reject request?';
+    } else if(status === "PROCESSING") {
+      dialogData.message = 'Process request?';
+    } else if(status === "IN-TRANSIT") {
+      dialogData.message = 'Mark as in-transit?';
+    } else if(status === "CANCELLED") {
+      dialogData.message = 'Cancel request?';
+    } else {
+      dialogData.message = 'Mark as completed?';
+    }
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',
@@ -152,7 +190,7 @@ export class IncomingInventoryRequestDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/incoming-inventory-request/']);
+          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();

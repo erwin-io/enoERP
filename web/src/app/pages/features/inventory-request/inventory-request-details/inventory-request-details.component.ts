@@ -92,14 +92,7 @@ export class InventoryRequestDetailsComponent {
       const res = await this.inventoryRequestService.getByCode(this.inventoryRequestCode).toPromise();
       if (res.success) {
         this.inventoryRequest = res.data;
-        if((!this.isReadOnly || !this.isNew) && this.inventoryRequest.requestStatus !== "PENDING") {
-          this.router.navigate(['/inventory-request/' + res.data.inventoryRequestCode]);
-          this.snackBar.open("Not allowed to edit, request was already - " + this.inventoryRequest.requestStatus.toLowerCase(), 'close', {
-            panelClass: ['style-error'],
-          });
-        } else {
-          this.canAddEdit = true;
-        }
+        this.canAddEdit = !((!this.isReadOnly || !this.isNew) && this.inventoryRequest.requestStatus !== "PENDING");
         this.inventoryRequestForm.setFormValue(this.inventoryRequest);
         const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
           return {
@@ -141,16 +134,10 @@ export class InventoryRequestDetailsComponent {
     this.inventoryRequestForm.form.controls["inventoryRequestItems"].markAsDirty();
   }
 
-  updateStatus(status: "PENDING"
-  | "REJECTED"
-  | "PROCESSING"
-  | "IN-TRANSIT"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "PARTIALLY-FULFILLED") {
+  cancelRequest() {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Delete inventoryRequest?';
+    dialogData.message = 'Are you sure you want to cancel the request?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',
@@ -170,12 +157,12 @@ export class InventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.inventoryRequestService.updateStatus(this.inventoryRequestCode, { status }).toPromise();
+        let res = await this.inventoryRequestService.updateStatus(this.inventoryRequestCode, { status: "CANCELLED" }).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/inventory-request/']);
+          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();

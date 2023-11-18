@@ -595,7 +595,7 @@
       "getByCode": "/inventoryRequest/",
       "create": "/inventoryRequest/",
       "update": "/inventoryRequest/",
-      "delete": "/inventoryRequest/"
+      "updateStatus": "/inventoryRequest/updateStatus/"
     },
     "dashboard": {},
     "message": {

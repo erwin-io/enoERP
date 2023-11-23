@@ -25,12 +25,12 @@ import { ItemCategoryService } from "src/services/item-category.service";
 export class ItemCategoryController {
   constructor(private readonly itemCategoryService: ItemCategoryService) {}
 
-  @Get("/:itemCategoryId")
+  @Get("/:itemCategoryCode")
   //   @UseGuards(JwtAuthGuard)
-  async getDetails(@Param("itemCategoryId") itemCategoryId: string) {
+  async getDetails(@Param("itemCategoryCode") itemCategoryCode: string) {
     const res = {} as ApiResponseModel<ItemCategory>;
     try {
-      res.data = await this.itemCategoryService.getById(itemCategoryId);
+      res.data = await this.itemCategoryService.getByCode(itemCategoryCode);
       res.success = true;
       return res;
     } catch (e) {
@@ -72,15 +72,15 @@ export class ItemCategoryController {
     }
   }
 
-  @Put("/:itemCategoryId")
+  @Put("/:itemCategoryCode")
   //   @UseGuards(JwtAuthGuard)
   async update(
-    @Param("itemCategoryId") itemCategoryId: string,
+    @Param("itemCategoryCode") itemCategoryCode: string,
     @Body() dto: UpdateItemCategoryDto
   ) {
     const res: ApiResponseModel<ItemCategory> = {} as any;
     try {
-      res.data = await this.itemCategoryService.update(itemCategoryId, dto);
+      res.data = await this.itemCategoryService.update(itemCategoryCode, dto);
       res.success = true;
       res.message = `Item category ${UPDATE_SUCCESS}`;
       return res;
@@ -91,12 +91,12 @@ export class ItemCategoryController {
     }
   }
 
-  @Delete("/:itemCategoryId")
+  @Delete("/:itemCategoryCode")
   //   @UseGuards(JwtAuthGuard)
-  async delete(@Param("itemCategoryId") itemCategoryId: string) {
+  async delete(@Param("itemCategoryCode") itemCategoryCode: string) {
     const res: ApiResponseModel<ItemCategory> = {} as any;
     try {
-      res.data = await this.itemCategoryService.delete(itemCategoryId);
+      res.data = await this.itemCategoryService.delete(itemCategoryCode);
       res.success = true;
       res.message = `Item category ${DELETE_SUCCESS}`;
       return res;

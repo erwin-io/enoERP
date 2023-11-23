@@ -28,6 +28,10 @@ __decorate([
     __metadata("design:type", String)
 ], ItemWarehouse.prototype, "quantity", void 0);
 __decorate([
+    (0, typeorm_1.Column)("bigint", { name: "OrderedQuantity", default: () => "0" }),
+    __metadata("design:type", String)
+], ItemWarehouse.prototype, "orderedQuantity", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Item_1.Item, (item) => item.itemWarehouses),
     (0, typeorm_1.JoinColumn)([{ name: "ItemId", referencedColumnName: "itemId" }]),
     __metadata("design:type", Item_1.Item)

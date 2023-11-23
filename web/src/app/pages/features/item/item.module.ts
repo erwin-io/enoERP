@@ -32,6 +32,11 @@ export const routes: Routes = [
     component: ItemDetailsComponent,
     data: { title: "Item", details: true, edit: true }
   },
+  {
+    path: ':itemId/edit',
+    component: ItemDetailsComponent,
+    data: { title: "Item", details: true, edit: true }
+  },
 ];
 
 

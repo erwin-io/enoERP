@@ -15,6 +15,8 @@ import { BranchModule } from "./controller/branch/branch.module";
 import { InventoryMasterlistModule } from "./controller/inventory-masterlist/inventory-masterlist.module";
 import { FirebaseProviderModule } from "./core/provider/firebase/firebase-provider.module";
 import { InventoryRequestModule } from "./controller/inventory-request/inventory-request.module";
+import { WarehouseInventoryModule } from "./controller/warehouse-inventory/warehouse-inventory.module";
+import { InventoryRequestRateModule } from "./controller/inventory-request-rate/inventory-request-rate.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 @Module({
   imports: [
@@ -35,6 +37,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     BranchModule,
     InventoryMasterlistModule,
     InventoryRequestModule,
+    WarehouseInventoryModule,
+    InventoryRequestRateModule,
     FirebaseProviderModule,
   ],
   providers: [AppService],

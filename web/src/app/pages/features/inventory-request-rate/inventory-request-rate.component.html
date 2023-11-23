@@ -1,0 +1,120 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <span id="title">Inventory Request Rate</span>
+  <span class="toolbar-item-spacer"></span>
+</mat-toolbar>
+<div class="component-floating-actions vertical-actions">
+  <button mat-fab color="primary" aria-label="Search" matTooltip="Search" (click)="showSelectItemDialog()">
+    <mat-icon>search</mat-icon>
+  </button>
+  <button *ngIf="selectedItem" mat-fab color="primary" aria-label="New inventoryRequestRate" matTooltip="New inventoryRequestRate" (click)="showAddDialog()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+<div class="content">
+<div class="inner-content">
+  <mat-card [ngClass]="{ 'hidden': isLoading }">
+    <mat-card-content fxLayout="column" >
+      <div fxLayout="column" *ngIf="selectedItem">
+        <div fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
+          <mat-form-field
+            fxFlex="100"
+            fxLayout="column"
+            fxFlex.gt-xs="row"
+            appearance="outline"
+            (dblclick)="showSelectItemDialog()">
+            <mat-label>Item name</mat-label>
+            <input
+              matInput
+              readonly
+              [(ngModel)]="selectedItem.itemName"
+              placeholder="Item name"/>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="100"
+            fxLayout="column"
+            fxFlex.gt-xs="row"
+            appearance="outline"
+            (dblclick)="showSelectItemDialog()">
+            <mat-label>Item category name</mat-label>
+            <input
+              matInput
+              readonly
+              [(ngModel)]="selectedItem.itemCategory.name"
+              placeholder="Item category name"/>
+          </mat-form-field>
+        </div>
+      </div>
+      <app-data-table
+        [isLoading]="isLoading"
+        [dataSource]="dataSource"
+        [columnDefs]="appConfig.config.tableColumns.inventoryRequestRate"
+        [total]="total"
+        (pageChange)="pageChange($event)"
+        (sortChange)="sortChange($event)"
+        (filterChange)="filterChange($event)"></app-data-table>
+    </mat-card-content>
+  </mat-card>
+  </div>
+</div>
+
+<ng-template #inventoryRequestRateFormDialog>
+  <h4 mat-dialog-title>New inventory request rate</h4>
+
+<div mat-dialog-content>
+  <app-inventory-request-rate-form [item] #inventoryRequestRateForm></app-inventory-request-rate-form>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      (click)="closeNewInventoryRequestRateDialog()"
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!inventoryRequestRateForm.valid || !inventoryRequestRateForm.ready"
+      color="primary"
+      type="submit"
+      (click)="saveNewInventoryRequestRate(inventoryRequestRateForm.getFormData)"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>
+
+
+<ng-template #inventoryRequestRateSelectDialog>
+  <h4 mat-dialog-title>Search Item</h4>
+
+<div mat-dialog-content>
+  <app-inventory-request-rate-select #inventoryRequestRateSelect></app-inventory-request-rate-select>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      (click)="inventoryRequestRateSelectDialogRef.close()"
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!inventoryRequestRateSelect?.getSelected"
+      color="primary"
+      type="submit"
+      (click)="inventoryRequestRateSelectDialogRef.close(inventoryRequestRateSelect?.getSelected)">
+      Select
+    </button>
+  </div>
+</div>
+
+</ng-template>
+
+

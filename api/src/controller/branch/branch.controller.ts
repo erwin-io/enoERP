@@ -63,7 +63,7 @@ export class BranchController {
     try {
       res.data = await this.branchService.create(branchDto);
       res.success = true;
-      res.message = `Item category ${SAVING_SUCCESS}`;
+      res.message = `Branch ${SAVING_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;
@@ -82,7 +82,7 @@ export class BranchController {
     try {
       res.data = await this.branchService.update(branchId, dto);
       res.success = true;
-      res.message = `Item category ${UPDATE_SUCCESS}`;
+      res.message = `Branch ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;
@@ -98,7 +98,7 @@ export class BranchController {
     try {
       res.data = await this.branchService.delete(branchId);
       res.success = true;
-      res.message = `Item category ${DELETE_SUCCESS}`;
+      res.message = `Branch ${DELETE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

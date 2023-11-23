@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-data-table-range-filter',
@@ -13,6 +13,7 @@ export class DataTableRangeFilterComponent {
   @Input() max = 1000;
   value = `${this.fromValue} - ${this.toValue}`;
   @ViewChild('rangeFormDialog') rangeFormDialog: TemplateRef<any>;
+  dialogRef: MatDialogRef<any>;
   @Output() valueChange = new EventEmitter<any>();
   fromValueCtrl = new FormControl(this.fromValue);
   toValueCtrl = new FormControl(this.toValue);
@@ -24,7 +25,7 @@ export class DataTableRangeFilterComponent {
   }
 
   async click() {
-    this.dialog.open(this.rangeFormDialog, {
+    this.dialogRef = this.dialog.open(this.rangeFormDialog, {
       width: '1080px',
     });
     this.fromValueCtrl.setValue(this.fromValue);
@@ -43,7 +44,7 @@ export class DataTableRangeFilterComponent {
     this.toValue = this.toValueCtrl.value;
     this.value = `${this.fromValue} - ${this.toValue}`;
     this.valueChange.emit(this.value);
-    this.dialog.closeAll();
+    this.dialogRef.close();
   }
 
   maxRangeChange(event) {

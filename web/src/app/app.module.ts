@@ -30,6 +30,7 @@ import { OptionSheetComponent } from './shared/option-sheet/option-sheet.compone
 import { NoAccessComponent } from './pages/no-access/no-access.component';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { AppDateAdapter } from './shared/utility/app-date-adapter';
+import { SelectItemDialogComponent } from './shared/select-item-dialog/select-item-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,7 +40,8 @@ import { AppDateAdapter } from './shared/utility/app-date-adapter';
     AlertDialogComponent,
     PageNotFoundComponent,
     OptionSheetComponent,
-    NoAccessComponent
+    NoAccessComponent,
+    SelectItemDialogComponent
   ],
   imports: [
     BrowserModule,

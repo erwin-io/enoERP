@@ -43,6 +43,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'warehouse-inventory',
+        canActivate: [AuthGuard],
+        data: { title: 'Warehouse Inventory', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/warehouse-inventory/warehouse-inventory.module').then(
+            (m) => m.WarehouseInventoryModule
+          ),
+      },
+      {
         path: 'inventory-request',
         canActivate: [AuthGuard],
         data: { title: 'Inventory Request', group: 'Inventory' },
@@ -94,6 +103,15 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/features/branch/branch.module').then(
             (m) => m.BranchModule
+          ),
+      },
+      {
+        path: 'inventory-request-rate',
+        canActivate: [AuthGuard],
+        data: { title: 'Inventory Request Rate', group: 'Configuration' },
+        loadChildren: () =>
+          import('./pages/features/inventory-request-rate/inventory-request-rate.module').then(
+            (m) => m.InventoryRequestRateModule
           ),
       },
       {

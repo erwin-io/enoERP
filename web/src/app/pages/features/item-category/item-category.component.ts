@@ -98,22 +98,23 @@ export class ItemCategoryComponent {
     this.getItemCategoryPaginated()
   }
 
-  async getItemCategoryPaginated(){
+  getItemCategoryPaginated(){
     try{
       this.isLoading = true;
       this.spinner.show();
-      await this.itemCategoryService.getByAdvanceSearch({
+      this.itemCategoryService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize
       })
-      .subscribe(async res => {
+      .subscribe(res => {
         if(res.success){
           let data = res.data.results.map((d)=>{
             return {
               itemCategoryId: d.itemCategoryId,
+              itemCategoryCode: d.itemCategoryCode,
               name: d.name,
-              url: `/item-category/${d.itemCategoryId}`,
+              url: `/item-category/${d.itemCategoryCode}`,
             } as ItemCategoryTableColumn
           });
           this.total = res.data.total;

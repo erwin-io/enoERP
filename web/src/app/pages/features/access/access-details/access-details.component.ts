@@ -24,7 +24,7 @@ import { AccessPagesTableComponent } from 'src/app/shared/access-pages-table/acc
   }
 })
 export class AccessDetailsComponent {
-  id;
+  code;
   isNew = false;
   // pageAccess: Access = {
   //   view: true,
@@ -56,7 +56,7 @@ export class AccessDetailsComponent {
   ) {
     const { isNew, edit } = this.route.snapshot.data;
     this.isNew = isNew;
-    this.id = this.route.snapshot.paramMap.get('accessId');
+    this.code = this.route.snapshot.paramMap.get('accessCode');
     this.isReadOnly = !edit && !isNew;
     if (this.route.snapshot.data) {
       // this.pageAccess = {
@@ -87,23 +87,24 @@ export class AccessDetailsComponent {
     this.accessForm.form.markAsDirty();
   }
 
-  async initDetails() {
-    const res = await this.accessService.getById(this.id).toPromise();
-    if (res.success) {
-      this.accessForm.setFormValue(res.data);
-      if(res.data.accessPages) {
-        this.accessPagesTable.setDataSource(res.data.accessPages);
-      }
+  initDetails() {
+    this.accessService.getByCode(this.code).subscribe(res=> {
+      if (res.success) {
+        this.accessForm.setFormValue(res.data);
+        if(res.data.accessPages) {
+          this.accessPagesTable.setDataSource(res.data.accessPages);
+        }
 
-      if (this.isReadOnly) {
-        this.accessForm.form.disable();
+        if (this.isReadOnly) {
+          this.accessForm.form.disable();
+        }
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
       }
-    } else {
-      this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-      this.snackBar.open(this.error, 'close', {
-        panelClass: ['style-error'],
-      });
-    }
+    });
   }
   compareFn(accessPages1: AccessPages, accessPages2: AccessPages) {
     return accessPages1 && accessPages2 ? accessPages1.page.toUpperCase() === accessPages1.page.toUpperCase() : accessPages1 === accessPages2;
@@ -140,7 +141,7 @@ export class AccessDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.accessService.delete(this.id).toPromise();
+        let res = await this.accessService.delete(this.code).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
@@ -199,7 +200,7 @@ export class AccessDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.accessService.update(this.id, formData).toPromise();
+        let res = await this.accessService.update(this.code, formData).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],

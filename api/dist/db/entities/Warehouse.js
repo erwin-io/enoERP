@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Warehouse = void 0;
 const typeorm_1 = require("typeorm");
+const GoodsIssue_1 = require("./GoodsIssue");
+const GoodsReceipt_1 = require("./GoodsReceipt");
+const InventoryRequest_1 = require("./InventoryRequest");
 const ItemWarehouse_1 = require("./ItemWarehouse");
 let Warehouse = class Warehouse {
 };
@@ -31,14 +34,26 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Warehouse.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsIssue_1.GoodsIssue, (goodsIssue) => goodsIssue.warehouse),
+    __metadata("design:type", Array)
+], Warehouse.prototype, "goodsIssues", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsReceipt_1.GoodsReceipt, (goodsReceipt) => goodsReceipt.warehouse),
+    __metadata("design:type", Array)
+], Warehouse.prototype, "goodsReceipts", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.fromWarehouse),
+    __metadata("design:type", Array)
+], Warehouse.prototype, "inventoryRequests", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => ItemWarehouse_1.ItemWarehouse, (itemWarehouse) => itemWarehouse.warehouse),
     __metadata("design:type", Array)
 ], Warehouse.prototype, "itemWarehouses", void 0);
 Warehouse = __decorate([
+    (0, typeorm_1.Index)("u_warehouse_name", ["active", "name"], { unique: true }),
     (0, typeorm_1.Index)("u_warehouse_warehouseCode", ["active", "warehouseCode"], {
         unique: true,
     }),
-    (0, typeorm_1.Index)("u_warehouse_name", ["active", "name"], { unique: true }),
     (0, typeorm_1.Index)("Warehouse_pkey", ["warehouseId"], { unique: true }),
     (0, typeorm_1.Entity)("Warehouse", { schema: "dbo" })
 ], Warehouse);

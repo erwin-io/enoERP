@@ -28,8 +28,8 @@ export class ItemCategoryService implements IServices {
     );
   }
 
-  getById(itemCategoryId: string): Observable<ApiResponse<ItemCategory>> {
-    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.getById + itemCategoryId)
+  getByCode(itemCategoryCode: string): Observable<ApiResponse<ItemCategory>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.getByCode + itemCategoryCode)
     .pipe(
       tap(_ => this.log('itemCategory')),
       catchError(this.handleError('itemCategory', []))
@@ -44,16 +44,16 @@ export class ItemCategoryService implements IServices {
     );
   }
 
-  update(id: string, data: any): Observable<ApiResponse<ItemCategory>> {
-    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.update + id, data)
+  update(itemCategoryCode: string, data: any): Observable<ApiResponse<ItemCategory>> {
+    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.update + itemCategoryCode, data)
     .pipe(
       tap(_ => this.log('itemCategory')),
       catchError(this.handleError('itemCategory', []))
     );
   }
 
-  delete(id: string): Observable<ApiResponse<ItemCategory>> {
-    return this.http.delete<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.delete + id)
+  delete(itemCategoryCode: string): Observable<ApiResponse<ItemCategory>> {
+    return this.http.delete<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.itemCategory.delete + itemCategoryCode)
     .pipe(
       tap(_ => this.log('itemCategory')),
       catchError(this.handleError('itemCategory', []))

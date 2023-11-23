@@ -74,34 +74,35 @@ export class IncomingInventoryRequestDetailsComponent {
     this.initDetails();
   }
 
-  async initDetails() {
+  initDetails() {
     this.isLoading = true;
     try {
-      const res = await this.inventoryRequestService.getByCode(this.inventoryRequestCode).toPromise();
-      if (res.success) {
-        this.inventoryRequest = res.data;
-        this.inventoryRequestForm.setFormValue(this.inventoryRequest);
-        const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
-          return {
-            quantity: x.quantity,
-            itemId: x.item.itemId,
-            itemCode: x.item.itemCode,
-            itemName: x.item.itemDescription,
-            itemDescription: x.item.itemId,
-            itemCategory: x.item.itemCategory.name,
-          } as InventoryRequestItemTableColumn
-        })
-        this.inventoryRequestItemComponent.init(items);
-        this.inventoryRequestForm.form.disable();
-        this.isLoading = false;
-      } else {
-        this.isLoading = false;
-        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-        this.snackBar.open(this.error, 'close', {
-          panelClass: ['style-error'],
-        });
-        this.router.navigate(['/incoming-inventory-request/']);
-      }
+      this.inventoryRequestService.getByCode(this.inventoryRequestCode).subscribe(res=> {
+        if (res.success) {
+          this.inventoryRequest = res.data;
+          this.inventoryRequestForm.setFormValue(this.inventoryRequest);
+          const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
+            return {
+              quantity: x.quantity,
+              itemId: x.item.itemId,
+              itemCode: x.item.itemCode,
+              itemName: x.item.itemDescription,
+              itemDescription: x.item.itemId,
+              itemCategory: x.item.itemCategory.name,
+            } as InventoryRequestItemTableColumn
+          })
+          this.inventoryRequestItemComponent.init(items);
+          this.inventoryRequestForm.form.disable();
+          this.isLoading = false;
+        } else {
+          this.isLoading = false;
+          this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+          this.snackBar.open(this.error, 'close', {
+            panelClass: ['style-error'],
+          });
+          this.router.navigate(['/incoming-inventory-request/']);
+        }
+      })
     } catch(ex) {
       this.error = Array.isArray(ex.message) ? ex.message[0] : ex.message;
       this.snackBar.open(this.error, 'close', {

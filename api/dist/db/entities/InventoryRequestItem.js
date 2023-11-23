@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryRequestItem = void 0;
 const typeorm_1 = require("typeorm");
 const InventoryRequest_1 = require("./InventoryRequest");
+const InventoryRequestRate_1 = require("./InventoryRequestRate");
 const Item_1 = require("./Item");
 let InventoryRequestItem = class InventoryRequestItem {
 };
@@ -28,12 +29,26 @@ __decorate([
     __metadata("design:type", String)
 ], InventoryRequestItem.prototype, "quantity", void 0);
 __decorate([
+    (0, typeorm_1.Column)("numeric", { name: "TotalAmount", default: () => "0" }),
+    __metadata("design:type", String)
+], InventoryRequestItem.prototype, "totalAmount", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.inventoryRequestItems),
     (0, typeorm_1.JoinColumn)([
         { name: "InventoryRequestId", referencedColumnName: "inventoryRequestId" },
     ]),
     __metadata("design:type", InventoryRequest_1.InventoryRequest)
 ], InventoryRequestItem.prototype, "inventoryRequest", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => InventoryRequestRate_1.InventoryRequestRate, (inventoryRequestRate) => inventoryRequestRate.inventoryRequestItems),
+    (0, typeorm_1.JoinColumn)([
+        {
+            name: "InventoryRequestRateId",
+            referencedColumnName: "inventoryRequestRateId",
+        },
+    ]),
+    __metadata("design:type", InventoryRequestRate_1.InventoryRequestRate)
+], InventoryRequestItem.prototype, "inventoryRequestRate", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Item_1.Item, (item) => item.inventoryRequestItems),
     (0, typeorm_1.JoinColumn)([{ name: "ItemId", referencedColumnName: "itemId" }]),

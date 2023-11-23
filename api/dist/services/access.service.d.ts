@@ -14,8 +14,8 @@ export declare class AccessService {
         results: Access[];
         total: number;
     }>;
-    getById(accessId: any): Promise<Access>;
+    getByCode(accessCode: any): Promise<Access>;
     create(dto: CreateAccessDto): Promise<Access>;
-    update(accessId: any, dto: UpdateAccessDto): Promise<Access>;
-    delete(accessId: any): Promise<Access>;
+    update(accessCode: any, dto: UpdateAccessDto): Promise<Access>;
+    delete(accessCode: any): Promise<Access>;
 }

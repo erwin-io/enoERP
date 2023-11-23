@@ -167,10 +167,10 @@ let UsersService = class UsersService {
             user.email = dto.email;
             user.mobileNumber = dto.mobileNumber;
             user.birthDate = (0, moment_1.default)(dto.birthDate).format("YYYY-MM-DD");
-            if (dto.accessId) {
+            if (dto.accessCode) {
                 const access = await entityManager.findOne(Access_1.Access, {
                     where: {
-                        accessId: dto.accessId,
+                        accessId: dto.accessCode,
                         active: true,
                     },
                 });
@@ -229,10 +229,10 @@ let UsersService = class UsersService {
             user.email = dto.email;
             user.birthDate = (0, moment_1.default)(dto.birthDate.toString()).format("YYYY-MM-DD");
             user.gender = dto.gender;
-            if (dto.accessId) {
+            if (dto.accessCode) {
                 const access = await entityManager.findOne(Access_1.Access, {
                     where: {
-                        accessId: dto.accessId,
+                        accessId: dto.accessCode,
                         active: true,
                     },
                 });

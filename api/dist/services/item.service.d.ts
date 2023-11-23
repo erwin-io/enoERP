@@ -15,6 +15,7 @@ export declare class ItemService {
         total: number;
     }>;
     getById(itemId: any): Promise<Item>;
+    getByCode(itemCode?: string): Promise<Item>;
     create(dto: CreateItemDto): Promise<Item>;
     update(itemId: any, dto: UpdateItemDto): Promise<Item>;
     delete(itemId: any): Promise<Item>;

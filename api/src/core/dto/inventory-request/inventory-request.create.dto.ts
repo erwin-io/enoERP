@@ -15,4 +15,12 @@ export class CreateInventoryRequestDto extends DefaultInventoryRequestDto {
     return obj[key]?.toString();
   })
   branchId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumberString()
+  @Transform(({ obj, key }) => {
+    return obj[key]?.toString();
+  })
+  fromWarehouseId: string;
 }

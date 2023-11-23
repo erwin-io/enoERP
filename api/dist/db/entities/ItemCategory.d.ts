@@ -4,5 +4,6 @@ export declare class ItemCategory {
     name: string;
     description: string;
     active: boolean;
+    itemCategoryCode: string | null;
     items: Item[];
 }

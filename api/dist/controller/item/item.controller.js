@@ -24,6 +24,19 @@ let ItemController = class ItemController {
     constructor(itemService) {
         this.itemService = itemService;
     }
+    async getByCode(itemCode) {
+        const res = {};
+        try {
+            res.data = await this.itemService.getByCode(itemCode);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async getDetails(itemId) {
         const res = {};
         try {
@@ -93,6 +106,13 @@ let ItemController = class ItemController {
         }
     }
 };
+__decorate([
+    (0, common_1.Get)("getByCode/:itemCode"),
+    __param(0, (0, common_1.Param)("itemCode")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ItemController.prototype, "getByCode", null);
 __decorate([
     (0, common_1.Get)("/:itemId"),
     __param(0, (0, common_1.Param)("itemId")),

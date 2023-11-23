@@ -43,14 +43,14 @@ let AccessService = class AccessService {
             total,
         };
     }
-    async getById(accessId) {
+    async getByCode(accessCode) {
         const result = await this.accessRepo.findOne({
             select: {
                 name: true,
                 accessPages: true,
             },
             where: {
-                accessId,
+                accessCode,
                 active: true,
             },
         });
@@ -61,17 +61,19 @@ let AccessService = class AccessService {
     }
     async create(dto) {
         return await this.accessRepo.manager.transaction(async (entityManager) => {
-            const access = new Access_1.Access();
+            let access = new Access_1.Access();
             access.name = dto.name;
             access.accessPages = dto.accessPages;
-            return await entityManager.save(access);
+            access = await entityManager.save(access);
+            access.accessCode = (0, utils_1.generateIndentityCode)(access.accessId);
+            return await entityManager.save(Access_1.Access, access);
         });
     }
-    async update(accessId, dto) {
+    async update(accessCode, dto) {
         return await this.accessRepo.manager.transaction(async (entityManager) => {
             const access = await entityManager.findOne(Access_1.Access, {
                 where: {
-                    accessId,
+                    accessCode,
                     active: true,
                 },
             });
@@ -83,11 +85,11 @@ let AccessService = class AccessService {
             return await entityManager.save(Access_1.Access, access);
         });
     }
-    async delete(accessId) {
+    async delete(accessCode) {
         return await this.accessRepo.manager.transaction(async (entityManager) => {
             const access = await entityManager.findOne(Access_1.Access, {
                 where: {
-                    accessId,
+                    accessCode,
                     active: true,
                 },
             });

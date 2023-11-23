@@ -1,10 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { IsNotEmpty, IsNumberString } from "class-validator";
+import { IsNotEmpty, IsNumberString, Matches } from "class-validator";
 
 export class DefaultItemDto {
   @ApiProperty()
   @IsNotEmpty()
+  @Matches(/^\S*$/)
   itemCode: string;
 
   @ApiProperty()

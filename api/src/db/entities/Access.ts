@@ -22,6 +22,9 @@ export class Access {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", { name: "AccessCode", nullable: true })
+  accessCode: string | null;
+
   @OneToMany(() => Users, (users) => users.access)
   users: Users[];
 }

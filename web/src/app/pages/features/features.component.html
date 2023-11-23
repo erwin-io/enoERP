@@ -30,7 +30,7 @@
                 <mat-icon>dashboard</mat-icon><span>Dashboard</span>
             </mat-list-item>
             <mat-expansion-panel
-              *ngIf="showGroupMenu(['Inventory Masterlist', 'Inventory Request','Incoming Inventory Request'])"
+              *ngIf="showGroupMenu(['Inventory Masterlist', 'Inventory Request','Incoming Inventory Request','Warehouse Inventory'])"
               [@.disabled]="disableGroupAnimation"
               (afterExpand)="disableGroupAnimation = false"
               [expanded]="expand('Inventory')"
@@ -39,6 +39,9 @@
                   <mat-icon>assignment_turned_in</mat-icon><span>Inventory</span>
               </mat-expansion-panel-header>
               <mat-nav-list>
+                <mat-list-item *ngIf="showMenu('Warehouse Inventory')" routerLink="warehouse-inventory" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>widgets</mat-icon><span>Warehouse Inventory</span>
+                </mat-list-item>
                 <mat-list-item *ngIf="showMenu('Inventory Masterlist')" routerLink="inventory-masterlist" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                     <mat-icon>assignment</mat-icon><span>Inventory Masterlist</span>
                 </mat-list-item>
@@ -60,6 +63,9 @@
                 </mat-list-item>
                 <mat-list-item *ngIf="showMenu('Item Category')" routerLink="item-category" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                     <mat-icon>category</mat-icon><span>Item Category</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Inventory Request Rate')" routerLink="inventory-request-rate" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>filter_9_plus</mat-icon><span>Inventory Request Rate</span>
                 </mat-list-item>
                 <mat-list-item *ngIf="showMenu('Warehouse')" routerLink="warehouse" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                     <mat-icon>pin_drop</mat-icon><span>Warehouse</span>

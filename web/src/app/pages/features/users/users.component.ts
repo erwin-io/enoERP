@@ -99,10 +99,10 @@ export class UsersComponent implements OnInit {
     this.getUsersPaginated()
   }
 
-  async getUsersPaginated(){
+  getUsersPaginated(){
     try{
       this.isLoading = true;
-      await this.userService.getUsersByAdvanceSearch({
+      this.userService.getUsersByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize

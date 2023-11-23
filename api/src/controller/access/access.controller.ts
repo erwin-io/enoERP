@@ -25,12 +25,12 @@ import { AccessService } from "src/services/access.service";
 export class AccessController {
   constructor(private readonly accessService: AccessService) {}
 
-  @Get("/:accessId")
+  @Get("/:accessCode")
   //   @UseGuards(JwtAuthGuard)
-  async getDetails(@Param("accessId") accessId: string) {
+  async getDetails(@Param("accessCode") accessCode: string) {
     const res = {} as ApiResponseModel<Access>;
     try {
-      res.data = await this.accessService.getById(accessId);
+      res.data = await this.accessService.getByCode(accessCode);
       res.success = true;
       return res;
     } catch (e) {
@@ -72,15 +72,15 @@ export class AccessController {
     }
   }
 
-  @Put("/:accessId")
+  @Put("/:accessCode")
   //   @UseGuards(JwtAuthGuard)
   async update(
-    @Param("accessId") accessId: string,
+    @Param("accessCode") accessCode: string,
     @Body() dto: UpdateAccessDto
   ) {
     const res: ApiResponseModel<Access> = {} as any;
     try {
-      res.data = await this.accessService.update(accessId, dto);
+      res.data = await this.accessService.update(accessCode, dto);
       res.success = true;
       res.message = `Access ${UPDATE_SUCCESS}`;
       return res;
@@ -91,12 +91,12 @@ export class AccessController {
     }
   }
 
-  @Delete("/:accessId")
+  @Delete("/:accessCode")
   //   @UseGuards(JwtAuthGuard)
-  async delete(@Param("accessId") accessId: string) {
+  async delete(@Param("accessCode") accessCode: string) {
     const res: ApiResponseModel<Access> = {} as any;
     try {
-      res.data = await this.accessService.delete(accessId);
+      res.data = await this.accessService.delete(accessCode);
       res.success = true;
       res.message = `Access ${DELETE_SUCCESS}`;
       return res;

@@ -24,10 +24,10 @@ let AccessController = class AccessController {
     constructor(accessService) {
         this.accessService = accessService;
     }
-    async getDetails(accessId) {
+    async getDetails(accessCode) {
         const res = {};
         try {
-            res.data = await this.accessService.getById(accessId);
+            res.data = await this.accessService.getByCode(accessCode);
             res.success = true;
             return res;
         }
@@ -64,10 +64,10 @@ let AccessController = class AccessController {
             return res;
         }
     }
-    async update(accessId, dto) {
+    async update(accessCode, dto) {
         const res = {};
         try {
-            res.data = await this.accessService.update(accessId, dto);
+            res.data = await this.accessService.update(accessCode, dto);
             res.success = true;
             res.message = `Access ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
@@ -78,10 +78,10 @@ let AccessController = class AccessController {
             return res;
         }
     }
-    async delete(accessId) {
+    async delete(accessCode) {
         const res = {};
         try {
-            res.data = await this.accessService.delete(accessId);
+            res.data = await this.accessService.delete(accessCode);
             res.success = true;
             res.message = `Access ${api_response_constant_1.DELETE_SUCCESS}`;
             return res;
@@ -94,8 +94,8 @@ let AccessController = class AccessController {
     }
 };
 __decorate([
-    (0, common_1.Get)("/:accessId"),
-    __param(0, (0, common_1.Param)("accessId")),
+    (0, common_1.Get)("/:accessCode"),
+    __param(0, (0, common_1.Param)("accessCode")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
@@ -115,16 +115,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AccessController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)("/:accessId"),
-    __param(0, (0, common_1.Param)("accessId")),
+    (0, common_1.Put)("/:accessCode"),
+    __param(0, (0, common_1.Param)("accessCode")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, access_update_dto_1.UpdateAccessDto]),
     __metadata("design:returntype", Promise)
 ], AccessController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)("/:accessId"),
-    __param(0, (0, common_1.Param)("accessId")),
+    (0, common_1.Delete)("/:accessCode"),
+    __param(0, (0, common_1.Param)("accessCode")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

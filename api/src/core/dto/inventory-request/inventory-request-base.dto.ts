@@ -26,6 +26,10 @@ export class InventoryRequestItemDto {
     return obj[key]?.toString();
   })
   quantity = 0;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  inventoryRequestRateCode: string;
 }
 
 

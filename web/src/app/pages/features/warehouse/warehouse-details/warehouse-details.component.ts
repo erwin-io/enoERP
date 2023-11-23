@@ -79,20 +79,21 @@ export class WarehouseDetailsComponent {
     this.initDetails();
   }
 
-  async initDetails() {
-    const res = await this.warehouseService.getById(this.id).toPromise();
-    if (res.success) {
-      this.warehouseForm.setFormValue(res.data);
+  initDetails() {
+    this.warehouseService.getById(this.id).subscribe(res=> {
+      if (res.success) {
+        this.warehouseForm.setFormValue(res.data);
 
-      if (this.isReadOnly) {
-        this.warehouseForm.form.disable();
+        if (this.isReadOnly) {
+          this.warehouseForm.form.disable();
+        }
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
       }
-    } else {
-      this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-      this.snackBar.open(this.error, 'close', {
-        panelClass: ['style-error'],
-      });
-    }
+    });
   }
 
   onDelete() {

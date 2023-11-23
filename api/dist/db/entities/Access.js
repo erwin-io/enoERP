@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Access.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", { name: "AccessCode", nullable: true }),
+    __metadata("design:type", String)
+], Access.prototype, "accessCode", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Users_1.Users, (users) => users.access),
     __metadata("design:type", Array)
 ], Access.prototype, "users", void 0);

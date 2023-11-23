@@ -7,12 +7,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { GoodsIssue } from "./GoodsIssue";
+import { GoodsReceipt } from "./GoodsReceipt";
 import { InventoryRequest } from "./InventoryRequest";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 
-@Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user_email", ["active", "email"], { unique: true })
+@Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user", ["active", "userName"], { unique: true })
 @Index("pk_users_1557580587", ["userId"], { unique: true })
 @Entity("Users", { schema: "dbo" })
@@ -52,6 +54,12 @@ export class Users {
 
   @Column("character varying", { name: "Address", default: () => "'NA'" })
   address: string;
+
+  @OneToMany(() => GoodsIssue, (goodsIssue) => goodsIssue.createdByUser)
+  goodsIssues: GoodsIssue[];
+
+  @OneToMany(() => GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser)
+  goodsReceipts: GoodsReceipt[];
 
   @OneToMany(
     () => InventoryRequest,

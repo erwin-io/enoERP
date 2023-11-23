@@ -1,5 +1,6 @@
 export class Access {
   accessId: string;
+  accessCode: string;
   name: string;
   active?: boolean;
   accessPages?: AccessPages[];

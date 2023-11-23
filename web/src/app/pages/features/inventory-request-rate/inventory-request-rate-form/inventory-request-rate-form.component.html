@@ -1,0 +1,164 @@
+
+<div class="inner-content">
+  <form
+  [formGroup]="form"
+  fxLayout="row wrap"
+  id="form"
+  [ngClass]="{'readonly' : isReadOnly}">
+  <fieldset fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="33.33%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Rate</mat-label>
+        <input
+          matInput
+          placeholder="Rate"
+          formControlName="rate"/>
+        <mat-error *ngIf="getError('rate') !== (null || undefined)">
+          {{
+            (getError("rate") &&
+            getError("rate")["required"]
+              ? "Please enter rate"
+              : "") ||
+              (getError("rate") &&
+              getError("rate")["pattern"]
+                ? "Invalid input"
+                : "")||
+              (getError("rate") &&
+              getError("rate").minlength
+                ? "Please enter a valid rate"
+                : "") ||
+              (getError("rate") &&
+              getError("rate").maxlength
+                ? "Please enter a valid rate"
+                : "")
+          }}
+        </mat-error>
+      </mat-form-field>
+      <div
+        fxFlex="33.33%">
+      </div>
+      <div
+        fxFlex="33.33%">
+      </div>
+    </div>
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="33.33%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Rate name</mat-label>
+        <input
+          matInput
+          placeholder="Rate name"
+          formControlName="rateName"/>
+        <mat-error *ngIf="getError('rate') !== (null || undefined)">
+          {{
+            (getError("rateName") &&
+            getError("rateName")["required"]
+              ? "Please enter rate name"
+              : "") ||
+              (getError("rateName") &&
+              getError("rateName")["pattern"]
+                ? "Invalid input"
+                : "")
+          }}
+        </mat-error>
+      </mat-form-field>
+      <div
+        fxFlex="33.33%">
+      </div>
+      <div
+        fxFlex="33.33%">
+      </div>
+    </div>
+    <div
+      fxFlex="100"
+      fxLayout="column"
+      fxLayout.gt-sm="row"
+      style="gap: 16px">
+      <mat-form-field
+        fxFlex="33.33%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Min quantity</mat-label>
+        <input
+          matInput
+          placeholder="Min quantity"
+          formControlName="minQuantity"/>
+        <mat-error *ngIf="getError('minQuantity') !== (null || undefined)">
+          {{
+            (getError("minQuantity") &&
+            getError("minQuantity")["required"]
+              ? "Please enter min quantity"
+              : "") ||
+              (getError("minQuantity") &&
+              getError("minQuantity")["pattern"]
+                ? "Invalid input"
+                : "")||
+              (getError("minQuantity") &&
+              getError("minQuantity").minlength
+                ? "Please enter a valid min quantity"
+                : "") ||
+              (getError("minQuantity") &&
+              getError("minQuantity").maxlength
+                ? "Please enter a valid min quantity"
+                : "") ||
+              (getError("minQuantity") &&
+              getError("minQuantity").exceed
+                ? "Min quantity must not be more than Max quantity"
+                : "")
+          }}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field
+        fxFlex="33.33%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>Max quantity</mat-label>
+        <input
+          matInput
+          placeholder="Max quantity"
+          formControlName="maxQuantity"/>
+        <mat-error *ngIf="getError('maxQuantity') !== (null || undefined)">
+          {{
+            (getError("maxQuantity") &&
+            getError("maxQuantity")["required"]
+              ? "Please enter max quantity"
+              : "") ||
+              (getError("maxQuantity") &&
+              getError("maxQuantity")["pattern"]
+                ? "Invalid input"
+                : "")||
+              (getError("maxQuantity") &&
+              getError("maxQuantity").minlength
+                ? "Please enter a valid max quantity"
+                : "") ||
+              (getError("maxQuantity") &&
+              getError("maxQuantity").maxlength
+                ? "Please enter a valid min quantity"
+                : "") ||
+              (getError("maxQuantity") &&
+              getError("maxQuantity").below
+                ? "Max quantity must not be less than Min quantity"
+                : "")
+          }}
+        </mat-error>
+      </mat-form-field>
+      <div
+        fxFlex="33.33%">
+      </div>
+    </div>
+  </fieldset>
+  </form>
+</div>

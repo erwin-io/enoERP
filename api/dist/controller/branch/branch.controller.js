@@ -55,7 +55,7 @@ let BranchController = class BranchController {
         try {
             res.data = await this.branchService.create(branchDto);
             res.success = true;
-            res.message = `Item category ${api_response_constant_1.SAVING_SUCCESS}`;
+            res.message = `Branch ${api_response_constant_1.SAVING_SUCCESS}`;
             return res;
         }
         catch (e) {
@@ -69,7 +69,7 @@ let BranchController = class BranchController {
         try {
             res.data = await this.branchService.update(branchId, dto);
             res.success = true;
-            res.message = `Item category ${api_response_constant_1.UPDATE_SUCCESS}`;
+            res.message = `Branch ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
         }
         catch (e) {
@@ -83,7 +83,7 @@ let BranchController = class BranchController {
         try {
             res.data = await this.branchService.delete(branchId);
             res.success = true;
-            res.message = `Item category ${api_response_constant_1.DELETE_SUCCESS}`;
+            res.message = `Branch ${api_response_constant_1.DELETE_SUCCESS}`;
             return res;
         }
         catch (e) {

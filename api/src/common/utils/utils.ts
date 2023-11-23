@@ -7,6 +7,7 @@ import {
   Between,
   ILike,
   Raw,
+  Not,
 } from "typeorm";
 import * as bcrypt from "bcrypt";
 import * as fs from "fs";
@@ -164,6 +165,14 @@ export const columnDefToTypeORMCondition = (columnDef) => {
           col.apiNotation,
           Between(range[0], range[1])
         )
+      );
+    } else if (col.type === "precise") {
+      conditionMapping.push(
+        convertColumnNotationToObject(col.apiNotation, col.filter)
+      );
+    } else if (col.type === "not" || col.type === "except") {
+      conditionMapping.push(
+        convertColumnNotationToObject(col.apiNotation, Not(col.filter))
       );
     } else {
       conditionMapping.push(

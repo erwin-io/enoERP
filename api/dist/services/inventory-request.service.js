@@ -16,16 +16,21 @@ exports.InventoryRequestService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const branch_constant_1 = require("../common/constant/branch.constant");
+const inventory_request_rate_constant_1 = require("../common/constant/inventory-request-rate.constant");
 const inventory_request_constant_1 = require("../common/constant/inventory-request.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
+const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
 const Branch_1 = require("../db/entities/Branch");
 const InventoryRequest_1 = require("../db/entities/InventoryRequest");
 const InventoryRequestItem_1 = require("../db/entities/InventoryRequestItem");
+const InventoryRequestRate_1 = require("../db/entities/InventoryRequestRate");
 const Item_1 = require("../db/entities/Item");
 const ItemBranch_1 = require("../db/entities/ItemBranch");
+const ItemWarehouse_1 = require("../db/entities/ItemWarehouse");
 const Users_1 = require("../db/entities/Users");
+const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
 const deafaultInventoryRequestSelect = {
     inventoryRequestId: true,
@@ -146,6 +151,16 @@ let InventoryRequestService = class InventoryRequestService {
                 throw Error(branch_constant_1.BRANCH_ERROR_NOT_FOUND);
             }
             inventoryRequest.branch = branch;
+            const fromWarehouse = await entityManager.findOne(Warehouse_1.Warehouse, {
+                where: {
+                    warehouseId: dto.fromWarehouseId,
+                    active: true,
+                },
+            });
+            if (!branch) {
+                throw Error(warehouse_constant_1.WAREHOUSE_ERROR_NOT_FOUND);
+            }
+            inventoryRequest.fromWarehouse = fromWarehouse;
             inventoryRequest.description = dto.description;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
@@ -178,7 +193,27 @@ let InventoryRequestService = class InventoryRequestService {
                         inventoryRequestId: inventoryRequest.inventoryRequestId,
                     },
                 });
+                const inventoryRequestRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
+                    where: {
+                        inventoryRequestRateCode: item.inventoryRequestRateCode,
+                        active: true,
+                    },
+                });
+                if (!inventoryRequestRate) {
+                    throw Error(inventory_request_rate_constant_1.INVENTORYREQUESTRATE_ERROR_NOT_FOUND);
+                }
+                newItem.inventoryRequestRate = inventoryRequestRate;
+                newItem.totalAmount = inventoryRequestRate.rate;
                 newItem = await entityManager.save(InventoryRequestItem_1.InventoryRequestItem, newItem);
+                const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
+                    where: {
+                        itemId: item.itemId,
+                        warehouseId: dto.fromWarehouseId,
+                    },
+                });
+                const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) + Number(item.quantity);
+                itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
             }
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
             inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
@@ -213,6 +248,7 @@ let InventoryRequestService = class InventoryRequestService {
                         branch: true,
                     },
                     branch: true,
+                    fromWarehouse: true,
                 },
             });
             if (!inventoryRequest) {
@@ -247,19 +283,38 @@ let InventoryRequestService = class InventoryRequestService {
                         inventoryRequestId: inventoryRequest.inventoryRequestId,
                     },
                 });
-                if (inventoryRequestItem) {
-                    inventoryRequestItem.quantity = item.quantity.toString();
-                }
-                else {
+                if (!inventoryRequestItem) {
                     inventoryRequestItem = new InventoryRequestItem_1.InventoryRequestItem();
                     inventoryRequestItem.item = await entityManager.findOne(Item_1.Item, {
                         where: { itemId: item.itemId },
                     });
-                    inventoryRequestItem.quantity = item.quantity.toString();
                     inventoryRequestItem.inventoryRequestId =
                         inventoryRequest.inventoryRequestId;
                 }
+                const inventoryRequestRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
+                    where: {
+                        inventoryRequestRateCode: item.inventoryRequestRateCode,
+                        active: true,
+                    },
+                });
+                if (!inventoryRequestRate) {
+                    throw Error(inventory_request_rate_constant_1.INVENTORYREQUESTRATE_ERROR_NOT_FOUND);
+                }
+                inventoryRequestItem.totalAmount = inventoryRequestRate.rate;
+                inventoryRequestItem.inventoryRequestRate = inventoryRequestRate;
+                const origReqQuantity = inventoryRequestItem.quantity;
+                inventoryRequestItem.quantity = item.quantity.toString();
                 inventoryRequestItem = await entityManager.save(InventoryRequestItem_1.InventoryRequestItem, inventoryRequestItem);
+                const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
+                    where: {
+                        itemId: item.itemId,
+                        warehouseId: inventoryRequest.fromWarehouse.warehouseId,
+                    },
+                });
+                const oldOrderQuantiy = Number(itemWarehouse.orderedQuantity) - Number(origReqQuantity);
+                const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
+                itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
             }
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
             inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
@@ -353,6 +408,7 @@ let InventoryRequestService = class InventoryRequestService {
                     },
                     branch: true,
                     inventoryRequestItems: true,
+                    fromWarehouse: true,
                 },
             });
             delete inventoryRequest.requestedByUser.password;
@@ -369,6 +425,15 @@ let InventoryRequestService = class InventoryRequestService {
                     const newQuantity = Number(itemBranch.quantity) + Number(item.quantity);
                     itemBranch.quantity = newQuantity.toString();
                     itemBranch = await entityManager.save(ItemBranch_1.ItemBranch, itemBranch);
+                    const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
+                        where: {
+                            itemId: item.itemId,
+                            warehouseId: inventoryRequest.fromWarehouse.warehouseId,
+                        },
+                    });
+                    const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) - Number(item.quantity);
+                    itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                    await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
             }
             return inventoryRequest;

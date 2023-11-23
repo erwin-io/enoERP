@@ -22,7 +22,7 @@ export class InventoryMasterlistService {
     } else {
       condition.item = {
         active: true,
-      }
+      };
     }
     const [results, total] = await Promise.all([
       this.itemBranchRepo.find({
@@ -34,10 +34,10 @@ export class InventoryMasterlistService {
         order,
         relations: {
           item: {
-            itemCategory: true
+            itemCategory: true,
           },
-          branch: true
-        }
+          branch: true,
+        },
       }),
       this.itemBranchRepo.count({
         where: {

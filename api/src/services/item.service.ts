@@ -5,10 +5,14 @@ import { ITEMCATEGORY_ERROR_NOT_FOUND } from "src/common/constant/item-category.
 import { ITEM_ERROR_NOT_FOUND } from "src/common/constant/item.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { WAREHOUSE_ERROR_NO_SETUP } from "src/common/constant/warehouse.constant";
-import { columnDefToTypeORMCondition } from "src/common/utils/utils";
+import {
+  columnDefToTypeORMCondition,
+  generateIndentityCode,
+} from "src/common/utils/utils";
 import { CreateItemDto } from "src/core/dto/item/item.create.dto";
 import { UpdateItemDto } from "src/core/dto/item/item.update.dto";
 import { Branch } from "src/db/entities/Branch";
+import { InventoryRequestRate } from "src/db/entities/InventoryRequestRate";
 import { Item } from "src/db/entities/Item";
 import { ItemBranch } from "src/db/entities/ItemBranch";
 import { ItemCategory } from "src/db/entities/ItemCategory";
@@ -39,7 +43,7 @@ export class ItemService {
         order,
         relations: {
           itemCategory: true,
-        }
+        },
       }),
       this.itemRepo.count({
         where: {
@@ -70,6 +74,22 @@ export class ItemService {
     return result;
   }
 
+  async getByCode(itemCode = "") {
+    const result = await this.itemRepo.findOne({
+      where: {
+        itemCode: itemCode?.toString()?.toLowerCase(),
+        active: true,
+      },
+      relations: {
+        itemCategory: true,
+      },
+    });
+    if (!result) {
+      throw Error(ITEM_ERROR_NOT_FOUND);
+    }
+    return result;
+  }
+
   async create(dto: CreateItemDto) {
     return await this.itemRepo.manager.transaction(async (entityManager) => {
       const hasWareHouse = await entityManager.find(Warehouse, {
@@ -79,7 +99,7 @@ export class ItemService {
         throw Error(WAREHOUSE_ERROR_NO_SETUP);
       }
       let item = new Item();
-      item.itemCode = dto.itemCode;
+      item.itemCode = dto.itemCode.toLowerCase();
       item.itemName = dto.itemName;
       item.itemDescription = dto.itemDescription;
       item.price = dto.price ? dto.price.toString() : "0";
@@ -121,6 +141,22 @@ export class ItemService {
       }
       await entityManager.insert(ItemBranch, itemBranches);
 
+      let inventoryRequestRate = new InventoryRequestRate();
+      inventoryRequestRate.rateName = "1pcs";
+      inventoryRequestRate.rate = dto.price.toString();
+      inventoryRequestRate.minQuantity = "1";
+      inventoryRequestRate.maxQuantity = "1";
+      inventoryRequestRate.item = item;
+      inventoryRequestRate.baseRate = true;
+      inventoryRequestRate = await entityManager.save(
+        InventoryRequestRate,
+        inventoryRequestRate
+      );
+      inventoryRequestRate.inventoryRequestRateCode = generateIndentityCode(
+        inventoryRequestRate.inventoryRequestRateId
+      );
+      await entityManager.save(InventoryRequestRate, inventoryRequestRate);
+
       return await entityManager.findOne(Item, {
         where: {
           itemId: item.itemId,
@@ -147,7 +183,7 @@ export class ItemService {
         throw Error(ITEM_ERROR_NOT_FOUND);
       }
 
-      item.itemCode = dto.itemCode;
+      item.itemCode = dto.itemCode.toLowerCase();
       item.itemName = dto.itemName;
       item.itemDescription = dto.itemDescription;
       item.price = dto.price ? dto.price.toString() : "0";

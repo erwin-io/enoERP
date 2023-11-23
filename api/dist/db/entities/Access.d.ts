@@ -4,5 +4,6 @@ export declare class Access {
     name: string;
     accessPages: object;
     active: boolean;
+    accessCode: string | null;
     users: Users[];
 }

@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
 const typeorm_1 = require("typeorm");
+const GoodsIssue_1 = require("./GoodsIssue");
+const GoodsReceipt_1 = require("./GoodsReceipt");
 const InventoryRequest_1 = require("./InventoryRequest");
 const Access_1 = require("./Access");
 const Branch_1 = require("./Branch");
@@ -65,6 +67,14 @@ __decorate([
     __metadata("design:type", String)
 ], Users.prototype, "address", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsIssue_1.GoodsIssue, (goodsIssue) => goodsIssue.createdByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "goodsIssues", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsReceipt_1.GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "goodsReceipts", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.requestedByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "inventoryRequests", void 0);
@@ -79,8 +89,8 @@ __decorate([
     __metadata("design:type", Branch_1.Branch)
 ], Users.prototype, "branch", void 0);
 Users = __decorate([
-    (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user_email", ["active", "email"], { unique: true }),
+    (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user", ["active", "userName"], { unique: true }),
     (0, typeorm_1.Index)("pk_users_1557580587", ["userId"], { unique: true }),
     (0, typeorm_1.Entity)("Users", { schema: "dbo" })

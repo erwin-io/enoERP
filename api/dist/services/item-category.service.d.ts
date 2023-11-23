@@ -14,8 +14,8 @@ export declare class ItemCategoryService {
         results: ItemCategory[];
         total: number;
     }>;
-    getById(itemCategoryId: any): Promise<ItemCategory>;
+    getByCode(itemCategoryCode: any): Promise<ItemCategory>;
     create(dto: CreateItemCategoryDto): Promise<ItemCategory>;
-    update(itemCategoryId: any, dto: UpdateItemCategoryDto): Promise<ItemCategory>;
-    delete(itemCategoryId: any): Promise<ItemCategory>;
+    update(itemCategoryCode: any, dto: UpdateItemCategoryDto): Promise<ItemCategory>;
+    delete(itemCategoryCode: any): Promise<ItemCategory>;
 }

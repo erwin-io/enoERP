@@ -79,21 +79,22 @@ export class ItemDetailsComponent {
     this.initDetails();
   }
 
-  async initDetails() {
-    const res = await this.itemService.getById(this.id).toPromise();
-    if (res.success) {
-      this.itemForm.init(res.data);
+  initDetails() {
+    this.itemService.getById(this.id).subscribe(res=> {
+      if (res.success) {
+        this.itemForm.init(res.data);
 
-      if (this.isReadOnly) {
-        this.itemForm.form.disable();
-        this.itemForm.itemCategorySearchCtrl.disable();
+        if (this.isReadOnly) {
+          this.itemForm.form.disable();
+          this.itemForm.itemCategorySearchCtrl.disable();
+        }
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
       }
-    } else {
-      this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-      this.snackBar.open(this.error, 'close', {
-        panelClass: ['style-error'],
-      });
-    }
+    })
   }
 
   onDelete() {

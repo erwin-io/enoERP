@@ -79,20 +79,21 @@ export class BranchDetailsComponent {
     this.initDetails();
   }
 
-  async initDetails() {
-    const res = await this.branchService.getById(this.id).toPromise();
-    if (res.success) {
-      this.branchForm.setFormValue(res.data);
+  initDetails() {
+    this.branchService.getById(this.id).subscribe(res=> {
+      if (res.success) {
+        this.branchForm.setFormValue(res.data);
 
-      if (this.isReadOnly) {
-        this.branchForm.form.disable();
+        if (this.isReadOnly) {
+          this.branchForm.form.disable();
+        }
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
       }
-    } else {
-      this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-      this.snackBar.open(this.error, 'close', {
-        panelClass: ['style-error'],
-      });
-    }
+    });
   }
 
   onDelete() {

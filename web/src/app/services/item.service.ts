@@ -16,7 +16,7 @@ export class ItemService implements IServices {
 
   getByAdvanceSearch(params:{
     order: any,
-    columnDef: { apiNotation: string; filter: string }[],
+    columnDef: { apiNotation: string; filter: string; type?: string }[],
     pageSize: number,
     pageIndex: number
   }): Observable<ApiResponse<{ results: Item[], total: number}>> {
@@ -30,6 +30,14 @@ export class ItemService implements IServices {
 
   getById(itemId: string): Observable<ApiResponse<Item>> {
     return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.item.getById + itemId)
+    .pipe(
+      tap(_ => this.log('item')),
+      catchError(this.handleError('item', []))
+    );
+  }
+
+  getByCode(itemCode: string): Observable<ApiResponse<Item>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.item.getByCode + itemCode)
     .pipe(
       tap(_ => this.log('item')),
       catchError(this.handleError('item', []))

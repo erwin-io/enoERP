@@ -46,7 +46,6 @@
     "class-validator": "^0.13.2",
     "firebase-admin": "^11.3.0",
     "moment": "^2.29.4",
-    "multilang-sentiment": "^2.0.0",
     "nestjs-typeorm-paginate": "^4.0.2",
     "node-base64-to-file": "^1.0.4",
     "passport": "^0.6.0",

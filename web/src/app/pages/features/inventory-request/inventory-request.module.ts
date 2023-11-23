@@ -10,6 +10,7 @@ import { DataTableModule } from 'src/app/shared/data-table/data-table.module';
 import { InventoryRequestFormComponent } from './inventory-request-form/inventory-request-form.component';
 import { InventoryRequestDetailsComponent } from './inventory-request-details/inventory-request-details.component';
 import { InventoryRequestItemComponent } from './inventory-request-items/inventory-request-items.component';
+import { InventoryRequestRateSelectComponent } from './inventory-request-items/inventory-request-rate-select/inventory-request-rate-select.component';
 
 export const routes: Routes = [
   {
@@ -41,7 +42,8 @@ export const routes: Routes = [
     InventoryRequestComponent,
     InventoryRequestDetailsComponent,
     InventoryRequestFormComponent,
-    InventoryRequestItemComponent
+    InventoryRequestItemComponent,
+    InventoryRequestRateSelectComponent
   ],
   imports: [
     CommonModule,

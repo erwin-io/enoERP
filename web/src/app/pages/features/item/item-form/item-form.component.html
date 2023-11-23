@@ -29,6 +29,10 @@
             (getError("itemCode") &&
             getError("itemCode")["pattern"]
               ? "Invalid input"
+              : "")||
+            (getError("itemCode") &&
+            getError("itemCode")["whitespace"]
+              ? "Invalid input"
               : "")
         }}
         </mat-error>

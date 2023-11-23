@@ -21,9 +21,8 @@ export class UpdateUserDto extends DefaultUserDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumberString()
   @Transform(({ obj, key }) => {
     return obj[key].toString();
   })
-  accessId: string;
+  accessCode: string;
 }

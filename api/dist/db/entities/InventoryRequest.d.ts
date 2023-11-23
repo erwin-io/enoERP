@@ -1,4 +1,5 @@
 import { Branch } from "./Branch";
+import { Warehouse } from "./Warehouse";
 import { Users } from "./Users";
 import { InventoryRequestItem } from "./InventoryRequestItem";
 export declare class InventoryRequest {
@@ -10,6 +11,7 @@ export declare class InventoryRequest {
     requestStatus: string;
     active: boolean;
     branch: Branch;
+    fromWarehouse: Warehouse;
     requestedByUser: Users;
     inventoryRequestItems: InventoryRequestItem[];
 }

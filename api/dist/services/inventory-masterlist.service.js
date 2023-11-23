@@ -42,10 +42,10 @@ let InventoryMasterlistService = class InventoryMasterlistService {
                 order,
                 relations: {
                     item: {
-                        itemCategory: true
+                        itemCategory: true,
                     },
-                    branch: true
-                }
+                    branch: true,
+                },
             }),
             this.itemBranchRepo.count({
                 where: Object.assign({}, condition),

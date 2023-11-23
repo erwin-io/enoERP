@@ -7,6 +7,7 @@ import { ItemService } from "src/services/item.service";
 export declare class ItemController {
     private readonly itemService;
     constructor(itemService: ItemService);
+    getByCode(itemCode: string): Promise<ApiResponseModel<Item>>;
     getDetails(itemId: string): Promise<ApiResponseModel<Item>>;
     getPaginated(params: PaginationParamsDto): Promise<ApiResponseModel<{
         results: Item[];

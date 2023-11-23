@@ -24,12 +24,12 @@ export const routes: Routes = [
     data: { title: "New Access", details: true, isNew: true}
   },
   {
-    path: ':accessId',
+    path: ':accessCode',
     component: AccessDetailsComponent,
     data: { title: "Access", details: true }
   },
   {
-    path: ':accessId/edit',
+    path: ':accessCode/edit',
     component: AccessDetailsComponent,
     data: { title: "Access", details: true, edit: true }
   },

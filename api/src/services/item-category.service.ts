@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ITEMCATEGORY_ERROR_NOT_FOUND } from "src/common/constant/item-category.constant";
-import { columnDefToTypeORMCondition } from "src/common/utils/utils";
+import {
+  columnDefToTypeORMCondition,
+  generateIndentityCode,
+} from "src/common/utils/utils";
 import { CreateItemCategoryDto } from "src/core/dto/item-category/item-category.create.dto";
 import { UpdateItemCategoryDto } from "src/core/dto/item-category/item-category.update.dto";
 import { ItemCategory } from "src/db/entities/ItemCategory";
@@ -43,10 +46,10 @@ export class ItemCategoryService {
     };
   }
 
-  async getById(itemCategoryId) {
+  async getByCode(itemCategoryCode) {
     const result = await this.itemCategoryRepo.findOne({
       where: {
-        itemCategoryId,
+        itemCategoryCode,
         active: true,
       },
     });
@@ -59,20 +62,24 @@ export class ItemCategoryService {
   async create(dto: CreateItemCategoryDto) {
     return await this.itemCategoryRepo.manager.transaction(
       async (entityManager) => {
-        const itemCategory = new ItemCategory();
+        let itemCategory = new ItemCategory();
         itemCategory.name = dto.name;
         itemCategory.description = dto.description;
-        return await entityManager.save(itemCategory);
+        itemCategory = await entityManager.save(itemCategory);
+        itemCategory.itemCategoryCode = generateIndentityCode(
+          itemCategory.itemCategoryId
+        );
+        return await entityManager.save(ItemCategory, itemCategory);
       }
     );
   }
 
-  async update(itemCategoryId, dto: UpdateItemCategoryDto) {
+  async update(itemCategoryCode, dto: UpdateItemCategoryDto) {
     return await this.itemCategoryRepo.manager.transaction(
       async (entityManager) => {
         const itemCategory = await entityManager.findOne(ItemCategory, {
           where: {
-            itemCategoryId,
+            itemCategoryCode,
             active: true,
           },
         });
@@ -86,12 +93,12 @@ export class ItemCategoryService {
     );
   }
 
-  async delete(itemCategoryId) {
+  async delete(itemCategoryCode) {
     return await this.itemCategoryRepo.manager.transaction(
       async (entityManager) => {
         const itemCategory = await entityManager.findOne(ItemCategory, {
           where: {
-            itemCategoryId,
+            itemCategoryCode,
             active: true,
           },
         });

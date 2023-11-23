@@ -12,6 +12,7 @@ export class InventoryRequestFormComponent {
 
   form: FormGroup;
   @Input() isReadOnly: any;
+  @Input() warehouseCode: any;
   constructor(
     private formBuilder: FormBuilder
   ) {

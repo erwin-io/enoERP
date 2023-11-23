@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const testing_1 = require("@nestjs/testing");
 const inventory_request_service_1 = require("./inventory-request.service");
-describe('InventoryRequestService', () => {
+describe("InventoryRequestService", () => {
     let service;
     beforeEach(async () => {
         const module = await testing_1.Test.createTestingModule({
@@ -10,7 +10,7 @@ describe('InventoryRequestService', () => {
         }).compile();
         service = module.get(inventory_request_service_1.InventoryRequestService);
     });
-    it('should be defined', () => {
+    it("should be defined", () => {
         expect(service).toBeDefined();
     });
 });

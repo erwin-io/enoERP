@@ -23,7 +23,7 @@ import { MatTableDataSource } from '@angular/material/table';
   }
 })
 export class ItemCategoryDetailsComponent {
-  id;
+  code;
   isNew = false;
   // pageItemCategory: ItemCategory = {
   //   view: true,
@@ -54,7 +54,7 @@ export class ItemCategoryDetailsComponent {
   ) {
     const { isNew, edit } = this.route.snapshot.data;
     this.isNew = isNew;
-    this.id = this.route.snapshot.paramMap.get('itemCategoryId');
+    this.code = this.route.snapshot.paramMap.get('itemCategoryCode');
     this.isReadOnly = !edit && !isNew;
     if (this.route.snapshot.data) {
       // this.pageItemCategory = {
@@ -79,20 +79,21 @@ export class ItemCategoryDetailsComponent {
     this.initDetails();
   }
 
-  async initDetails() {
-    const res = await this.itemCategoryService.getById(this.id).toPromise();
-    if (res.success) {
-      this.itemCategoryForm.setFormValue(res.data);
+  initDetails() {
+    this.itemCategoryService.getByCode(this.code).subscribe(res=> {
+      if (res.success) {
+        this.itemCategoryForm.setFormValue(res.data);
 
-      if (this.isReadOnly) {
-        this.itemCategoryForm.form.disable();
+        if (this.isReadOnly) {
+          this.itemCategoryForm.form.disable();
+        }
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
       }
-    } else {
-      this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-      this.snackBar.open(this.error, 'close', {
-        panelClass: ['style-error'],
-      });
-    }
+    });
   }
 
   onDelete() {
@@ -118,7 +119,7 @@ export class ItemCategoryDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.itemCategoryService.delete(this.id).toPromise();
+        let res = await this.itemCategoryService.delete(this.code).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
@@ -173,7 +174,7 @@ export class ItemCategoryDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.itemCategoryService.update(this.id, formData).toPromise();
+        let res = await this.itemCategoryService.update(this.code, formData).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],

@@ -24,4 +24,5 @@ export class InventoryRequestItem {
   quantity: string;
   inventoryRequest: InventoryRequest;
   item: Item;
+  totalAmount: number;
 }

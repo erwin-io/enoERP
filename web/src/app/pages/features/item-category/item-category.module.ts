@@ -23,12 +23,12 @@ export const routes: Routes = [
     data: { title: "New Item Category", details: true, isNew: true}
   },
   {
-    path: ':itemCategoryId',
+    path: ':itemCategoryCode',
     component: ItemCategoryDetailsComponent,
     data: { title: "Item Category", details: true }
   },
   {
-    path: ':itemCategoryId/edit',
+    path: ':itemCategoryCode/edit',
     component: ItemCategoryDetailsComponent,
     data: { title: "Item Category", details: true, edit: true }
   },

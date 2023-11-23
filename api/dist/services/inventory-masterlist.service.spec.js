@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const testing_1 = require("@nestjs/testing");
 const inventory_masterlist_service_1 = require("./inventory-masterlist.service");
-describe('InventoryMasterlistService', () => {
+describe("InventoryMasterlistService", () => {
     let service;
     beforeEach(async () => {
         const module = await testing_1.Test.createTestingModule({
@@ -10,7 +10,7 @@ describe('InventoryMasterlistService', () => {
         }).compile();
         service = module.get(inventory_masterlist_service_1.InventoryMasterlistService);
     });
-    it('should be defined', () => {
+    it("should be defined", () => {
         expect(service).toBeDefined();
     });
 });

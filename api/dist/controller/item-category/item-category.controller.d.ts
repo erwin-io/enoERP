@@ -7,12 +7,12 @@ import { ItemCategoryService } from "src/services/item-category.service";
 export declare class ItemCategoryController {
     private readonly itemCategoryService;
     constructor(itemCategoryService: ItemCategoryService);
-    getDetails(itemCategoryId: string): Promise<ApiResponseModel<ItemCategory>>;
+    getDetails(itemCategoryCode: string): Promise<ApiResponseModel<ItemCategory>>;
     getPaginated(params: PaginationParamsDto): Promise<ApiResponseModel<{
         results: ItemCategory[];
         total: number;
     }>>;
     create(itemCategoryDto: CreateItemCategoryDto): Promise<ApiResponseModel<ItemCategory>>;
-    update(itemCategoryId: string, dto: UpdateItemCategoryDto): Promise<ApiResponseModel<ItemCategory>>;
-    delete(itemCategoryId: string): Promise<ApiResponseModel<ItemCategory>>;
+    update(itemCategoryCode: string, dto: UpdateItemCategoryDto): Promise<ApiResponseModel<ItemCategory>>;
+    delete(itemCategoryCode: string): Promise<ApiResponseModel<ItemCategory>>;
 }

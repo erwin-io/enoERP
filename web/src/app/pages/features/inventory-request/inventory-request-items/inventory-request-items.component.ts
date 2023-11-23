@@ -4,14 +4,20 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { InventoryRequest, InventoryRequestItem } from 'src/app/model/inventory-request';
+import { InventoryRequestRate } from 'src/app/model/inventory-request-rate';
+import { Item } from 'src/app/model/item';
+import { InventoryRequestRateService } from 'src/app/services/inventory-request-rate.service';
 import { InventoryRequestService } from 'src/app/services/inventory-request.service';
 import { ItemService } from 'src/app/services/item.service';
 import { AlertDialogModel } from 'src/app/shared/alert-dialog/alert-dialog-model';
 import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.component';
 import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.matcher';
+import { SelectItemDialogComponent } from 'src/app/shared/select-item-dialog/select-item-dialog.component';
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
+import { InventoryRequestRateSelectComponent } from './inventory-request-rate-select/inventory-request-rate-select.component';
 
 @Component({
   selector: 'app-inventory-request-items',
@@ -19,36 +25,53 @@ import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
   styleUrls: ['./inventory-request-items.component.scss']
 })
 export class InventoryRequestItemComponent {
+  @Input() warehouseCode;
   id;
   isProcessing = false;
   isNew = false;
-  displayedColumns = ['itemName', 'quantity', 'controls'];
+  displayedColumns = ['itemName', 'quantity', 'totalAmount', 'controls'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
   @Input() inventoryRequest!: InventoryRequest;
   @Input() isReadOnly = true;
   @ViewChild('inventoryRequestItemFormDialog') inventoryRequestItemFormDialogTemp: TemplateRef<any>;
 
   matcher = new MyErrorStateMatcher();
-  itemId = new FormControl("", [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]);
+  itemId = new FormControl("", [Validators.required]);
   quantity = new FormControl("",[
     Validators.minLength(1),
     Validators.max(1000),
     Validators.pattern('^[0-9]*$'),
     Validators.required,
   ]);
-  triggerLoadTimeOut;
-  isOptionsItemNameLoading = false;
-  optionItems: {id: string; name: string}[] = [];
-  itemNameSearchCtrl = new FormControl();
-  itemNameSearchInput: string = "";
+  inventoryRequestRateCode = new FormControl("", [Validators.required])
 
-  currentSelected: InventoryRequestItemTableColumn;
+  currentSelected: InventoryRequestItemTableColumn = {
+    itemId: "",
+    itemCode: "",
+    itemName: "",
+    itemCategory: "",
+    quantity: "",
+    inventoryRequestRateCode: "",
+    totalAmount: "0",
+  } as any;
+
+  currentRateSelected: InventoryRequestRate = {
+    inventoryRequestRateId: "",
+    inventoryRequestRateCode: "",
+    rate: "",
+    rateName: "",
+    minQuantity: "",
+    maxQuantity: "",
+    baseRate: false
+  } as any;
 
   error;
 
-  @Output() itemsChanged = new EventEmitter()
+  @Output() itemsChanged = new EventEmitter();
   constructor(
+    private spinner: SpinnerVisibilityService,
     private inventoryRequestService: InventoryRequestService,
+    private inventoryRequestRateService: InventoryRequestRateService,
     private itemService: ItemService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -56,7 +79,6 @@ export class InventoryRequestItemComponent {
     private route: ActivatedRoute,
     public router: Router,) {
   }
-
 
   get f() {
     return {
@@ -67,30 +89,23 @@ export class InventoryRequestItemComponent {
 
   get form() {
     return {
-      valid: this.itemId.valid && this.quantity.valid,
-      dirty: this.itemId.dirty || this.quantity.dirty,
+      valid: this.itemId.valid && this.quantity.valid && this.inventoryRequestRateCode.valid,
+      dirty: this.itemId.dirty || this.quantity.dirty || this.inventoryRequestRateCode.dirty,
       value: {
         itemId: this.itemId.value,
-        quantity: this.quantity.value
+        quantity: this.quantity.value,
+        inventoryRequestRateId: this.inventoryRequestRateCode.value
       },
       validate: ()=> {
         this.itemId.updateValueAndValidity();
         this.quantity.updateValueAndValidity();
+        this.inventoryRequestRateCode.updateValueAndValidity();
       }
     }
   }
 
 
   ngAfterViewInit() {
-    this.itemNameSearchCtrl.valueChanges
-    .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-    )
-    .subscribe(async value => {
-      this.isOptionsItemNameLoading = false;
-      await this.initItemNameOptions();
-    });
     this.itemId.valueChanges
     .subscribe(async value => {
       if(this.dataSource.data.some(x=>x.itemId === this.itemId.value) && this.currentSelected?.itemId !== this.itemId.value) {
@@ -101,6 +116,67 @@ export class InventoryRequestItemComponent {
         this.itemId.markAsDirty();
       }
     });
+    this.quantity.valueChanges
+    .subscribe(async value => {
+      if(this.currentRateSelected) {
+        const { maxQuantity, minQuantity, baseRate } = this.currentRateSelected;
+        if(Number(value) > Number(maxQuantity) && !baseRate && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not exceed max quantity!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ exceed: true});
+        } else if(Number(value) < Number(minQuantity) && !baseRate && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not be less than min quantity!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ below: true});
+        } else if(Number(value) < 1 && baseRate && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not be less than 1!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ below: true});
+        } else if((value === '' || isNaN(Number(value))) && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not be less than 1!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ below: true});
+        } else {
+          this.quantity.setErrors(null);
+        }
+        this.quantity.markAsDirty();
+        this.computeItemTotalAmount();
+      }
+    });
+    this.inventoryRequestRateCode.valueChanges
+    .subscribe(async value => {
+      if(this.currentRateSelected) {
+        const { maxQuantity, minQuantity, baseRate } = this.currentRateSelected;
+        if(Number(this.quantity.value) > Number(maxQuantity) && !baseRate && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not exceed max quantity!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ exceed: true});
+        } else if(Number(this.quantity.value) < Number(minQuantity) && !baseRate && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.snackBar.open("Quantity must not be less than min quantity!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ below: true});
+        } else if(Number(this.quantity.value) < 1 && baseRate && this.quantity.dirty && this.quantity.touched) {
+          this.snackBar.open("Quantity must not be less than 1!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ below: true});
+        } else {
+          this.quantity.setErrors(null)
+        }
+        this.quantity.markAsDirty();
+        this.computeItemTotalAmount();
+      }
+    });
+  }
+
+  computeItemTotalAmount() {
+    this.currentSelected.totalAmount = Number(this.currentRateSelected.rate) * Number(this.quantity.value);
   }
 
   init(data: InventoryRequestItemTableColumn[]) {
@@ -109,84 +185,166 @@ export class InventoryRequestItemComponent {
     }
   }
 
-  async initItemNameOptions() {
-    if(!this.isOptionsItemNameLoading) {
-      this.isOptionsItemNameLoading = true;
-      const res = await this.itemService.getByAdvanceSearch({
-        order: {},
-        columnDef: [{
-          apiNotation: "itemName",
-          filter: this.itemNameSearchInput??""
-        }],
-        pageIndex: 0,
-        pageSize: 10
-      }).toPromise();
-      this.optionItems = res.data.results.map(a=> { return { name: a.itemName, id: a.itemId }});
-      this.mapSearchItem();
-      this.isOptionsItemNameLoading = false;
-    }
+  resetCurrentSelected(){
+    this.currentSelected = {
+      itemId: "",
+      itemCode: "",
+      itemName: "",
+      itemCategory: "",
+      quantity: "",
+      inventoryRequestRateCode: "",
+      totalAmount: "",
+    } as any;
   }
 
-  displayItemName(value?: number) {
-    return value ? this.optionItems.find(_ => _.id === value?.toString())?.name : undefined;
-  }
-
-  mapSearchItem() {
-    if(this.f['itemId'].value !== this.itemNameSearchInput) {
-      this.f['itemId'].setErrors({ required: true});
-      const selected = this.optionItems.find(x=>x.id === this.itemNameSearchInput);
-      if(selected) {
-        this.f["itemId"].setValue(selected.id);
-      } else {
-        this.f["itemId"].setValue(null);
-      }
-      if(!this.f["itemId"].value) {
-        this.f["itemId"].setErrors({required: true});
-      } else {
-        this.f['itemId'].setErrors(null);
-        this.f['itemId'].markAsPristine();
-      }
-    }
-    this.itemNameSearchCtrl.setErrors(this.f["itemId"].errors);
+  resetCurrentRateSelected(){
+    this.currentRateSelected = {
+      inventoryRequestRateId: "",
+      inventoryRequestRateCode: "",
+      rate: "",
+      rateName: "",
+      minQuantity: "",
+      maxQuantity: "",
+      baseRate: false
+    } as any;
   }
 
   async onShowNewItem() {
-    this.currentSelected = null;
+    this.resetCurrentSelected();
     this.itemId.reset();
     this.quantity.reset();
-    this.itemNameSearchInput = null;
-    this.itemNameSearchCtrl.reset();
-    this.itemNameSearchCtrl.enable();
+    this.inventoryRequestRateCode.reset();
     this.isNew = true;
     const dialogRef = this.dialog.open(this.inventoryRequestItemFormDialogTemp, {
       disableClose: true,
       panelClass: 'inventory-request-items'
     });
     dialogRef.afterOpened().subscribe(async res=> {
-      await this.initItemNameOptions();
+      this.inventoryRequestRateCode.markAsPristine();
+      this.quantity.markAsPristine();
+      this.resetCurrentSelected();
+      this.resetCurrentRateSelected();
     });
     dialogRef.afterClosed().subscribe(async res=> {
+      this.inventoryRequestRateCode.markAsPristine();
+      this.quantity.markAsPristine();
+      this.resetCurrentSelected();
+      this.resetCurrentRateSelected();
     });
   }
 
   async editInventoryRequestItem(data: InventoryRequestItemTableColumn) {
-    this.currentSelected = data;
-    this.itemId.setValue(this.currentSelected.itemId);
-    this.itemNameSearchCtrl.setValue(this.currentSelected.itemId);
-    this.itemNameSearchInput = this.currentSelected.itemId;
-    this.quantity.setValue(this.currentSelected.quantity);
-    this.itemNameSearchCtrl.disable();
-    await this.initItemNameOptions();
-    this.isNew = false;;
+
+    this.spinner.show();
+    try {
+      const res = await this.inventoryRequestRateService.getByCode(data.inventoryRequestRateCode).toPromise();
+      if(res.success) {
+        this.currentRateSelected.inventoryRequestRateId = res.data.inventoryRequestRateId;
+        this.currentRateSelected.inventoryRequestRateCode = res.data.inventoryRequestRateCode;
+        this.currentRateSelected.rate = res.data.rate;
+        this.currentRateSelected.rateName = res.data.rateName;
+        this.currentRateSelected.minQuantity = res.data.minQuantity;
+        this.currentRateSelected.maxQuantity = res.data.maxQuantity;
+        this.currentRateSelected.baseRate = res.data.baseRate;
+        this.currentSelected = data;
+        this.itemId.setValue(this.currentSelected.itemId);
+        this.quantity.setValue(this.currentSelected.quantity);
+        this.inventoryRequestRateCode.setValue(this.currentSelected.inventoryRequestRateCode);
+        this.isNew = false;
+        this.spinner.hide();
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
+        this.spinner.hide();
+      }
+    } catch (e) {
+      this.error = Array.isArray(e.message) ? e.message[0] : e.message;
+      this.snackBar.open(this.error, 'close', {
+        panelClass: ['style-error'],
+      });
+      this.spinner.hide();
+    }
     const dialogRef = this.dialog.open(this.inventoryRequestItemFormDialogTemp, {
       disableClose: true,
       panelClass: 'inventory-request-items'
     });
     dialogRef.afterClosed().subscribe(async res=> {
+      this.inventoryRequestRateCode.markAsPristine();
+      this.quantity.markAsPristine();
+      this.resetCurrentSelected();
+      this.resetCurrentRateSelected();
     });
     this.itemId.markAsPristine();
-    this.itemNameSearchCtrl.markAsPristine();
     this.quantity.markAsPristine();
+  }
+
+  showSelectItemDialog() {
+    const dialogRef = this.dialog.open(SelectItemDialogComponent, {
+        disableClose: true,
+        panelClass: "select-item-dialog"
+    });
+    dialogRef.componentInstance.selected = {
+      itemId: this.currentSelected?.itemId,
+      itemCode: this.currentSelected?.itemCode,
+      itemName: this.currentSelected?.itemName,
+      itemCategory: this.currentSelected?.itemCategory,
+      selected: true
+    }
+    dialogRef.afterClosed().subscribe((res:Item)=> {
+      console.log(res);
+      if(res) {
+        if(!this.dataSource.data.some(x=>x.itemId ===  res.itemId) ) {
+          this.currentSelected.itemId = res.itemId;
+          this.currentSelected.itemCode = res.itemCode;
+          this.currentSelected.itemName = res.itemName;
+          this.currentSelected.itemCategory = res.itemCategory.name;
+          this.itemId.setValue(this.currentSelected.itemId);
+        } else {
+          this.snackBar.open("Item already exist in table!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.itemId.setErrors({ exist: true});
+          this.itemId.markAsDirty();
+        }
+      }
+    })
+  }
+
+  showSelectRateDialog() {
+
+    const dialogRef = this.dialog.open(InventoryRequestRateSelectComponent, {
+        disableClose: true,
+        panelClass: "select-rate-dialog"
+    });
+    dialogRef.componentInstance.item = { itemId: this.currentSelected?.itemId, itemCode: this.currentSelected?.itemCode } as any;
+    dialogRef.componentInstance.selected = {
+      inventoryRequestRateId: this.currentRateSelected?.inventoryRequestRateId,
+      inventoryRequestRateCode: this.currentRateSelected?.inventoryRequestRateCode,
+      rate: this.currentRateSelected?.rate,
+      rateName: this.currentRateSelected?.rateName,
+      minQuantity: this.currentRateSelected?.minQuantity,
+      maxQuantity: this.currentRateSelected?.maxQuantity,
+      baseRate: this.currentRateSelected?.baseRate,
+      selected: true
+    }
+    dialogRef.afterClosed().subscribe((res:InventoryRequestRate)=> {
+      console.log(res);
+      if(res) {
+        this.currentRateSelected.inventoryRequestRateId = res.inventoryRequestRateId;
+        this.currentRateSelected.inventoryRequestRateCode = res.inventoryRequestRateCode;
+        this.currentRateSelected.rate = res.rate;
+        this.currentRateSelected.rateName = res.rateName;
+        this.currentRateSelected.minQuantity = res.minQuantity;
+        this.currentRateSelected.maxQuantity = res.maxQuantity;
+        this.currentRateSelected.baseRate = res.baseRate;
+        this.currentSelected.inventoryRequestRateCode = this.currentRateSelected.inventoryRequestRateCode;
+        this.inventoryRequestRateCode.setValue(this.currentRateSelected.inventoryRequestRateCode);
+        this.inventoryRequestRateCode.markAsDirty();
+        this.inventoryRequestRateCode.markAsTouched();
+      }
+    })
   }
 
   deleteInventoryRequestItem(selected: InventoryRequestItemTableColumn) {
@@ -263,18 +421,19 @@ export class InventoryRequestItemComponent {
           } else {
             this.dataSource.data
             const items = this.dataSource.data;
-            if(items.some(x=>x.itemId === this.itemId.value)) {
-              items.find(x=>x.itemId === this.itemId.value).quantity = this.quantity.value;
+            this.currentSelected.quantity = this.quantity.value;
+            if(items.some(x=>x.itemId === this.currentSelected.itemId)) {
+              items.find(x=>x.itemId === this.itemId.value).quantity = this.currentSelected.quantity;
+              items.find(x=>x.itemId === this.itemId.value).inventoryRequestRateCode = this.inventoryRequestRateCode.value;
+              items.find(x=>x.itemId === this.itemId.value).inventoryRequestRateCode = this.inventoryRequestRateCode.value;
+              items.find(x=>x.itemId === this.itemId.value).totalAmount = Number(this.currentSelected?.totalAmount);
             } else {
-              items.push({
-                itemId: data.itemId,
-                itemCode: data.itemCode,
-                itemName: data.itemName,
-                itemDescription: data.itemDescription,
-                itemCategory: data.itemCategory.name,
-                quantity: this.quantity.value,
-              });
+              items.push(this.currentSelected);
             }
+            this.inventoryRequestRateCode.markAsPristine();
+            this.quantity.markAsPristine();
+            this.resetCurrentSelected();
+            this.resetCurrentRateSelected();
             this.dataSource = new MatTableDataSource(items);
             this.itemsChanged.emit(this.dataSource.data);
             this.dialog.closeAll();

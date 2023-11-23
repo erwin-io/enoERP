@@ -11,6 +11,11 @@ import { Warehouse } from "../entities/Warehouse";
 import { ItemWarehouse } from "../entities/ItemWarehouse";
 import { Branch } from "../entities/Branch";
 import { ItemBranch } from "../entities/ItemBranch";
+import { InventoryRequestRate } from "../entities/InventoryRequestRate";
+import { GoodsIssue } from "../entities/GoodsIssue";
+import { GoodsIssueItem } from "../entities/GoodsIssueItem";
+import { GoodsReceipt } from "../entities/GoodsReceipt";
+import { GoodsReceiptItem } from "../entities/GoodsReceiptItem";
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -37,6 +42,11 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         ItemBranch,
         InventoryRequest,
         InventoryRequestItem,
+        InventoryRequestRate,
+        GoodsIssue,
+        GoodsIssueItem,
+        GoodsReceipt,
+        GoodsReceiptItem,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

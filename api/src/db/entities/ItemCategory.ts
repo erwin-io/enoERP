@@ -23,6 +23,9 @@ export class ItemCategory {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", { name: "ItemCategoryCode", nullable: true })
+  itemCategoryCode: string | null;
+
   @OneToMany(() => Item, (item) => item.itemCategory)
   items: Item[];
 }

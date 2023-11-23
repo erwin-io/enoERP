@@ -86,7 +86,7 @@ export class IncomingInventoryRequestComponent {
   async pageChange(event: { pageIndex: number, pageSize: number }) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    await this.getIncomingInventoryRequestPaginated();
+    this.getIncomingInventoryRequestPaginated();
   }
 
   async sortChange(event: { active: string, direction: string }) {
@@ -96,11 +96,11 @@ export class IncomingInventoryRequestComponent {
     this.getIncomingInventoryRequestPaginated()
   }
 
-  async getIncomingInventoryRequestPaginated(){
+  getIncomingInventoryRequestPaginated(){
     try{
       this.isLoading = true;
       this.spinner.show();
-      await this.inventoryRequestService.getByAdvanceSearch({
+      this.inventoryRequestService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize

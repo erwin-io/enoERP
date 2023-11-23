@@ -25,6 +25,21 @@ import { ItemService } from "src/services/item.service";
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
+  @Get("getByCode/:itemCode")
+  //   @UseGuards(JwtAuthGuard)
+  async getByCode(@Param("itemCode") itemCode: string) {
+    const res = {} as ApiResponseModel<Item>;
+    try {
+      res.data = await this.itemService.getByCode(itemCode);
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
   @Get("/:itemId")
   //   @UseGuards(JwtAuthGuard)
   async getDetails(@Param("itemId") itemId: string) {

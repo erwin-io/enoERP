@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryRequest = void 0;
 const typeorm_1 = require("typeorm");
 const Branch_1 = require("./Branch");
+const Warehouse_1 = require("./Warehouse");
 const Users_1 = require("./Users");
 const InventoryRequestItem_1 = require("./InventoryRequestItem");
 let InventoryRequest = class InventoryRequest {
@@ -58,6 +59,13 @@ __decorate([
     (0, typeorm_1.JoinColumn)([{ name: "BranchId", referencedColumnName: "branchId" }]),
     __metadata("design:type", Branch_1.Branch)
 ], InventoryRequest.prototype, "branch", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Warehouse_1.Warehouse, (warehouse) => warehouse.inventoryRequests),
+    (0, typeorm_1.JoinColumn)([
+        { name: "FromWarehouseId", referencedColumnName: "warehouseId" },
+    ]),
+    __metadata("design:type", Warehouse_1.Warehouse)
+], InventoryRequest.prototype, "fromWarehouse", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.inventoryRequests),
     (0, typeorm_1.JoinColumn)([{ name: "RequestedByUserId", referencedColumnName: "userId" }]),

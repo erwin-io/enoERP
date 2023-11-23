@@ -105,7 +105,7 @@ export class InventoryMasterlistComponent {
 
   async ngAfterViewInit() {
     this.getInventoryMasterlistPaginated();
-    await this.initBranchOptions();
+    this.initBranchOptions();
     this.branchSearchCtrl.setValue(this.branchCode.value);
   }
 
@@ -151,7 +151,7 @@ export class InventoryMasterlistComponent {
 
       this.isLoading = true;
       this.spinner.show();
-      await this.inventoryMasterlistService.getByAdvanceSearch({
+      this.inventoryMasterlistService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize

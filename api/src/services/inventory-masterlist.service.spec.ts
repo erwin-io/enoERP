@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { InventoryMasterlistService } from './inventory-masterlist.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { InventoryMasterlistService } from "./inventory-masterlist.service";
 
-describe('InventoryMasterlistService', () => {
+describe("InventoryMasterlistService", () => {
   let service: InventoryMasterlistService;
 
   beforeEach(async () => {
@@ -9,10 +9,12 @@ describe('InventoryMasterlistService', () => {
       providers: [InventoryMasterlistService],
     }).compile();
 
-    service = module.get<InventoryMasterlistService>(InventoryMasterlistService);
+    service = module.get<InventoryMasterlistService>(
+      InventoryMasterlistService
+    );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

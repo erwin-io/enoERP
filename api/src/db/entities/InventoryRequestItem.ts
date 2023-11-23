@@ -1,5 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { InventoryRequest } from "./InventoryRequest";
+import { InventoryRequestRate } from "./InventoryRequestRate";
 import { Item } from "./Item";
 
 @Index("InventoryRequestItem_pkey", ["inventoryRequestId", "itemId"], {
@@ -16,6 +17,9 @@ export class InventoryRequestItem {
   @Column("numeric", { name: "Quantity", default: () => "0" })
   quantity: string;
 
+  @Column("numeric", { name: "TotalAmount", default: () => "0" })
+  totalAmount: string;
+
   @ManyToOne(
     () => InventoryRequest,
     (inventoryRequest) => inventoryRequest.inventoryRequestItems
@@ -24,6 +28,18 @@ export class InventoryRequestItem {
     { name: "InventoryRequestId", referencedColumnName: "inventoryRequestId" },
   ])
   inventoryRequest: InventoryRequest;
+
+  @ManyToOne(
+    () => InventoryRequestRate,
+    (inventoryRequestRate) => inventoryRequestRate.inventoryRequestItems
+  )
+  @JoinColumn([
+    {
+      name: "InventoryRequestRateId",
+      referencedColumnName: "inventoryRequestRateId",
+    },
+  ])
+  inventoryRequestRate: InventoryRequestRate;
 
   @ManyToOne(() => Item, (item) => item.inventoryRequestItems)
   @JoinColumn([{ name: "ItemId", referencedColumnName: "itemId" }])

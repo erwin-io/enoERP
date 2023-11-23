@@ -23,6 +23,8 @@ export interface AppConfig {
       inventoryMasterlist: ColumnDefinition[];
       inventoryRequest: ColumnDefinition[];
       incomingInventoryRequest: ColumnDefinition[];
+      inventoryRequestRate: ColumnDefinition[];
+      warehouseInventory: ColumnDefinition[];
     };
     sessionConfig: {
       sessionTimeout: string;
@@ -45,14 +47,14 @@ export interface AppConfig {
       };
       access: {
         getByAdvanceSearch: string;
-        getById: string;
+        getByCode: string;
         create: string;
         update: string;
         delete: string;
       };
       itemCategory: {
         getByAdvanceSearch: string;
-        getById: string;
+        getByCode: string;
         create: string;
         update: string;
         delete: string;
@@ -60,6 +62,7 @@ export interface AppConfig {
       item: {
         getByAdvanceSearch: string;
         getById: string;
+        getByCode: string;
         create: string;
         update: string;
         delete: string;
@@ -81,13 +84,23 @@ export interface AppConfig {
       inventoryMasterlist: {
         getByAdvanceSearch: string;
       };
+      warehouseInventory: {
+        getByAdvanceSearch: string;
+      };
       inventoryRequest: {
         getByAdvanceSearch: string;
         getByCode: string;
         create: string;
         update: string;
         updateStatus: string;
-      }
+      },
+      inventoryRequestRate: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        delete: string;
+      };
       dashboard: {};
       message: { create: string };
     };

@@ -14,6 +14,9 @@ export class ItemWarehouse {
   @Column("bigint", { name: "Quantity", default: () => "0" })
   quantity: string;
 
+  @Column("bigint", { name: "OrderedQuantity", default: () => "0" })
+  orderedQuantity: string;
+
   @ManyToOne(() => Item, (item) => item.itemWarehouses)
   @JoinColumn([{ name: "ItemId", referencedColumnName: "itemId" }])
   item: Item;

@@ -36,6 +36,11 @@ __decorate([
     }),
     __metadata("design:type", Object)
 ], InventoryRequestItemDto.prototype, "quantity", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], InventoryRequestItemDto.prototype, "inventoryRequestRateCode", void 0);
 exports.InventoryRequestItemDto = InventoryRequestItemDto;
 class DefaultInventoryRequestDto {
     constructor() {

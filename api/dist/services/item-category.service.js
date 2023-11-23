@@ -43,10 +43,10 @@ let ItemCategoryService = class ItemCategoryService {
             total,
         };
     }
-    async getById(itemCategoryId) {
+    async getByCode(itemCategoryCode) {
         const result = await this.itemCategoryRepo.findOne({
             where: {
-                itemCategoryId,
+                itemCategoryCode,
                 active: true,
             },
         });
@@ -57,17 +57,19 @@ let ItemCategoryService = class ItemCategoryService {
     }
     async create(dto) {
         return await this.itemCategoryRepo.manager.transaction(async (entityManager) => {
-            const itemCategory = new ItemCategory_1.ItemCategory();
+            let itemCategory = new ItemCategory_1.ItemCategory();
             itemCategory.name = dto.name;
             itemCategory.description = dto.description;
-            return await entityManager.save(itemCategory);
+            itemCategory = await entityManager.save(itemCategory);
+            itemCategory.itemCategoryCode = (0, utils_1.generateIndentityCode)(itemCategory.itemCategoryId);
+            return await entityManager.save(ItemCategory_1.ItemCategory, itemCategory);
         });
     }
-    async update(itemCategoryId, dto) {
+    async update(itemCategoryCode, dto) {
         return await this.itemCategoryRepo.manager.transaction(async (entityManager) => {
             const itemCategory = await entityManager.findOne(ItemCategory_1.ItemCategory, {
                 where: {
-                    itemCategoryId,
+                    itemCategoryCode,
                     active: true,
                 },
             });
@@ -79,11 +81,11 @@ let ItemCategoryService = class ItemCategoryService {
             return await entityManager.save(ItemCategory_1.ItemCategory, itemCategory);
         });
     }
-    async delete(itemCategoryId) {
+    async delete(itemCategoryCode) {
         return await this.itemCategoryRepo.manager.transaction(async (entityManager) => {
             const itemCategory = await entityManager.findOne(ItemCategory_1.ItemCategory, {
                 where: {
-                    itemCategoryId,
+                    itemCategoryCode,
                     active: true,
                 },
             });

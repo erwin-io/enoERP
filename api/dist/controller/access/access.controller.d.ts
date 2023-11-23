@@ -7,12 +7,12 @@ import { AccessService } from "src/services/access.service";
 export declare class AccessController {
     private readonly accessService;
     constructor(accessService: AccessService);
-    getDetails(accessId: string): Promise<ApiResponseModel<Access>>;
+    getDetails(accessCode: string): Promise<ApiResponseModel<Access>>;
     getPaginated(params: PaginationParamsDto): Promise<ApiResponseModel<{
         results: Access[];
         total: number;
     }>>;
     create(accessDto: CreateAccessDto): Promise<ApiResponseModel<Access>>;
-    update(accessId: string, dto: UpdateAccessDto): Promise<ApiResponseModel<Access>>;
-    delete(accessId: string): Promise<ApiResponseModel<Access>>;
+    update(accessCode: string, dto: UpdateAccessDto): Promise<ApiResponseModel<Access>>;
+    delete(accessCode: string): Promise<ApiResponseModel<Access>>;
 }

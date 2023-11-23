@@ -182,10 +182,10 @@ export class UsersService {
       user.email = dto.email;
       user.mobileNumber = dto.mobileNumber;
       user.birthDate = moment(dto.birthDate).format("YYYY-MM-DD");
-      if (dto.accessId) {
+      if (dto.accessCode) {
         const access = await entityManager.findOne(Access, {
           where: {
-            accessId: dto.accessId,
+            accessId: dto.accessCode,
             active: true,
           },
         });
@@ -255,10 +255,10 @@ export class UsersService {
       user.email = dto.email;
       user.birthDate = moment(dto.birthDate.toString()).format("YYYY-MM-DD");
       user.gender = dto.gender;
-      if (dto.accessId) {
+      if (dto.accessCode) {
         const access = await entityManager.findOne(Access, {
           where: {
-            accessId: dto.accessId,
+            accessId: dto.accessCode,
             active: true,
           },
         });

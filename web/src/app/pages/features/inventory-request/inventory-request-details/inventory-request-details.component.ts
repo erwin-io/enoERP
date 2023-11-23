@@ -1,9 +1,9 @@
 import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { InventoryRequest } from 'src/app/model/inventory-request';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { InventoryRequestService } from 'src/app/services/inventory-request.service';
@@ -16,6 +16,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { InventoryRequestItemComponent } from '../inventory-request-items/inventory-request-items.component';
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
+import { WarehouseService } from 'src/app/services/warehouse.service';
 
 @Component({
   selector: 'app-inventory-request-details',
@@ -43,9 +44,16 @@ export class InventoryRequestDetailsComponent {
 
   canAddEdit = false;
 
-  inventoryRequest: InventoryRequest
+  inventoryRequest: InventoryRequest;
+
+  warehouseCode = new FormControl();
+  isOptionsWarehouseLoading = false;
+  optionWarehouse: {code: string; name: string}[] = [];
+  warehouseSearchCtrl = new FormControl();
+  @ViewChild('warehouseSearchInput', { static: true}) warehouseSearchInput: ElementRef<HTMLInputElement>;
   constructor(
     private inventoryRequestService: InventoryRequestService,
+    private warehouseService: WarehouseService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private appconfig: AppConfigService,
@@ -84,40 +92,74 @@ export class InventoryRequestDetailsComponent {
     } else {
       this.canAddEdit = true;
     }
+
+    this.warehouseSearchCtrl.valueChanges
+    .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+    )
+    .subscribe(async value => {
+        await this.initWarehouseOptions();
+    });
+    this.warehouseCode.valueChanges
+    .subscribe(async value => {
+    });
+    this.initWarehouseOptions();
   }
 
-  async initDetails() {
+  async initWarehouseOptions() {
+    this.isOptionsWarehouseLoading = true;
+    this.warehouseService.getByAdvanceSearch({
+      order: {},
+      columnDef: [{
+        apiNotation: "name",
+        filter: this.warehouseSearchInput.nativeElement.value
+      }],
+      pageIndex: 0,
+      pageSize: 10
+    }).subscribe(res=> {
+      this.optionWarehouse = res.data.results.map(a=> { return { name: a.name, code: a.warehouseCode }});
+      this.isOptionsWarehouseLoading = false;
+    })
+  }
+
+  displayWarehouseName(value?: number) {
+    return value ? this.optionWarehouse.find(_ => _.code === value?.toString())?.name : undefined;
+  }
+
+  initDetails() {
     this.isLoading = true;
     try {
-      const res = await this.inventoryRequestService.getByCode(this.inventoryRequestCode).toPromise();
-      if (res.success) {
-        this.inventoryRequest = res.data;
-        this.canAddEdit = !((!this.isReadOnly || !this.isNew) && this.inventoryRequest.requestStatus !== "PENDING");
-        this.inventoryRequestForm.setFormValue(this.inventoryRequest);
-        const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
-          return {
-            quantity: x.quantity,
-            itemId: x.item.itemId,
-            itemCode: x.item.itemCode,
-            itemName: x.item.itemDescription,
-            itemDescription: x.item.itemId,
-            itemCategory: x.item.itemCategory.name,
-          } as InventoryRequestItemTableColumn
-        })
-        this.inventoryRequestItemComponent.init(items);
+      this.inventoryRequestService.getByCode(this.inventoryRequestCode).subscribe(res=> {
+        if (res.success) {
+          this.inventoryRequest = res.data;
+          this.canAddEdit = !((!this.isReadOnly || !this.isNew) && this.inventoryRequest.requestStatus !== "PENDING");
+          this.inventoryRequestForm.setFormValue(this.inventoryRequest);
+          const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
+            return {
+              quantity: x.quantity,
+              itemId: x.item.itemId,
+              itemCode: x.item.itemCode,
+              itemName: x.item.itemDescription,
+              itemDescription: x.item.itemId,
+              itemCategory: x.item.itemCategory.name,
+            } as InventoryRequestItemTableColumn
+          })
+          this.inventoryRequestItemComponent.init(items);
 
-        if (this.isReadOnly) {
-          this.inventoryRequestForm.form.disable();
+          if (this.isReadOnly) {
+            this.inventoryRequestForm.form.disable();
+          }
+          this.isLoading = false;
+        } else {
+          this.isLoading = false;
+          this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+          this.snackBar.open(this.error, 'close', {
+            panelClass: ['style-error'],
+          });
+          this.router.navigate(['/inventory-request/']);
         }
-        this.isLoading = false;
-      } else {
-        this.isLoading = false;
-        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
-        this.snackBar.open(this.error, 'close', {
-          panelClass: ['style-error'],
-        });
-        this.router.navigate(['/inventory-request/']);
-      }
+      });
     } catch(ex) {
       this.error = Array.isArray(ex.message) ? ex.message[0] : ex.message;
       this.snackBar.open(this.error, 'close', {

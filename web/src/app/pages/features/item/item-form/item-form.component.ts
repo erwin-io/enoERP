@@ -109,6 +109,11 @@ export class ItemFormComponent {
   }
 
   getError(key: string) {
+    if(key === "itemCode") {
+      if(/\s/.test(this.form.controls[key].value)) {
+        this.form.controls[key].setErrors({ whitespace: true})
+      }
+    }
     return this.form.controls && this.form.controls[key] ? this.form.controls[key].errors : null;
   }
 

@@ -19,10 +19,10 @@
   "tableColumns": {
     "access": [
       {
-        "name": "accessId",
+        "name": "accessCode",
         "label": "Access #",
         "sticky": true,
-        "apiNotation": "accessId",
+        "apiNotation": "accessCode",
         "type": "string",
         "style": {
           "width": "100px",
@@ -48,9 +48,9 @@
     "itemCategory": [
       {
         "sticky": true,
-        "name": "itemCategoryId",
+        "name": "itemCategoryCode",
         "label": "Item category #",
-        "apiNotation": "itemCategoryId",
+        "apiNotation": "itemCategoryCode",
         "type": "string",
         "style": {
           "width": "100px",
@@ -137,6 +137,57 @@
           "enable": true,
           "placeholder": "Main branch",
           "type": "option-yes-no"
+        }
+      }
+    ],
+    "inventoryRequestRate": [
+      {
+        "sticky": true,
+        "name": "rateName",
+        "label": "Rate name",
+        "apiNotation": "rateName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Rate name"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "rate",
+        "label": "Rate",
+        "apiNotation": "rate",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Rate",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "minQuantity",
+        "label": "Min",
+        "apiNotation": "rate",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Min",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "maxQuantity",
+        "label": "Max",
+        "apiNotation": "maxQuantity",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Max",
+          "type": "number-range"
         }
       }
     ],
@@ -254,6 +305,75 @@
           "enable": true,
           "placeholder": "Item price",
           "type": "number-range"
+        }
+      },
+      {
+        "name": "itemCategory",
+        "label": "Item category",
+        "apiNotation": "item.itemCategory.name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item category"
+        }
+      }
+    ],
+    "warehouseInventory": [
+      {
+        "sticky": true,
+        "name": "itemCode",
+        "label": "Item code",
+        "apiNotation": "item.itemCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item code"
+        }
+      },
+      {
+        "name": "itemName",
+        "label": "Item name",
+        "apiNotation": "item.itemName",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item name"
+        }
+      },
+      {
+        "name": "quantity",
+        "label": "Stocks",
+        "apiNotation": "quantity",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Stocks",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "orderedQuantity",
+        "label": "Ordered stocks",
+        "apiNotation": "orderedQuantity",
+        "type": "number",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Ordered stocks",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "itemDescription",
+        "label": "Item description",
+        "apiNotation": "item.itemDescription",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Item description"
         }
       },
       {
@@ -484,6 +604,12 @@
         "rights": []
       },
       {
+        "page": "Warehouse Inventory",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
         "page": "Inventory Masterlist",
         "view": false,
         "modify": false,
@@ -515,6 +641,12 @@
       },
       {
         "page": "Warehouse",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Inventory Request Rate",
         "view": false,
         "modify": false,
         "rights": []
@@ -554,14 +686,14 @@
     },
     "access": {
       "getByAdvanceSearch": "/access/page/",
-      "getById": "/access/",
+      "getByCode": "/access/",
       "create": "/access/",
       "update": "/access/",
       "delete": "/access/"
     },
     "itemCategory": {
       "getByAdvanceSearch": "/itemCategory/page/",
-      "getById": "/itemCategory/",
+      "getByCode": "/itemCategory/",
       "create": "/itemCategory/",
       "update": "/itemCategory/",
       "delete": "/itemCategory/"
@@ -569,6 +701,7 @@
     "item": {
       "getByAdvanceSearch": "/item/page/",
       "getById": "/item/",
+      "getByCode": "/item/getByCode/",
       "create": "/item/",
       "update": "/item/",
       "delete": "/item/"
@@ -590,12 +723,22 @@
     "inventoryMasterlist": {
       "getByAdvanceSearch": "/inventoryMasterlist/page/"
     },
+    "warehouseInventory": {
+      "getByAdvanceSearch": "/warehouseInventory/page/"
+    },
     "inventoryRequest": {
       "getByAdvanceSearch": "/inventoryRequest/page/",
       "getByCode": "/inventoryRequest/",
       "create": "/inventoryRequest/",
       "update": "/inventoryRequest/",
       "updateStatus": "/inventoryRequest/updateStatus/"
+    },
+    "inventoryRequestRate": {
+      "getByAdvanceSearch": "/inventoryRequestRate/page/",
+      "getByCode": "/inventoryRequestRate/",
+      "create": "/inventoryRequestRate/",
+      "update": "/inventoryRequestRate/",
+      "delete": "/inventoryRequestRate/"
     },
     "dashboard": {},
     "message": {

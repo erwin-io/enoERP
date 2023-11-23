@@ -19,6 +19,6 @@ import { DataTableRangeFilterComponent } from './data-table-range-filter/data-ta
     FormsModule,
     ReactiveFormsModule
   ],
-  exports: [DataTableComponent]
+  exports: [DataTableComponent, DataTableRangeFilterComponent]
 })
 export class DataTableModule { }

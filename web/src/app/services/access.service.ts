@@ -28,8 +28,8 @@ export class AccessService implements IServices {
     );
   }
 
-  getById(accessId: string): Observable<ApiResponse<Access>> {
-    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.getById + accessId)
+  getByCode(accessCode: string): Observable<ApiResponse<Access>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.getByCode + accessCode)
     .pipe(
       tap(_ => this.log('access')),
       catchError(this.handleError('access', []))
@@ -44,16 +44,16 @@ export class AccessService implements IServices {
     );
   }
 
-  update(id: string, data: any): Observable<ApiResponse<Access>> {
-    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.update + id, data)
+  update(accessCode: string, data: any): Observable<ApiResponse<Access>> {
+    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.update + accessCode, data)
     .pipe(
       tap(_ => this.log('access')),
       catchError(this.handleError('access', []))
     );
   }
 
-  delete(id: string): Observable<ApiResponse<Access>> {
-    return this.http.delete<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.delete + id)
+  delete(accessCode: string): Observable<ApiResponse<Access>> {
+    return this.http.delete<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.access.delete + accessCode)
     .pipe(
       tap(_ => this.log('access')),
       catchError(this.handleError('access', []))

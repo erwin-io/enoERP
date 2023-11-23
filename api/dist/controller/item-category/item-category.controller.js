@@ -24,10 +24,10 @@ let ItemCategoryController = class ItemCategoryController {
     constructor(itemCategoryService) {
         this.itemCategoryService = itemCategoryService;
     }
-    async getDetails(itemCategoryId) {
+    async getDetails(itemCategoryCode) {
         const res = {};
         try {
-            res.data = await this.itemCategoryService.getById(itemCategoryId);
+            res.data = await this.itemCategoryService.getByCode(itemCategoryCode);
             res.success = true;
             return res;
         }
@@ -64,10 +64,10 @@ let ItemCategoryController = class ItemCategoryController {
             return res;
         }
     }
-    async update(itemCategoryId, dto) {
+    async update(itemCategoryCode, dto) {
         const res = {};
         try {
-            res.data = await this.itemCategoryService.update(itemCategoryId, dto);
+            res.data = await this.itemCategoryService.update(itemCategoryCode, dto);
             res.success = true;
             res.message = `Item category ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
@@ -78,10 +78,10 @@ let ItemCategoryController = class ItemCategoryController {
             return res;
         }
     }
-    async delete(itemCategoryId) {
+    async delete(itemCategoryCode) {
         const res = {};
         try {
-            res.data = await this.itemCategoryService.delete(itemCategoryId);
+            res.data = await this.itemCategoryService.delete(itemCategoryCode);
             res.success = true;
             res.message = `Item category ${api_response_constant_1.DELETE_SUCCESS}`;
             return res;
@@ -94,8 +94,8 @@ let ItemCategoryController = class ItemCategoryController {
     }
 };
 __decorate([
-    (0, common_1.Get)("/:itemCategoryId"),
-    __param(0, (0, common_1.Param)("itemCategoryId")),
+    (0, common_1.Get)("/:itemCategoryCode"),
+    __param(0, (0, common_1.Param)("itemCategoryCode")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
@@ -115,16 +115,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ItemCategoryController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)("/:itemCategoryId"),
-    __param(0, (0, common_1.Param)("itemCategoryId")),
+    (0, common_1.Put)("/:itemCategoryCode"),
+    __param(0, (0, common_1.Param)("itemCategoryCode")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, item_category_update_dto_1.UpdateItemCategoryDto]),
     __metadata("design:returntype", Promise)
 ], ItemCategoryController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)("/:itemCategoryId"),
-    __param(0, (0, common_1.Param)("itemCategoryId")),
+    (0, common_1.Delete)("/:itemCategoryCode"),
+    __param(0, (0, common_1.Param)("itemCategoryCode")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

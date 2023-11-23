@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ACCESS_ERROR_NOT_FOUND } from "src/common/constant/access.constant";
-import { columnDefToTypeORMCondition } from "src/common/utils/utils";
+import { columnDefToTypeORMCondition, generateIndentityCode } from "src/common/utils/utils";
 import { CreateAccessDto } from "src/core/dto/access/access.create.dto";
 import { UpdateAccessDto } from "src/core/dto/access/access.update.dto";
 import { Access } from "src/db/entities/Access";
@@ -43,14 +43,14 @@ export class AccessService {
     };
   }
 
-  async getById(accessId) {
+  async getByCode(accessCode) {
     const result = await this.accessRepo.findOne({
       select: {
         name: true,
         accessPages: true,
       } as any,
       where: {
-        accessId,
+        accessCode,
         active: true,
       },
     });
@@ -62,18 +62,20 @@ export class AccessService {
 
   async create(dto: CreateAccessDto) {
     return await this.accessRepo.manager.transaction(async (entityManager) => {
-      const access = new Access();
+      let access = new Access();
       access.name = dto.name;
       access.accessPages = dto.accessPages;
-      return await entityManager.save(access);
+      access = await entityManager.save(access);
+      access.accessCode = generateIndentityCode(access.accessId);
+      return await entityManager.save(Access, access);
     });
   }
 
-  async update(accessId, dto: UpdateAccessDto) {
+  async update(accessCode, dto: UpdateAccessDto) {
     return await this.accessRepo.manager.transaction(async (entityManager) => {
       const access = await entityManager.findOne(Access, {
         where: {
-          accessId,
+          accessCode,
           active: true,
         },
       });
@@ -86,11 +88,11 @@ export class AccessService {
     });
   }
 
-  async delete(accessId) {
+  async delete(accessCode) {
     return await this.accessRepo.manager.transaction(async (entityManager) => {
       const access = await entityManager.findOne(Access, {
         where: {
-          accessId,
+          accessCode,
           active: true,
         },
       });

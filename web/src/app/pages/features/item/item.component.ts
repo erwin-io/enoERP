@@ -102,7 +102,7 @@ export class ItemComponent {
     try{
       this.isLoading = true;
       this.spinner.show();
-      await this.itemService.getByAdvanceSearch({
+      this.itemService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize

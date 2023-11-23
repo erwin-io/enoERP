@@ -97,11 +97,11 @@ export class AccessComponent {
     this.getAccessPaginated()
   }
 
-  async getAccessPaginated(){
+  getAccessPaginated(){
     try{
       this.isLoading = true;
       this.spinner.show();
-      await this.accessService.getByAdvanceSearch({
+      this.accessService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize
@@ -111,8 +111,9 @@ export class AccessComponent {
           let data = res.data.results.map((d)=>{
             return {
               accessId: d.accessId,
+              accessCode: d.accessCode,
               name: d.name,
-              url: `/access/${d.accessId}`,
+              url: `/access/${d.accessCode}`,
             } as any
           });
           this.total = res.data.total;

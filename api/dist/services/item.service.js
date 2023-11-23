@@ -21,6 +21,7 @@ const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
 const Branch_1 = require("../db/entities/Branch");
+const InventoryRequestRate_1 = require("../db/entities/InventoryRequestRate");
 const Item_1 = require("../db/entities/Item");
 const ItemBranch_1 = require("../db/entities/ItemBranch");
 const ItemCategory_1 = require("../db/entities/ItemCategory");
@@ -43,7 +44,7 @@ let ItemService = class ItemService {
                 order,
                 relations: {
                     itemCategory: true,
-                }
+                },
             }),
             this.itemRepo.count({
                 where: Object.assign(Object.assign({}, condition), { active: true }),
@@ -69,6 +70,22 @@ let ItemService = class ItemService {
         }
         return result;
     }
+    async getByCode(itemCode = "") {
+        var _a;
+        const result = await this.itemRepo.findOne({
+            where: {
+                itemCode: (_a = itemCode === null || itemCode === void 0 ? void 0 : itemCode.toString()) === null || _a === void 0 ? void 0 : _a.toLowerCase(),
+                active: true,
+            },
+            relations: {
+                itemCategory: true,
+            },
+        });
+        if (!result) {
+            throw Error(item_constant_1.ITEM_ERROR_NOT_FOUND);
+        }
+        return result;
+    }
     async create(dto) {
         return await this.itemRepo.manager.transaction(async (entityManager) => {
             const hasWareHouse = await entityManager.find(Warehouse_1.Warehouse, {
@@ -78,7 +95,7 @@ let ItemService = class ItemService {
                 throw Error(warehouse_constant_1.WAREHOUSE_ERROR_NO_SETUP);
             }
             let item = new Item_1.Item();
-            item.itemCode = dto.itemCode;
+            item.itemCode = dto.itemCode.toLowerCase();
             item.itemName = dto.itemName;
             item.itemDescription = dto.itemDescription;
             item.price = dto.price ? dto.price.toString() : "0";
@@ -116,6 +133,16 @@ let ItemService = class ItemService {
                 itemBranches.push(itemBranch);
             }
             await entityManager.insert(ItemBranch_1.ItemBranch, itemBranches);
+            let inventoryRequestRate = new InventoryRequestRate_1.InventoryRequestRate();
+            inventoryRequestRate.rateName = "1pcs";
+            inventoryRequestRate.rate = dto.price.toString();
+            inventoryRequestRate.minQuantity = "1";
+            inventoryRequestRate.maxQuantity = "1";
+            inventoryRequestRate.item = item;
+            inventoryRequestRate.baseRate = true;
+            inventoryRequestRate = await entityManager.save(InventoryRequestRate_1.InventoryRequestRate, inventoryRequestRate);
+            inventoryRequestRate.inventoryRequestRateCode = (0, utils_1.generateIndentityCode)(inventoryRequestRate.inventoryRequestRateId);
+            await entityManager.save(InventoryRequestRate_1.InventoryRequestRate, inventoryRequestRate);
             return await entityManager.findOne(Item_1.Item, {
                 where: {
                     itemId: item.itemId,
@@ -140,7 +167,7 @@ let ItemService = class ItemService {
             if (!item) {
                 throw Error(item_constant_1.ITEM_ERROR_NOT_FOUND);
             }
-            item.itemCode = dto.itemCode;
+            item.itemCode = dto.itemCode.toLowerCase();
             item.itemName = dto.itemName;
             item.itemDescription = dto.itemDescription;
             item.price = dto.price ? dto.price.toString() : "0";

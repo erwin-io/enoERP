@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], ItemCategory.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", { name: "ItemCategoryCode", nullable: true }),
+    __metadata("design:type", String)
+], ItemCategory.prototype, "itemCategoryCode", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Item_1.Item, (item) => item.itemCategory),
     __metadata("design:type", Array)
 ], ItemCategory.prototype, "items", void 0);

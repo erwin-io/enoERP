@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Branch } from "./Branch";
+import { Warehouse } from "./Warehouse";
 import { Users } from "./Users";
 import { InventoryRequestItem } from "./InventoryRequestItem";
 
@@ -47,6 +48,12 @@ export class InventoryRequest {
   @ManyToOne(() => Branch, (branch) => branch.inventoryRequests)
   @JoinColumn([{ name: "BranchId", referencedColumnName: "branchId" }])
   branch: Branch;
+
+  @ManyToOne(() => Warehouse, (warehouse) => warehouse.inventoryRequests)
+  @JoinColumn([
+    { name: "FromWarehouseId", referencedColumnName: "warehouseId" },
+  ])
+  fromWarehouse: Warehouse;
 
   @ManyToOne(() => Users, (users) => users.inventoryRequests)
   @JoinColumn([{ name: "RequestedByUserId", referencedColumnName: "userId" }])

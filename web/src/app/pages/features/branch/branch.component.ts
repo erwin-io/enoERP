@@ -88,7 +88,7 @@ export class BranchComponent {
   async pageChange(event: { pageIndex: number, pageSize: number }) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    await this.getBranchPaginated();
+    this.getBranchPaginated();
   }
 
   async sortChange(event: { active: string, direction: string }) {
@@ -98,11 +98,11 @@ export class BranchComponent {
     this.getBranchPaginated()
   }
 
-  async getBranchPaginated(){
+  getBranchPaginated(){
     try{
       this.isLoading = true;
       this.spinner.show();
-      await this.branchService.getByAdvanceSearch({
+      this.branchService.getByAdvanceSearch({
         order: this.order,
         columnDef: this.filter,
         pageIndex: this.pageIndex, pageSize: this.pageSize

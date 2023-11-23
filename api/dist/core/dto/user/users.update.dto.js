@@ -19,11 +19,10 @@ class UpdateUserDto extends user_base_dto_1.DefaultUserDto {
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumberString)(),
     (0, class_transformer_1.Transform)(({ obj, key }) => {
         return obj[key].toString();
     }),
     __metadata("design:type", String)
-], UpdateUserDto.prototype, "accessId", void 0);
+], UpdateUserDto.prototype, "accessCode", void 0);
 exports.UpdateUserDto = UpdateUserDto;
 //# sourceMappingURL=users.update.dto.js.map

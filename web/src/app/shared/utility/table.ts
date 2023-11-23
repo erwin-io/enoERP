@@ -19,7 +19,7 @@ export class ColumnDefinition {
 export class ColumnDefinitionFilterOptions {
   placeholder?: string;
   enable?: boolean;
-  type?: "text" | "option" | "option-yes-no" | "date" | "date-range" | "number" | "number-range";
+  type?: "text" | "option" | "option-yes-no" | "date" | "date-range" | "number" | "number-range" | "precise";
 };
 export class ColumnStyle {
   width: string;
@@ -40,6 +40,7 @@ export class UsersTableColumn {
 
 export class AccessTableColumn {
   accessId: string;
+  accessCode: string;
   name?: string;
   url?: string;
 }
@@ -85,6 +86,17 @@ export class InventoryMasterlistTableColumn {
   quantity?: string;
 }
 
+export class WarehouseInventoryTableColumn {
+  itemId?: string;
+  itemCode?: string;
+  itemName?: string;
+  itemDescription?: string;
+  itemCategory?: string;
+  quantity?: string;
+  orderedQuantity?: string;
+  warehouse: string
+}
+
 export class InventoryRequestTableColumn {
   inventoryRequestId?: string;
   inventoryRequestCode?: string;
@@ -102,6 +114,9 @@ export class InventoryRequestItemTableColumn {
   itemName: string;
   itemDescription: string;
   itemCategory: string;
+  inventoryRequestRateCode: string;
+  rate: string;
+  totalAmount: number;
 }
 
 export class IncomingInventoryRequestTableColumn {
@@ -114,5 +129,14 @@ export class IncomingInventoryRequestTableColumn {
   url?: string;
 }
 
+export class InventoryRequestRateTableColumn {
+  inventoryRequestRateId?: string;
+  rate?: string;
+  rateName?: string;
+  minQuantity?: string;
+  maxQuantity?: string;
+  itemName?: string;
+  url?: string;
+}
 
 

@@ -69,7 +69,7 @@ export class UserDetailsComponent implements OnInit {
 
   accessSearchCtrl = new FormControl()
   isOptionsAccessLoading = false;
-  optionsAccess: { name: string; id: string}[] = [];
+  optionsAccess: { name: string; code: string}[] = [];
   @ViewChild('accessPagesTable', { static: true}) accessPagesTable: AccessPagesTableComponent;
   @ViewChild('accessSearchInput', { static: true}) accessSearchInput: ElementRef<HTMLInputElement>;
 
@@ -163,7 +163,7 @@ export class UserDetailsComponent implements OnInit {
             ],
           ],
           confirmPassword: '',
-          accessId: ['', Validators.required],
+          accessCode: ['', Validators.required],
           branchId: ['', Validators.required],
         },
         { validators: this.checkPasswords }
@@ -190,12 +190,12 @@ export class UserDetailsComponent implements OnInit {
           Validators.required,
           Validators.email]],
         address: ['',[Validators.required]],
-        accessId: ['', Validators.required],
+        accessCode: ['', Validators.required],
         branchId: ['', Validators.required],
       });
 
 
-      const [user, branchOptions, accessOptions] = await forkJoin([
+      forkJoin([
         this.userService.getByCode(this.userCode).toPromise(),
         this.branchService.getByAdvanceSearch({
         order: {},
@@ -209,62 +209,63 @@ export class UserDetailsComponent implements OnInit {
         pageIndex: 0,
         pageSize: 10
       })
-    ]).toPromise();
-      if(branchOptions.success) {
-        this.optionsBranch = branchOptions.data.results.map(x=> {
-          return { name: x.name, id: x.branchId }
-        });
-      }
-      if(accessOptions.success) {
-        this.optionsAccess = accessOptions.data.results.map(x=> {
-          return { name: x.name, id: x.accessId }
-        });
-      }
-      if (user.success) {
-        this.f['userName'].setValue(user.data.userName);
-        this.f['fullName'].setValue(user.data.fullName);
-        this.f['gender'].setValue(user.data.gender && ["MALE", "FEMALE"].includes(user.data.gender) ? user.data.gender : "OTHERS");
-        this.f['birthDate'].setValue(user.data.birthDate);
-        this.f['mobileNumber'].setValue(user.data.mobileNumber);
-        this.f['email'].setValue(user.data.email);
-        this.f['address'].setValue(user.data.address);
-        this.f['branchId'].setValue(user.data.branch?.branchId);
-        this.f['accessId'].setValue(user.data.access?.accessId);
-        if(user.data.access?.accessPages) {
-          this.accessPagesTable.setDataSource(user.data.access?.accessPages);
+      ]).subscribe(([user, branchOptions, accessOptions])=> {
+        if(branchOptions.success) {
+          this.optionsBranch = branchOptions.data.results.map(x=> {
+            return { name: x.name, id: x.branchId }
+          });
         }
-        this.f['userName'].disable();
-        this.branchSearchCtrl.disable();
-        if (this.isReadOnly) {
-          this.userForm.disable();
-          this.accessSearchCtrl.disable();
+        if(accessOptions.success) {
+          this.optionsAccess = accessOptions.data.results.map(x=> {
+            return { name: x.name, code: x.accessCode }
+          });
         }
-        this.branchSearchCtrl.setValue(user.data.branch?.branchId);
-        this.accessSearchCtrl.setValue(user.data.access?.accessId);
-      } else {
-        this.error = Array.isArray(user.message) ? user.message[0] : user.message;
-        this.snackBar.open(this.error, 'close', {
-          panelClass: ['style-error'],
-        });
-      }
+        if (user.success) {
+          this.f['userName'].setValue(user.data.userName);
+          this.f['fullName'].setValue(user.data.fullName);
+          this.f['gender'].setValue(user.data.gender && ["MALE", "FEMALE"].includes(user.data.gender) ? user.data.gender : "OTHERS");
+          this.f['birthDate'].setValue(user.data.birthDate);
+          this.f['mobileNumber'].setValue(user.data.mobileNumber);
+          this.f['email'].setValue(user.data.email);
+          this.f['address'].setValue(user.data.address);
+          this.f['branchId'].setValue(user.data.branch?.branchId);
+          this.f['accessCode'].setValue(user.data.access?.accessCode);
+          if(user.data.access?.accessPages) {
+            this.accessPagesTable.setDataSource(user.data.access?.accessPages);
+          }
+          this.f['userName'].disable();
+          this.branchSearchCtrl.disable();
+          if (this.isReadOnly) {
+            this.userForm.disable();
+            this.accessSearchCtrl.disable();
+          }
+          this.branchSearchCtrl.setValue(user.data.branch?.branchId);
+          this.accessSearchCtrl.setValue(user.data.access?.accessCode);
+        } else {
+          this.error = Array.isArray(user.message) ? user.message[0] : user.message;
+          this.snackBar.open(this.error, 'close', {
+            panelClass: ['style-error'],
+          });
+        }
+        this.f['email'].valueChanges.subscribe(res=> {
+          if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
+            this.f['email'].setErrors({ pattern: true})
+          } else if(res && res !== "") {
+            this.f['email'].setErrors(null)
+          }
+        })
+        this.f['accessCode'].valueChanges.subscribe(async res=> {
+          if(!this.isReadOnly) {
+            this.spinner.show();
+            const access = await this.accessService.getByCode(res).toPromise();
+            if(access.data && access.data.accessPages) {
+              this.accessPagesTable.setDataSource(access.data.accessPages)
+            }
+            this.spinner.hide();
+          }
+        })
+      });
     }
-    this.f['email'].valueChanges.subscribe(res=> {
-      if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
-        this.f['email'].setErrors({ pattern: true})
-      } else if(res && res !== "") {
-        this.f['email'].setErrors(null)
-      }
-    })
-    this.f['accessId'].valueChanges.subscribe(async res=> {
-      if(!this.isReadOnly) {
-        this.spinner.show();
-        const access = await this.accessService.getById(res).toPromise();
-        if(access.data && access.data.accessPages) {
-          this.accessPagesTable.setDataSource(access.data.accessPages)
-        }
-        this.spinner.hide();
-      }
-    })
     this.branchSearchCtrl.valueChanges
     .pipe(
         debounceTime(2000),
@@ -335,32 +336,32 @@ export class UserDetailsComponent implements OnInit {
       pageIndex: 0,
       pageSize: 10
     }).toPromise();
-    this.optionsAccess = res.data.results.map(a=> { return { name: a.name, id: a.accessId }});
+    this.optionsAccess = res.data.results.map(a=> { return { name: a.name, code: a.accessCode }});
     this.mapSearchAccess();
     this.isOptionsAccessLoading = false;
   }
 
   displayAccessName(value?: number) {
-    return value ? this.optionsAccess.find(_ => _.id === value?.toString())?.name : undefined;
+    return value ? this.optionsAccess.find(_ => _.code === value?.toString())?.name : undefined;
   }
 
   mapSearchAccess() {
-    if(this.f['accessId'].value !== this.accessSearchCtrl.value) {
-      this.f['accessId'].setErrors({ required: true});
-      const selected = this.optionsAccess.find(x=>x.id === this.accessSearchCtrl.value);
+    if(this.f['accessCode'].value !== this.accessSearchCtrl.value) {
+      this.f['accessCode'].setErrors({ required: true});
+      const selected = this.optionsAccess.find(x=>x.code === this.accessSearchCtrl.value);
       if(selected) {
-        this.f["accessId"].setValue(selected.id);
+        this.f["accessCode"].setValue(selected.code);
       } else {
-        this.f["accessId"].setValue(null);
+        this.f["accessCode"].setValue(null);
       }
-      if(!this.f["accessId"].value) {
-        this.f["accessId"].setErrors({required: true});
+      if(!this.f["accessCode"].value) {
+        this.f["accessCode"].setErrors({required: true});
       } else {
-        this.f['accessId'].setErrors(null);
-        this.f['accessId'].markAsPristine();
+        this.f['accessCode'].setErrors(null);
+        this.f['accessCode'].markAsPristine();
       }
     }
-    this.accessSearchCtrl.setErrors(this.f["accessId"].errors);
+    this.accessSearchCtrl.setErrors(this.f["accessCode"].errors);
   }
 
   getError(key: string) {

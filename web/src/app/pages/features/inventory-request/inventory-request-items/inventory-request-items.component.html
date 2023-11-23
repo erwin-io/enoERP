@@ -18,6 +18,10 @@
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '20%'}">quantity</th>
           <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
         </ng-container>
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '20%'}">Total Amount</th>
+          <td mat-cell *matCellDef="let element">{{ element.totalAmount }}</td>
+        </ng-container>
         <ng-container matColumnDef="controls">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element"></td>
@@ -49,85 +53,195 @@
 
 
 <ng-template #inventoryRequestItemFormDialog>
-  <h4 mat-dialog-title>{{isNew ? 'New Item': 'Update Item'}}</h4>
+  <h4 mat-dialog-title>{{isNew ? 'Add Item': 'Update Item'}}</h4>
 
 <div mat-dialog-content>
   <div class="inner-content">
-    <div
-    fxLayout="row wrap">
-    <div fxFlex="100" fxLayout="row wrap" style="row-gap: 16px"
-    [ngClass]="{'readonly' : !isNew}">
-      <mat-form-field
-        fxFlex="100"
-        (keydown.enter)="onSubmit()"
-        fxLayout="column"
-        appearance="outline" >
-        <mat-label>Item name</mat-label>
-        <input type="text"
-                placeholder="Search Item"
-                aria-label="Search Item"
-                matInput
-                [formControl]="itemNameSearchCtrl"
-                [matAutocomplete]="auto"
-                (input)="isOptionsItemNameLoading = true;mapSearchItem()"
-                (focusout)="mapSearchItem();"
-                [(ngModel)]="itemNameSearchInput">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayItemName.bind(this)" (optionSelected)="itemId.setValue($event.option.value);itemId.markAsDirty()">
-          <mat-option *ngFor="let option of optionItems" [value]="option.id">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-spinner *ngIf="isOptionsItemNameLoading" style="position: absolute;
-        width: calc(48px / 2);
-        height: calc(48px / 2);
-        display: block;
-        top: calc(48px /3);
-        right: 0;"></mat-spinner>
-
-      <mat-error
-      *ngIf="getError('itemId') !== (null || undefined)">
-      {{
-        (getError("itemId") &&
-        getError("itemId").required
-          ? "Please enter valid item name"
-          : "") ||
-        (getError("itemId") && getError("itemId").exist
-        ? "Item already exist"
-          : "")||
-        (getError("itemId") && getError("itemId").notavailable
-        ? "Item not available"
-          : "")
-      }}</mat-error>
-      </mat-form-field>
-      <mat-form-field
-      appearance="outline"
-      fxFlex="50%"
-      class="cell"
-      [ngClass.gt-sm]="{ isLargeScreen: true }">
-      <mat-label>Quantity</mat-label>
-      <input
-        (keydown.enter)="onSubmit()"
-        matInput
-        placeholder="Quantity"
-        [formControl]="quantity"/>
-        <mat-error
-          *ngIf="getError('quantity') !== (null || undefined)">
-          {{
-            (getError("quantity") &&
-            getError("quantity").required
-              ? "Please enter quantity"
-              : "") ||
-              (getError("quantity") &&
-              getError("quantity").minlength
-                ? "Please enter a valid quantity"
-                : "") ||
-              (getError("quantity") &&
-              getError("quantity").maxlength
-                ? "Please enter not exceeding 1000 items."
-                : "")
-          }}</mat-error>
-    </mat-form-field>
-    </div>
+    <div fxFlex="100" fxLayout="column" fxLayout="column">
+      <div fxLayout="row wrap">
+        <h4>Item details</h4>
+        <div
+          fxFlex="100"
+          fxLayout="row wrap"
+          style="row-gap: 16px">
+          <mat-form-field
+            fxFlex="100"
+            fxLayout="column"
+            appearance="outline"
+            (dblclick)="isNew ? showSelectItemDialog() : false">
+            <mat-label>Item </mat-label>
+            <input
+              type="text"
+              placeholder="Search Item"
+              aria-label="Search Item"
+              matInput
+              readonly
+              [(ngModel)]="currentSelected.itemName"/>
+              <mat-icon
+                *ngIf="isNew"
+                class="icon-right"
+                (click)="showSelectItemDialog()"
+                style="cursor: pointer;"
+                matSuffix>
+                search
+              </mat-icon>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="100"
+            *ngIf="currentSelected.itemCategory && currentSelected.itemCategory !== ''"
+            fxLayout="column"
+            appearance="outline" >
+            <mat-label>Category</mat-label>
+            <input
+              type="text"
+              placeholder="Search Item category"
+              aria-label="Search Item category"
+              matInput
+              readonly
+              [(ngModel)]="currentSelected.itemCategory"/>
+          </mat-form-field>
+        </div>
+      </div>
+      <div fxLayout="row wrap" *ngIf="currentSelected?.itemCode && currentSelected?.itemCode !== ''">
+        <h4>Rate</h4>
+        <div
+          fxFlex="100"
+          fxLayout="row wrap"
+          style="gap: 16px">
+          <mat-form-field
+            fxFlex="33.33%"
+            fxLayout="column"
+            appearance="outline"
+            (dblclick)="showSelectRateDialog()">
+            <mat-label>Rate </mat-label>
+            <input
+              type="text"
+              placeholder="Search Rate"
+              aria-label="Search Rate"
+              matInput
+              readonly
+              [(ngModel)]="currentRateSelected.rate"/>
+              <mat-icon
+                class="icon-right"
+                (click)="showSelectRateDialog()"
+                style="cursor: pointer;"
+                matSuffix>
+                search
+              </mat-icon>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="33.33%"
+            fxLayout="column"
+            appearance="outline"
+            *ngIf="currentRateSelected.rateName && currentRateSelected.rateName !== ''">
+            <mat-label>Rate name </mat-label>
+            <input
+              type="text"
+              placeholder="Rate name"
+              aria-label="Rate name"
+              matInput
+              readonly
+              [(ngModel)]="currentRateSelected.rateName"/>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="33.33%"
+            fxLayout="column"
+            appearance="outline"
+            *ngIf="currentRateSelected.minQuantity && currentRateSelected.minQuantity !== ''">
+            <mat-label>Min</mat-label>
+            <input
+              type="text"
+              placeholder="Min"
+              aria-label="Min"
+              matInput
+              readonly
+              [(ngModel)]="currentRateSelected.minQuantity"/>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="33.33%"
+            fxLayout="column"
+            appearance="outline"
+            *ngIf="currentRateSelected.maxQuantity && currentRateSelected.maxQuantity !== ''">
+            <mat-label>Max</mat-label>
+            <input
+              type="text"
+              placeholder="Max"
+              aria-label="Max"
+              matInput
+              readonly
+              [(ngModel)]="currentRateSelected.maxQuantity"/>
+          </mat-form-field>
+        </div>
+      </div>
+      <div
+        fxLayout="row wrap"
+        *ngIf="currentSelected?.itemCode && currentSelected?.itemCode !== '' && currentRateSelected.rate && currentRateSelected.rate !== ''">
+        <h4>Quantity</h4>
+        <div
+          fxFlex="100"
+          fxLayout="row wrap"
+          style="row-gap: 16px">
+          <mat-form-field
+            appearance="outline"
+            fxFlex="50%"
+            class="cell"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Stock to request</mat-label>
+            <input
+              (keydown.enter)="onSubmit()"
+              matInput
+              placeholder="Quantity"
+              [formControl]="quantity"/>
+            <mat-error *ngIf="getError('quantity') !== (null || undefined)">
+              {{
+                (getError("quantity") &&
+                getError("quantity").required
+                  ? "Please enter quantity"
+                  : "") ||
+                (getError("quantity") &&
+                getError("quantity").minlength
+                  ? "Please enter a valid quantity"
+                  : "") ||
+                (getError("quantity") &&
+                getError("quantity").maxlength
+                  ? "Please enter not exceeding 1000 items."
+                  : "") ||
+                (getError("quantity") &&
+                getError("quantity").exceed
+                  ? "Quantity must not exceed max quantity."
+                  : "") ||
+                (getError("quantity") &&
+                getError("quantity").below
+                  ? "Quantity must not be less than min quantity."
+                  : "")
+              }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div
+        fxLayout="row wrap"
+        *ngIf="quantity?.value && quantity?.value !== '' && quantity?.value !== '0'">
+        <h4>Total</h4>
+        <div
+          fxFlex="100"
+          fxLayout="row wrap"
+          style="row-gap: 16px">
+          <mat-form-field
+            appearance="outline"
+            fxFlex="50%"
+            class="cell"
+            [ngClass.gt-sm]="{ isLargeScreen: true }">
+            <mat-label>Total Amount</mat-label>
+            <input
+              (keydown.enter)="onSubmit()"
+              matInput
+              readonly
+              placeholder="Total Amount"
+              [(ngModel)]="currentSelected.totalAmount"/>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
   </div>
 

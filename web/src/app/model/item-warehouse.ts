@@ -5,6 +5,7 @@ export class ItemWarehouse {
   itemId: string;
   warehouseId: string;
   quantity: string;
+  orderedQuantity: string;
   item: Item;
   warehouse: Warehouse;
 }

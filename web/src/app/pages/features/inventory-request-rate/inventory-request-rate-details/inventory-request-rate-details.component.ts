@@ -130,7 +130,7 @@ export class InventoryRequestRateDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/inventory-request-rate/find' + this.selected.item.itemCode]);
+          this.router.navigate(['/inventory-request-rate/find/' + this.selected.item.itemCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           dialogRef.close();

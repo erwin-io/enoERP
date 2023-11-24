@@ -119,7 +119,7 @@ export class InventoryRequestController {
         dto
       );
       res.success = true;
-      res.message = `Inventory Request ${DELETE_SUCCESS}`;
+      res.message = `Inventory Request ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;
@@ -141,7 +141,7 @@ export class InventoryRequestController {
         dto
       );
       res.success = true;
-      res.message = `Inventory Request ${DELETE_SUCCESS}`;
+      res.message = `Inventory Request ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

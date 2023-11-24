@@ -49,6 +49,7 @@ const firebase_provider_module_1 = require("./core/provider/firebase/firebase-pr
 const inventory_request_module_1 = require("./controller/inventory-request/inventory-request.module");
 const warehouse_inventory_module_1 = require("./controller/warehouse-inventory/warehouse-inventory.module");
 const inventory_request_rate_module_1 = require("./controller/inventory-request-rate/inventory-request-rate.module");
+const goods_receipt_module_1 = require("./controller/goods-receipt/goods-receipt.module");
 const envFilePath = (0, utils_1.getEnvPath)(`${__dirname}/common/envs`);
 let AppModule = class AppModule {
 };
@@ -74,6 +75,7 @@ AppModule = __decorate([
             inventory_request_module_1.InventoryRequestModule,
             warehouse_inventory_module_1.WarehouseInventoryModule,
             inventory_request_rate_module_1.InventoryRequestRateModule,
+            goods_receipt_module_1.GoodsReceiptModule,
             firebase_provider_module_1.FirebaseProviderModule,
         ],
         providers: [app_service_1.AppService],

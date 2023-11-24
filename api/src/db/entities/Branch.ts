@@ -9,8 +9,8 @@ import { InventoryRequest } from "./InventoryRequest";
 import { ItemBranch } from "./ItemBranch";
 import { Users } from "./Users";
 
-@Index("u_branch_name", ["active", "name"], { unique: true })
 @Index("u_branch_branchCode", ["active", "branchCode"], { unique: true })
+@Index("u_branch_name", ["active", "name"], { unique: true })
 @Index("Branch_pkey", ["branchId"], { unique: true })
 @Entity("Branch", { schema: "dbo" })
 export class Branch {

@@ -41,6 +41,13 @@ export class GoodsReceipt {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", {
+    name: "Notes",
+    nullable: true,
+    default: () => "''",
+  })
+  notes: string | null;
+
   @ManyToOne(() => Users, (users) => users.goodsReceipts)
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])
   createdByUser: Users;

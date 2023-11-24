@@ -51,6 +51,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], GoodsReceipt.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", {
+        name: "Notes",
+        nullable: true,
+        default: () => "''",
+    }),
+    __metadata("design:type", String)
+], GoodsReceipt.prototype, "notes", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.goodsReceipts),
     (0, typeorm_1.JoinColumn)([{ name: "CreatedByUserId", referencedColumnName: "userId" }]),
     __metadata("design:type", Users_1.Users)

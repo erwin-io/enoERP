@@ -83,7 +83,7 @@ let InventoryRequestController = class InventoryRequestController {
         try {
             res.data = await this.inventoryRequestService.updateStatus(inventoryRequestCode, dto);
             res.success = true;
-            res.message = `Inventory Request ${api_response_constant_1.DELETE_SUCCESS}`;
+            res.message = `Inventory Request ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
         }
         catch (e) {
@@ -97,7 +97,7 @@ let InventoryRequestController = class InventoryRequestController {
         try {
             res.data = await this.inventoryRequestService.updateStatus(inventoryRequestCode, dto);
             res.success = true;
-            res.message = `Inventory Request ${api_response_constant_1.DELETE_SUCCESS}`;
+            res.message = `Inventory Request ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
         }
         catch (e) {

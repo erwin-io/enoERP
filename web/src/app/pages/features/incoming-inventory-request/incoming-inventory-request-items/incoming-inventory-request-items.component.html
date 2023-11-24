@@ -2,6 +2,22 @@
   <mat-card-header>
   </mat-card-header>
   <mat-card-content fxFlex="100" fxLayout="column" >
+    <div
+      fxFlex="33.33%"
+      fxLayout="column"
+      fxLayout.gt-xs="row">
+      <mat-form-field
+        appearance="outline">
+        <mat-label>Total amount&nbsp;&nbsp;</mat-label>
+        <input
+          type="text"
+          placeholder="Total amount"
+          aria-label="Total amount"
+          matInput
+          readonly
+          [ngModel]="accTotalAmount | currency: 'PHP'"/>
+      </mat-form-field>
+    </div>
     <div fxFlex="100" fxLayout="column" class="request-inventoryRequestItems-card-inner">
       <table class="table-request-inventoryRequestItems" mat-table [dataSource]="dataSource">
         <!-- Page Column -->
@@ -10,12 +26,16 @@
           <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
         </ng-container>
         <ng-container matColumnDef="itemCategory">
-          <th mat-header-cell *matHeaderCellDef>Item category</th>
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%'}">Item category</th>
           <td mat-cell *matCellDef="let element">{{ element.itemCategory }}</td>
         </ng-container>
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">quantity</th>
-          <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
+          <td mat-cell *matCellDef="let element">{{ element.quantity }}pcs</td>
+        </ng-container>
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Total Amount</th>
+          <td mat-cell *matCellDef="let element">{{ element.totalAmount | currency: 'PHP' }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

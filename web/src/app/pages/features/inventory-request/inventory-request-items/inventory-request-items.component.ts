@@ -33,7 +33,8 @@ export class InventoryRequestItemComponent {
   id;
   isProcessing = false;
   isNew = false;
-  displayedColumns = ['itemName', 'quantity', 'totalAmount', 'controls'];
+  accTotalAmount = 0;
+  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount', 'controls'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
   @Input() inventoryRequest!: InventoryRequest;
   @Input() isReadOnly = true;
@@ -234,9 +235,16 @@ export class InventoryRequestItemComponent {
     this.currentSelected.totalAmount = Number(this.currentRateSelected.rate) * Number(this.quantity.value);
   }
 
+  computeAccTotalAmount() {
+    this.accTotalAmount = this.dataSource.data.map(x=>x.totalAmount).reduce((curr, prev) => {
+      return Number(curr) + Number(prev);
+    });
+  }
+
   init(data: InventoryRequestItemTableColumn[]) {
     if(data) {
       this.dataSource = new MatTableDataSource(data);
+      this.computeAccTotalAmount();
     }
   }
 
@@ -503,6 +511,7 @@ export class InventoryRequestItemComponent {
             this.resetCurrentRateSelected();
             this.dataSource = new MatTableDataSource(items);
             this.itemsChanged.emit(this.dataSource.data);
+            this.computeAccTotalAmount();
             this.dialog.closeAll();
           }
         } else {

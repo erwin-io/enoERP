@@ -22,7 +22,8 @@ export class IncomingInventoryRequestItemComponent {
   id;
   isProcessing = false;
   isNew = false;
-  displayedColumns = ['itemName', 'itemCategory', 'quantity'];
+  accTotalAmount = 0;
+  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
   @Input() inventoryRequest!: InventoryRequest;
   @Input() isReadOnly = true;
@@ -46,6 +47,9 @@ export class IncomingInventoryRequestItemComponent {
   init(data: InventoryRequestItemTableColumn[]) {
     if(data) {
       this.dataSource = new MatTableDataSource(data);
+      this.accTotalAmount = this.dataSource.data.map(x=>x.totalAmount).reduce((curr, prev) => {
+        return Number(curr) + Number(prev);
+      });
     }
   }
 

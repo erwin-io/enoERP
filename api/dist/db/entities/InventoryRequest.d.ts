@@ -10,6 +10,7 @@ export declare class InventoryRequest {
     dateLastUpdated: Date | null;
     requestStatus: string;
     active: boolean;
+    notes: string | null;
     branch: Branch;
     fromWarehouse: Warehouse;
     requestedByUser: Users;

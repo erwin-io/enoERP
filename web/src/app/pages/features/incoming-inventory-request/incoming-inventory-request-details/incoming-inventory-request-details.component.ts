@@ -16,7 +16,15 @@ import { MatTableDataSource } from '@angular/material/table';
 import { InventoryRequestItemComponent } from '../../inventory-request/inventory-request-items/inventory-request-items.component';
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
-
+export class UpdateStatusModel {
+  notes: string;
+  status:  "PENDING"
+| "REJECTED"
+| "PROCESSING"
+| "IN-TRANSIT"
+| "COMPLETED"
+| "CANCELLED"
+| "PARTIALLY-FULFILLED" };
 @Component({
   selector: 'app-incoming-inventory-request-details',
   templateUrl: './incoming-inventory-request-details.component.html',
@@ -37,6 +45,9 @@ export class IncomingInventoryRequestDetailsComponent {
 
   @ViewChild('inventoryRequestForm', { static: true}) inventoryRequestForm: InventoryRequestFormComponent;
   @ViewChild('inventoryRequestItems', { static: true}) inventoryRequestItemComponent: InventoryRequestItemComponent;
+  @ViewChild('updateStatusDialog') updateStatusDialog: TemplateRef<any>;
+
+  updateStatusData: UpdateStatusModel = { status: null, notes: null };
 
   inventoryRequest: InventoryRequest
   constructor(
@@ -149,7 +160,23 @@ export class IncomingInventoryRequestDetailsComponent {
     return show;
   }
 
-  updateStatus(status: "PENDING"
+  showUpdateStatusDialog(status: "PENDING"
+  | "REJECTED"
+  | "PROCESSING"
+  | "IN-TRANSIT"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "PARTIALLY-FULFILLED") {
+    this.updateStatusData = {
+      status
+    } as any;
+    const dialogRef = this.dialog.open(this.updateStatusDialog, {
+      maxWidth: "300px",
+      disableClose: true,
+    });
+  }
+
+  processStatus(status: "PENDING"
   | "REJECTED"
   | "PROCESSING"
   | "IN-TRANSIT"
@@ -158,13 +185,77 @@ export class IncomingInventoryRequestDetailsComponent {
   | "PARTIALLY-FULFILLED") {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    if(status === "REJECTED") {
-      dialogData.message = 'Reject request?';
-    } else if(status === "PROCESSING") {
+    if(status === "PROCESSING") {
       dialogData.message = 'Process request?';
     } else if(status === "IN-TRANSIT") {
       dialogData.message = 'Mark as in-transit?';
-    } else if(status === "CANCELLED") {
+    } else {
+      return;
+    }
+    dialogData.confirmButton = {
+      visible: true,
+      text: 'yes',
+      color: 'primary',
+    };
+    dialogData.dismissButton = {
+      visible: true,
+      text: 'cancel',
+    };
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      maxWidth: '400px',
+      closeOnNavigation: true,
+    });
+    dialogRef.componentInstance.alertDialogConfig = dialogData;
+
+    dialogRef.componentInstance.conFirm.subscribe(async (data: any) => {
+      this.isProcessing = true;
+      dialogRef.componentInstance.isProcessing = this.isProcessing;
+      try {
+        let res = await this.inventoryRequestService.processStatus(this.inventoryRequestCode, { status }).toPromise();
+        if (res.success) {
+          this.snackBar.open('Saved!', 'close', {
+            panelClass: ['style-success'],
+          });
+          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
+          this.isProcessing = false;
+          dialogRef.componentInstance.isProcessing = this.isProcessing;
+          this.initDetails();
+          dialogRef.close();
+        } else {
+          this.isProcessing = false;
+          dialogRef.componentInstance.isProcessing = this.isProcessing;
+          this.error = Array.isArray(res.message)
+            ? res.message[0]
+            : res.message;
+          this.snackBar.open(this.error, 'close', {
+            panelClass: ['style-error'],
+          });
+          dialogRef.close();
+        }
+      } catch (e) {
+        this.isProcessing = false;
+        dialogRef.componentInstance.isProcessing = this.isProcessing;
+        this.error = Array.isArray(e.message) ? e.message[0] : e.message;
+        this.snackBar.open(this.error, 'close', {
+          panelClass: ['style-error'],
+        });
+        dialogRef.close();
+      }
+    });
+  }
+
+  closeRequest(params) {
+    if(!params?.notes || params?.notes === '') {
+      this.snackBar.open("Notes is required!", 'close', {
+        panelClass: ['style-error'],
+      });
+      return;
+    }
+    const dialogData = new AlertDialogModel();
+    dialogData.title = 'Confirm';
+    if(params.status === "REJECTED") {
+      dialogData.message = 'Reject request?';
+    } else if(params.status === "CANCELLED") {
       dialogData.message = 'Cancel request?';
     } else {
       dialogData.message = 'Mark as completed?';
@@ -188,7 +279,7 @@ export class IncomingInventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.inventoryRequestService.updateStatus(this.inventoryRequestCode, { status }).toPromise();
+        let res = await this.inventoryRequestService.closeRequest(this.inventoryRequestCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
@@ -198,6 +289,7 @@ export class IncomingInventoryRequestDetailsComponent {
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();
           dialogRef.close();
+          this.dialog.closeAll();
         } else {
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;

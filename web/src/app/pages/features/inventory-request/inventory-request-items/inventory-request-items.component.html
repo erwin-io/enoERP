@@ -69,7 +69,7 @@
             fxLayout="column"
             appearance="outline"
             (dblclick)="isNew ? showSelectItemDialog() : false">
-            <mat-label>Item </mat-label>
+            <mat-label>Item&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Search Item"
@@ -99,7 +99,7 @@
             *ngIf="currentSelected.itemCategory && currentSelected.itemCategory !== ''"
             fxLayout="column"
             appearance="outline" >
-            <mat-label>Category</mat-label>
+            <mat-label>Category&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Search Item category"
@@ -113,11 +113,11 @@
             fxLayout="column"
             appearance="outline"
             *ngIf="currentSelected?.itemCode && currentSelected?.itemCode !== ''">
-            <mat-label>Available stock</mat-label>
+            <mat-label>Available stock&nbsp;&nbsp;</mat-label>
             <input
               type="text"
-              placeholder="Search Rate"
-              aria-label="Search Rate"
+              placeholder="Available stock"
+              aria-label="Available stock"
               matInput
               readonly
               [(ngModel)]="currentWarehouseInventory.availableToRequest"/>
@@ -134,7 +134,7 @@
             fxLayout="column"
             appearance="outline"
             (dblclick)="showSelectRateDialog()">
-            <mat-label>Rate </mat-label>
+            <mat-label>Rate&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Search Rate"
@@ -154,7 +154,7 @@
             fxLayout="column"
             appearance="outline"
             *ngIf="currentRateSelected.rateName && currentRateSelected.rateName !== ''">
-            <mat-label>Rate name </mat-label>
+            <mat-label>Rate name&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Rate name"
@@ -167,7 +167,7 @@
             fxLayout="column"
             appearance="outline"
             *ngIf="currentRateSelected.minQuantity && currentRateSelected.minQuantity !== ''">
-            <mat-label>Min</mat-label>
+            <mat-label>Min&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Min"
@@ -180,7 +180,7 @@
             fxLayout="column"
             appearance="outline"
             *ngIf="currentRateSelected.maxQuantity && currentRateSelected.maxQuantity !== ''">
-            <mat-label>Max</mat-label>
+            <mat-label>Max&nbsp;&nbsp;</mat-label>
             <input
               type="text"
               placeholder="Max"
@@ -207,7 +207,7 @@
         fxFlex="33.33%"
         class="cell"
         [ngClass.gt-sm]="{ isLargeScreen: true }">
-        <mat-label>Stock to request</mat-label>
+        <mat-label>Stock to request&nbsp;&nbsp;</mat-label>
         <input
           (keydown.enter)="onSubmit()"
           matInput
@@ -247,7 +247,7 @@
         fxFlex="33.33%"
         class="cell"
         [ngClass.gt-sm]="{ isLargeScreen: true }">
-        <mat-label>Total Amount</mat-label>
+        <mat-label>Total Amount&nbsp;&nbsp;</mat-label>
         <input
           (keydown.enter)="onSubmit()"
           matInput

@@ -78,7 +78,21 @@ let InventoryRequestController = class InventoryRequestController {
             return res;
         }
     }
-    async updateStatus(inventoryRequestCode, dto) {
+    async processStatus(inventoryRequestCode, dto) {
+        const res = {};
+        try {
+            res.data = await this.inventoryRequestService.updateStatus(inventoryRequestCode, dto);
+            res.success = true;
+            res.message = `Inventory Request ${api_response_constant_1.DELETE_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
+    async closeRequest(inventoryRequestCode, dto) {
         const res = {};
         try {
             res.data = await this.inventoryRequestService.updateStatus(inventoryRequestCode, dto);
@@ -123,13 +137,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], InventoryRequestController.prototype, "update", null);
 __decorate([
-    (0, common_1.Put)("/updateStatus/:inventoryRequestCode/"),
+    (0, common_1.Put)("/processStatus/:inventoryRequestCode/"),
     __param(0, (0, common_1.Param)("inventoryRequestCode")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, inventory_request_update_dto_1.UpdateInventoryRequestStatusDto]),
+    __metadata("design:paramtypes", [String, inventory_request_update_dto_1.ProcessInventoryRequestStatusDto]),
     __metadata("design:returntype", Promise)
-], InventoryRequestController.prototype, "updateStatus", null);
+], InventoryRequestController.prototype, "processStatus", null);
+__decorate([
+    (0, common_1.Put)("/closeRequest/:inventoryRequestCode/"),
+    __param(0, (0, common_1.Param)("inventoryRequestCode")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, inventory_request_update_dto_1.CloseInventoryRequestStatusDto]),
+    __metadata("design:returntype", Promise)
+], InventoryRequestController.prototype, "closeRequest", null);
 InventoryRequestController = __decorate([
     (0, swagger_1.ApiTags)("inventoryRequest"),
     (0, common_1.Controller)("inventoryRequest"),

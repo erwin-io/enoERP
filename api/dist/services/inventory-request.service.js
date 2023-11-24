@@ -422,7 +422,7 @@ let InventoryRequestService = class InventoryRequestService {
                     throw Error("Not allowed to update status, the request was not yet processed");
                 }
             }
-            if (dto.status === "CANCELLED" || dto.status === "REJECTED") {
+            if (status === "CANCELLED" || status === "REJECTED") {
                 for (const item of inventoryRequest.inventoryRequestItems) {
                     const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
                         where: {
@@ -440,6 +440,11 @@ let InventoryRequestService = class InventoryRequestService {
                             : "0";
                     await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
+            }
+            if (status === "CANCELLED" ||
+                status === "REJECTED" ||
+                status === "COMPLETED") {
+                inventoryRequest.notes = dto["notes"];
             }
             delete inventoryRequest.inventoryRequestItems;
             inventoryRequest.requestStatus = status;

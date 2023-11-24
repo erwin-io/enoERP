@@ -17,7 +17,7 @@ export class InventoryRequestFormComponent {
     private formBuilder: FormBuilder
   ) {
     this.form = this.formBuilder.group({
-      description: [[null],Validators.required],
+      description: [null,Validators.required],
       inventoryRequestItems: [[null], Validators.required],
     });
   }

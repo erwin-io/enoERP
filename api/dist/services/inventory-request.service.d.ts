@@ -1,5 +1,5 @@
 import { CreateInventoryRequestDto } from "src/core/dto/inventory-request/inventory-request.create.dto";
-import { UpdateInventoryRequestDto, UpdateInventoryRequestStatusDto } from "src/core/dto/inventory-request/inventory-request.update.dto";
+import { CloseInventoryRequestStatusDto, ProcessInventoryRequestStatusDto, UpdateInventoryRequestDto } from "src/core/dto/inventory-request/inventory-request.update.dto";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
 import { Repository } from "typeorm";
 export declare class InventoryRequestService {
@@ -17,5 +17,5 @@ export declare class InventoryRequestService {
     getByCode(inventoryRequestCode: any): Promise<InventoryRequest>;
     create(dto: CreateInventoryRequestDto): Promise<InventoryRequest>;
     update(inventoryRequestCode: any, dto: UpdateInventoryRequestDto): Promise<InventoryRequest>;
-    updateStatus(inventoryRequestCode: any, dto: UpdateInventoryRequestStatusDto): Promise<InventoryRequest>;
+    updateStatus(inventoryRequestCode: any, dto: ProcessInventoryRequestStatusDto | CloseInventoryRequestStatusDto): Promise<InventoryRequest>;
 }

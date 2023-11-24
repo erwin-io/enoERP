@@ -17,7 +17,10 @@ import { InventoryRequestItemComponent } from '../inventory-request-items/invent
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
-
+export class UpdateStatusModel {
+  status: "CANCELLED";
+  notes: string;
+}
 @Component({
   selector: 'app-inventory-request-details',
   templateUrl: './inventory-request-details.component.html',
@@ -51,6 +54,9 @@ export class InventoryRequestDetailsComponent {
   optionWarehouse: {code: string; name: string}[] = [];
   warehouseSearchCtrl = new FormControl();
   @ViewChild('warehouseSearchInput', { static: true}) warehouseSearchInput: ElementRef<HTMLInputElement>;
+  updateStatusData: UpdateStatusModel = { } as any
+
+  @ViewChild('cancelDialog') cancelDialog: TemplateRef<any>;
   constructor(
     private inventoryRequestService: InventoryRequestService,
     private warehouseService: WarehouseService,
@@ -180,7 +186,23 @@ export class InventoryRequestDetailsComponent {
     this.inventoryRequestForm.form.controls["inventoryRequestItems"].markAsDirty();
   }
 
-  cancelRequest() {
+  async showCancelDialog() {
+    this.updateStatusData = {
+      status:"CANCELLED"
+    } as any;
+    const dialogRef = this.dialog.open(this.cancelDialog, {
+      maxWidth: "300px",
+      disableClose: true,
+    });
+  }
+
+  cancelRequest(params: UpdateStatusModel) {
+    if(!params?.notes || params?.notes === "") {
+      this.snackBar.open("Notes is required!", 'close', {
+        panelClass: ['style-error'],
+      });
+      return;
+    }
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
     dialogData.message = 'Are you sure you want to cancel the request?';
@@ -203,16 +225,17 @@ export class InventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.inventoryRequestService.updateStatus(this.inventoryRequestCode, { status: "CANCELLED" }).toPromise();
+        let res = await this.inventoryRequestService.closeRequest(this.inventoryRequestCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
+          this.router.navigate(['/inventory-request/' + this.inventoryRequestCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();
           dialogRef.close();
+          this.dialog.closeAll();
         } else {
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;

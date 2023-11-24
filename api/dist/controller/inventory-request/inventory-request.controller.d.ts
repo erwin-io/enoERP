@@ -1,5 +1,5 @@
 import { CreateInventoryRequestDto } from "src/core/dto/inventory-request/inventory-request.create.dto";
-import { UpdateInventoryRequestDto, UpdateInventoryRequestStatusDto } from "src/core/dto/inventory-request/inventory-request.update.dto";
+import { UpdateInventoryRequestDto, ProcessInventoryRequestStatusDto, CloseInventoryRequestStatusDto } from "src/core/dto/inventory-request/inventory-request.update.dto";
 import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
@@ -14,5 +14,6 @@ export declare class InventoryRequestController {
     }>>;
     create(inventoryRequestDto: CreateInventoryRequestDto): Promise<ApiResponseModel<InventoryRequest>>;
     update(inventoryRequestCode: string, dto: UpdateInventoryRequestDto): Promise<ApiResponseModel<InventoryRequest>>;
-    updateStatus(inventoryRequestCode: string, dto: UpdateInventoryRequestStatusDto): Promise<ApiResponseModel<InventoryRequest>>;
+    processStatus(inventoryRequestCode: string, dto: ProcessInventoryRequestStatusDto): Promise<ApiResponseModel<InventoryRequest>>;
+    closeRequest(inventoryRequestCode: string, dto: CloseInventoryRequestStatusDto): Promise<ApiResponseModel<InventoryRequest>>;
 }

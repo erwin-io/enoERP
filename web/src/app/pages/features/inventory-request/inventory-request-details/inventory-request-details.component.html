@@ -14,7 +14,7 @@
     <button
       *ngIf="!canAddEdit ? false : !isNew"
       mat-flat-button
-      (click)="cancelRequest()">
+      (click)="showCancelDialog()">
       Cancel
     </button>
     <button
@@ -67,7 +67,7 @@
         <div fxFlex="100" fxLayout="column">
           <div fxLayout="column" fxFlex="33.33%" fxLayout.gt-xs="row" >
             <mat-form-field appearance="outline" >
-              <mat-label>Warehouse</mat-label>
+              <mat-label>Request to Warehouse</mat-label>
               <input type="text"
                       placeholder="Select warehouse"
                       aria-label="Warehouse"
@@ -98,3 +98,44 @@
     <app-inventory-request-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="isReadOnly" #inventoryRequestItems></app-inventory-request-items>
   </div>
 </div>
+
+<ng-template #cancelDialog>
+  <h4 mat-dialog-title>Cancel request</h4>
+
+<div mat-dialog-content>
+  <div style="display: flex;flex-direction: column;width: 100%;margin-top: 10px;">
+    <mat-form-field
+      appearance="outline"
+      fxFlex="100"
+      class="cell">
+      <mat-label>Notes</mat-label>
+      <textarea
+        (keydown.enter)="updateStatusData?.notes && updateStatusData?.notes.trim() !== '' ? cancelRequest(updateStatusData) : false"
+        matInput
+        placeholder="Notes..."
+        [(ngModel)]="updateStatusData.notes">
+      </textarea>
+    </mat-form-field>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      mat-dialog-close>
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!updateStatusData?.notes || updateStatusData?.notes.trim() === ''"
+      color="primary"
+      type="submit"
+      (click)="cancelRequest(updateStatusData)">
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>

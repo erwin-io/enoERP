@@ -16,7 +16,8 @@ import {
 import { CreateInventoryRequestDto } from "src/core/dto/inventory-request/inventory-request.create.dto";
 import {
   UpdateInventoryRequestDto,
-  UpdateInventoryRequestStatusDto,
+  ProcessInventoryRequestStatusDto,
+  CloseInventoryRequestStatusDto,
 } from "src/core/dto/inventory-request/inventory-request.update.dto";
 import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
@@ -105,11 +106,33 @@ export class InventoryRequestController {
     }
   }
 
-  @Put("/updateStatus/:inventoryRequestCode/")
+  @Put("/processStatus/:inventoryRequestCode/")
   //   @UseGuards(JwtAuthGuard)
-  async updateStatus(
+  async processStatus(
     @Param("inventoryRequestCode") inventoryRequestCode: string,
-    @Body() dto: UpdateInventoryRequestStatusDto
+    @Body() dto: ProcessInventoryRequestStatusDto
+  ) {
+    const res: ApiResponseModel<InventoryRequest> = {} as any;
+    try {
+      res.data = await this.inventoryRequestService.updateStatus(
+        inventoryRequestCode,
+        dto
+      );
+      res.success = true;
+      res.message = `Inventory Request ${DELETE_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Put("/closeRequest/:inventoryRequestCode/")
+  //   @UseGuards(JwtAuthGuard)
+  async closeRequest(
+    @Param("inventoryRequestCode") inventoryRequestCode: string,
+    @Body() dto: CloseInventoryRequestStatusDto
   ) {
     const res: ApiResponseModel<InventoryRequest> = {} as any;
     try {

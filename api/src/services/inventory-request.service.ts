@@ -12,8 +12,9 @@ import {
 } from "src/common/utils/utils";
 import { CreateInventoryRequestDto } from "src/core/dto/inventory-request/inventory-request.create.dto";
 import {
+  CloseInventoryRequestStatusDto,
+  ProcessInventoryRequestStatusDto,
   UpdateInventoryRequestDto,
-  UpdateInventoryRequestStatusDto,
 } from "src/core/dto/inventory-request/inventory-request.update.dto";
 import { Branch } from "src/db/entities/Branch";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
@@ -415,7 +416,7 @@ export class InventoryRequestService {
 
   async updateStatus(
     inventoryRequestCode,
-    dto: UpdateInventoryRequestStatusDto
+    dto: ProcessInventoryRequestStatusDto | CloseInventoryRequestStatusDto
   ) {
     return await this.inventoryRequestRepo.manager.transaction(
       async (entityManager) => {
@@ -509,7 +510,7 @@ export class InventoryRequestService {
             );
           }
         }
-        if (dto.status === "CANCELLED" || dto.status === "REJECTED") {
+        if (status === "CANCELLED" || status === "REJECTED") {
           for (const item of inventoryRequest.inventoryRequestItems) {
             const itemWarehouse = await entityManager.findOne(ItemWarehouse, {
               where: {
@@ -530,6 +531,13 @@ export class InventoryRequestService {
                 : "0";
             await entityManager.save(ItemWarehouse, itemWarehouse);
           }
+        }
+        if (
+          status === "CANCELLED" ||
+          status === "REJECTED" ||
+          status === "COMPLETED"
+        ) {
+          inventoryRequest.notes = dto["notes"];
         }
         delete inventoryRequest.inventoryRequestItems;
         inventoryRequest.requestStatus = status;

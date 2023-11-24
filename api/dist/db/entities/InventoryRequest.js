@@ -55,6 +55,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], InventoryRequest.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", {
+        name: "Notes",
+        nullable: true,
+        default: () => "''",
+    }),
+    __metadata("design:type", String)
+], InventoryRequest.prototype, "notes", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Branch_1.Branch, (branch) => branch.inventoryRequests),
     (0, typeorm_1.JoinColumn)([{ name: "BranchId", referencedColumnName: "branchId" }]),
     __metadata("design:type", Branch_1.Branch)

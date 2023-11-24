@@ -732,7 +732,8 @@
       "getByCode": "/inventoryRequest/",
       "create": "/inventoryRequest/",
       "update": "/inventoryRequest/",
-      "updateStatus": "/inventoryRequest/updateStatus/"
+      "processStatus": "/inventoryRequest/processStatus/",
+      "closeRequest": "/inventoryRequest/closeRequest/"
     },
     "inventoryRequestRate": {
       "getByAdvanceSearch": "/inventoryRequestRate/page/",

@@ -93,7 +93,8 @@ export interface AppConfig {
         getByCode: string;
         create: string;
         update: string;
-        updateStatus: string;
+        processStatus: string;
+        closeRequest: string;
       },
       inventoryRequestRate: {
         getByAdvanceSearch: string;

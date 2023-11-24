@@ -45,6 +45,13 @@ export class InventoryRequest {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", {
+    name: "Notes",
+    nullable: true,
+    default: () => "''",
+  })
+  notes: string | null;
+
   @ManyToOne(() => Branch, (branch) => branch.inventoryRequests)
   @JoinColumn([{ name: "BranchId", referencedColumnName: "branchId" }])
   branch: Branch;

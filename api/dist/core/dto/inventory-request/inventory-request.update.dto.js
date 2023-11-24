@@ -9,19 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateInventoryRequestStatusDto = exports.UpdateInventoryRequestDto = void 0;
+exports.CloseInventoryRequestStatusDto = exports.ProcessInventoryRequestStatusDto = exports.UpdateInventoryRequestDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const inventory_request_base_dto_1 = require("./inventory-request-base.dto");
 class UpdateInventoryRequestDto extends inventory_request_base_dto_1.DefaultInventoryRequestDto {
 }
 exports.UpdateInventoryRequestDto = UpdateInventoryRequestDto;
-class UpdateInventoryRequestStatusDto {
+class ProcessInventoryRequestStatusDto {
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
-        default: ""
+        default: "",
     }),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsIn)([
@@ -35,6 +35,35 @@ __decorate([
     ]),
     (0, class_validator_1.IsUppercase)(),
     __metadata("design:type", String)
-], UpdateInventoryRequestStatusDto.prototype, "status", void 0);
-exports.UpdateInventoryRequestStatusDto = UpdateInventoryRequestStatusDto;
+], ProcessInventoryRequestStatusDto.prototype, "status", void 0);
+exports.ProcessInventoryRequestStatusDto = ProcessInventoryRequestStatusDto;
+class CloseInventoryRequestStatusDto {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        default: "",
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsIn)([
+        "PENDING",
+        "REJECTED",
+        "PROCESSING",
+        "IN-TRANSIT",
+        "COMPLETED",
+        "CANCELLED",
+        "PARTIALLY-FULFILLED",
+    ]),
+    (0, class_validator_1.IsUppercase)(),
+    __metadata("design:type", String)
+], CloseInventoryRequestStatusDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        default: "Notes",
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CloseInventoryRequestStatusDto.prototype, "notes", void 0);
+exports.CloseInventoryRequestStatusDto = CloseInventoryRequestStatusDto;
 //# sourceMappingURL=inventory-request.update.dto.js.map

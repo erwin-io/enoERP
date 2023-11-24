@@ -11,34 +11,34 @@
     <button
       *ngIf="showAction('CANCELLED')"
       mat-flat-button
-      (click)="updateStatus('CANCELLED')">
+      (click)="showUpdateStatusDialog('CANCELLED')">
       Cancel
     </button>
     <button
       *ngIf="showAction('REJECTED')"
       mat-flat-button
-      (click)="updateStatus('REJECTED')">
+      (click)="showUpdateStatusDialog('REJECTED')">
       Reject
     </button>
     <button
       *ngIf="showAction('PROCESSING')"
       mat-flat-button
       color="primary"
-      (click)="updateStatus('PROCESSING')">
+      (click)="processStatus('PROCESSING')">
       Process
     </button>
     <button
       *ngIf="showAction('IN-TRANSIT')"
       mat-flat-button
       color="primary"
-      (click)="updateStatus('IN-TRANSIT')">
+      (click)="processStatus('IN-TRANSIT')">
       Mark as in-transit
     </button>
     <button
       *ngIf="showAction('COMPLETED')"
       mat-flat-button
       color="primary"
-      (click)="updateStatus('COMPLETED')">
+      (click)="showUpdateStatusDialog('COMPLETED')">
       Complete
     </button>
   </div>
@@ -79,3 +79,48 @@
     <app-incoming-inventory-request-items (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="true" #inventoryRequestItems></app-incoming-inventory-request-items>
   </div>
 </div>
+
+<ng-template #updateStatusDialog>
+  <h4 mat-dialog-title>Mark request as - {{
+    updateStatusData?.status === 'REJECTED' ? 'Rejected' : '' ||
+    updateStatusData?.status === 'COMPLETED' ? 'Completed' : '' ||
+    updateStatusData?.status === 'CANCELLED' ? 'Cancelled' : '' ||
+    updateStatusData?.status === 'PARTIALLY-FULFILLED' ? 'Partially fulfilled' : '' }}</h4>
+
+<div mat-dialog-content>
+  <div style="display: flex;flex-direction: column;width: 100%;margin-top: 10px;">
+    <mat-form-field
+      appearance="outline"
+      fxFlex="100"
+      class="cell">
+      <mat-label>Notes</mat-label>
+      <textarea
+        (keydown.enter)="updateStatusData?.notes && updateStatusData?.notes !== '' ? closeRequest(updateStatusData) : false"
+        matInput
+        placeholder="Notes..."
+        [(ngModel)]="updateStatusData.notes">
+      </textarea>
+    </mat-form-field>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      mat-dialog-close>
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!updateStatusData?.notes || updateStatusData?.notes === ''"
+      color="primary"
+      type="submit"
+      (click)="closeRequest(updateStatusData)">
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>

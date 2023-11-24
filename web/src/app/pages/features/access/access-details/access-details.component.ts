@@ -205,7 +205,7 @@ export class AccessDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/access/' + res.data.accessId]);
+          this.router.navigate(['/access/' + res.data.accessCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           dialogRef.close();

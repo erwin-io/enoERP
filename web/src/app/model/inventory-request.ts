@@ -1,6 +1,8 @@
 import { Branch } from "./branch";
+import { InventoryRequestRate } from "./inventory-request-rate";
 import { Item } from "./item";
 import { Users } from "./users";
+import { Warehouse } from "./warehouse";
 
 export class InventoryRequest {
   inventoryRequestId: string;
@@ -18,6 +20,7 @@ export class InventoryRequest {
   active: boolean;
   branch: Branch;
   requestedByUser: Users;
+  fromWarehouse: Warehouse;
   inventoryRequestItems: InventoryRequestItem[];
 }
 export class InventoryRequestItem {
@@ -25,4 +28,5 @@ export class InventoryRequestItem {
   inventoryRequest: InventoryRequest;
   item: Item;
   totalAmount: number;
+  inventoryRequestRate: InventoryRequestRate;
 }

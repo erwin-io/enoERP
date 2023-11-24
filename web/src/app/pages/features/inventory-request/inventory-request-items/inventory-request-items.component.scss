@@ -1,44 +1,57 @@
-.request-requirements-card-inner {
-  overflow: auto;
-}
-.table-request-requirements {
-  min-width: 860px!important;
-  tr.mat-header-row {
-    .mat-header-cell {
-      padding-right: 20px !important;
-      &:last-child {
-        padding-right: 0 !important;
+::ng-deep {
+  .request-requirements-card-inner {
+    overflow: auto;
+  }
+  .table-request-requirements {
+    min-width: 860px!important;
+    tr.mat-header-row {
+      .mat-header-cell {
+        padding-right: 20px !important;
+        &:last-child {
+          padding-right: 0 !important;
+        }
       }
     }
-  }
-  tr.mat-row {
-    .mat-cell {
-      padding-right: 20px !important;
-      &:last-child {
-        padding-right: 0 !important;
+    tr.mat-row {
+      .mat-cell {
+        padding-right: 20px !important;
+        &:last-child {
+          padding-right: 0 !important;
+        }
       }
     }
+
+    .mat-column-name {
+      flex: 0 0 75% !important;
+      width: 75% !important;
+    }
+
+    .mat-column-requireToSubmitProof {
+      flex: 0 0 20% !important;
+      width: 20% !important;
+    }
+
+    .mat-column-controls {
+      flex: 0 0 5% !important;
+      width: 5% !important;
+    }
+
   }
 
-  .mat-column-name {
-    flex: 0 0 75% !important;
-    width: 75% !important;
+  ::ng-deep .inventory-request-items {
+    .mat-mdc-dialog-content {
+      padding-top: 20px!important;
+    }
   }
-
-  .mat-column-requireToSubmitProof {
-    flex: 0 0 20% !important;
-    width: 20% !important;
-  }
-
-  .mat-column-controls {
-    flex: 0 0 5% !important;
-    width: 5% !important;
-  }
-
-}
-
-::ng-deep .inventory-request-items {
   .mat-mdc-dialog-content {
-    padding-top: 20px!important;
+    .request-item-content-holder {
+      max-height: inherit;
+      .request-item-content {
+        overflow: auto;
+      }
+      .request-item-content-footer {
+        padding-top: 16px!important;
+      }
+    }
   }
 }

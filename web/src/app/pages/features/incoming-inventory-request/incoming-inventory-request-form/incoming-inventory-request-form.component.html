@@ -9,9 +9,20 @@
     <div
       fxFlex="100"
       fxLayout="column"
-      fxLayout.gt-xs="row">
+      fxLayout.gt-xs="row"
+      style="gap: 16px">
       <mat-form-field
-        fxFlex="33.33%"
+        fxFlex="50%"
+        fxLayout="column"
+        appearance="outline">
+        <mat-label>To warehouse</mat-label>
+        <input
+          matInput
+          placeholder="Date requested"
+          formControlName="warehouse"/>
+      </mat-form-field>
+      <mat-form-field
+        fxFlex="50%"
         fxLayout="column"
         appearance="outline">
         <mat-label>Date requested</mat-label>
@@ -30,10 +41,10 @@
         fxFlex="50%"
         fxLayout="column"
         appearance="outline">
-        <mat-label>Branch</mat-label>
+        <mat-label>From branch</mat-label>
         <input
           matInput
-          placeholder="Branch"
+          placeholder="From branch"
           formControlName="branch"/>
       </mat-form-field>
       <mat-form-field

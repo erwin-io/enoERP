@@ -15,12 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WarehouseInventoryService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const item_constant_1 = require("../common/constant/item.constant");
 const utils_1 = require("../common/utils/utils");
 const ItemWarehouse_1 = require("../db/entities/ItemWarehouse");
 const typeorm_2 = require("typeorm");
 let WarehouseInventoryService = class WarehouseInventoryService {
-    constructor(itemBranchRepo) {
-        this.itemBranchRepo = itemBranchRepo;
+    constructor(itemWarehouse) {
+        this.itemWarehouse = itemWarehouse;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -35,7 +36,7 @@ let WarehouseInventoryService = class WarehouseInventoryService {
             };
         }
         const [results, total] = await Promise.all([
-            this.itemBranchRepo.find({
+            this.itemWarehouse.find({
                 where: Object.assign({}, condition),
                 skip,
                 take,
@@ -47,7 +48,7 @@ let WarehouseInventoryService = class WarehouseInventoryService {
                     warehouse: true,
                 },
             }),
-            this.itemBranchRepo.count({
+            this.itemWarehouse.count({
                 where: Object.assign({}, condition),
             }),
         ]);
@@ -55,6 +56,30 @@ let WarehouseInventoryService = class WarehouseInventoryService {
             results,
             total,
         };
+    }
+    async getByItemCode(warehouseCode, itemCode) {
+        var _a;
+        const result = await this.itemWarehouse.findOne({
+            where: {
+                item: {
+                    itemCode: (_a = itemCode === null || itemCode === void 0 ? void 0 : itemCode.toString()) === null || _a === void 0 ? void 0 : _a.toLowerCase(),
+                    active: true,
+                },
+                warehouse: {
+                    warehouseCode,
+                },
+            },
+            relations: {
+                item: {
+                    itemCategory: true,
+                },
+                warehouse: true,
+            },
+        });
+        if (!result) {
+            throw Error(item_constant_1.ITEM_ERROR_NOT_FOUND);
+        }
+        return result;
     }
 };
 WarehouseInventoryService = __decorate([

@@ -1,6 +1,8 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import { Item } from 'src/app/model/item';
@@ -23,9 +25,14 @@ export class SelectItemDialogComponent {
   dataSource = new MatTableDataSource<SelectItemDialogTableColumn>();
   selected: SelectItemDialogTableColumn;
   doneSelect = new EventEmitter();
-
+  total = 0;
+  pageIndex = 0;
+  pageSize = 10
+  order = { itemCode: "ASC" } as any;
   filterItemName = "";
   filterItemCategory = "";
+  @ViewChild('paginator', {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private itemService: ItemService,
@@ -37,6 +44,25 @@ export class SelectItemDialogComponent {
 
   ngAfterViewInit(): void {
     this.init();
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.paginator.page.subscribe((event: PageEvent)=> {
+      const { pageIndex, pageSize } = event;
+      this.pageIndex = pageIndex;
+      this.pageSize = pageSize;
+      this.init();
+    });
+    this.dataSource.sort.sortChange.subscribe((event: MatSort)=> {
+      const { active, direction } = event;
+      if(active === "itemName") {
+        this.order = { itemName: direction.toUpperCase()}
+      } else if(active === "itemCategory") {
+        this.order = { itemCategory: {
+          name: direction.toUpperCase()
+        }}
+      }
+      this.init();
+    });
   }
 
   init() {
@@ -50,19 +76,12 @@ export class SelectItemDialogComponent {
         filter: this.filterItemCategory,
       },
     ];
-    // if(this.selected && this.selected?.itemId && this.selected?.itemId !== "") {
-    //   filter.push({
-    //     apiNotation: "itemId",
-    //     filter: this.selected?.itemId,
-    //     type: "not",
-    //   });
-    // }
     try {
       this.itemService.getByAdvanceSearch({
-        order: {},
+        order: this.order,
         columnDef: filter,
-        pageIndex: 0,
-        pageSize: 10
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
       }).subscribe(res=> {
         this.dataSource = new MatTableDataSource(res.data.results.map(x=> {
           return {
@@ -73,7 +92,7 @@ export class SelectItemDialogComponent {
             selected: this.selected?.itemId === x.itemId
           }
         }));
-
+        this.total = res.data.total;
       });
     }catch(ex) {
 

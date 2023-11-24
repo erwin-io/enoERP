@@ -21,7 +21,8 @@ export class IncomingInventoryRequestFormComponent {
       branch: [null,Validators.required],
       dateRequested: [null,Validators.required],
       requestedByUser: [null,Validators.required],
-      inventoryRequestItems: [[null], Validators.required],
+      warehouse: [null, Validators.required],
+      inventoryRequestItems: [[null], Validators.required]
     });
   }
 
@@ -31,6 +32,7 @@ export class IncomingInventoryRequestFormComponent {
       this.form.controls["branch"].setValue(value.branch.name);
       this.form.controls["dateRequested"].setValue(moment(value.dateRequested).format("MMMM DD, YYYY h:mm a"));
       this.form.controls["requestedByUser"].setValue(value.requestedByUser.fullName);
+      this.form.controls["warehouse"].setValue(value.fromWarehouse.name);
       const items = value.inventoryRequestItems.map(x=> {
         return {
           quantity: x.quantity,

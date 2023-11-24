@@ -67,7 +67,12 @@ const deafaultInventoryRequestSelect = {
                 description: true,
             },
         },
+        quantity: true,
+        inventoryRequest: true,
+        totalAmount: true,
+        inventoryRequestRate: true,
     },
+    fromWarehouse: true,
 };
 let InventoryRequestService = class InventoryRequestService {
     constructor(inventoryRequestRepo) {
@@ -93,6 +98,7 @@ let InventoryRequestService = class InventoryRequestService {
                         item: {
                             itemCategory: true,
                         },
+                        inventoryRequestRate: true,
                     },
                 },
             }),
@@ -120,7 +126,9 @@ let InventoryRequestService = class InventoryRequestService {
                     item: {
                         itemCategory: true,
                     },
+                    inventoryRequestRate: true,
                 },
+                fromWarehouse: true,
             },
         });
         if (!result) {
@@ -153,7 +161,7 @@ let InventoryRequestService = class InventoryRequestService {
             inventoryRequest.branch = branch;
             const fromWarehouse = await entityManager.findOne(Warehouse_1.Warehouse, {
                 where: {
-                    warehouseId: dto.fromWarehouseId,
+                    warehouseCode: dto.fromWarehouseCode,
                     active: true,
                 },
             });
@@ -188,11 +196,7 @@ let InventoryRequestService = class InventoryRequestService {
                     where: { itemId: item.itemId },
                 });
                 newItem.quantity = item.quantity.toString();
-                newItem.inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
-                    where: {
-                        inventoryRequestId: inventoryRequest.inventoryRequestId,
-                    },
-                });
+                newItem.inventoryRequest = inventoryRequest;
                 const inventoryRequestRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
                     where: {
                         inventoryRequestRateCode: item.inventoryRequestRateCode,
@@ -208,11 +212,18 @@ let InventoryRequestService = class InventoryRequestService {
                 const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
                     where: {
                         itemId: item.itemId,
-                        warehouseId: dto.fromWarehouseId,
+                        warehouse: {
+                            warehouseCode: dto.fromWarehouseCode,
+                        },
                     },
                 });
                 const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) + Number(item.quantity);
                 itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                const newItemWarehouseQuantity = Number(itemWarehouse.quantity) - Number(item.quantity);
+                itemWarehouse.quantity =
+                    newItemWarehouseQuantity >= 0
+                        ? newItemWarehouseQuantity.toString()
+                        : "0";
                 await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
             }
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
@@ -230,6 +241,7 @@ let InventoryRequestService = class InventoryRequestService {
                             itemCategory: true,
                         },
                     },
+                    fromWarehouse: true,
                 },
             });
             delete inventoryRequest.requestedByUser.password;
@@ -314,6 +326,12 @@ let InventoryRequestService = class InventoryRequestService {
                 const oldOrderQuantiy = Number(itemWarehouse.orderedQuantity) - Number(origReqQuantity);
                 const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
                 itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                const oldQuantity = Number(itemWarehouse.quantity) + Number(origReqQuantity);
+                const newItemWarehouseQuantity = oldQuantity - Number(item.quantity);
+                itemWarehouse.quantity =
+                    newItemWarehouseQuantity >= 0
+                        ? newItemWarehouseQuantity.toString()
+                        : "0";
                 await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
             }
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
@@ -331,6 +349,7 @@ let InventoryRequestService = class InventoryRequestService {
                             itemCategory: true,
                         },
                     },
+                    fromWarehouse: true,
                 },
             });
             delete inventoryRequest.requestedByUser.password;
@@ -341,9 +360,22 @@ let InventoryRequestService = class InventoryRequestService {
         return await this.inventoryRequestRepo.manager.transaction(async (entityManager) => {
             const { status } = dto;
             let inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
+                select: deafaultInventoryRequestSelect,
                 where: {
                     inventoryRequestCode,
                     active: true,
+                },
+                relations: {
+                    fromWarehouse: true,
+                    branch: true,
+                    requestedByUser: true,
+                    inventoryRequestItems: {
+                        inventoryRequest: true,
+                        item: {
+                            itemCategory: true,
+                        },
+                        inventoryRequestRate: true,
+                    },
                 },
             });
             if (!inventoryRequest) {
@@ -390,6 +422,26 @@ let InventoryRequestService = class InventoryRequestService {
                     throw Error("Not allowed to update status, the request was not yet processed");
                 }
             }
+            if (dto.status === "CANCELLED" || dto.status === "REJECTED") {
+                for (const item of inventoryRequest.inventoryRequestItems) {
+                    const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
+                        where: {
+                            itemId: item.item.itemId,
+                            warehouseId: inventoryRequest.fromWarehouse.warehouseId,
+                        },
+                    });
+                    const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) - Number(item.quantity);
+                    itemWarehouse.orderedQuantity =
+                        newOrderedQuantity >= 0 ? newOrderedQuantity.toString() : "0";
+                    const newItemWarehouseQuantity = Number(itemWarehouse.quantity) + Number(item.quantity);
+                    itemWarehouse.quantity =
+                        newItemWarehouseQuantity >= 0
+                            ? newItemWarehouseQuantity.toString()
+                            : "0";
+                    await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
+                }
+            }
+            delete inventoryRequest.inventoryRequestItems;
             inventoryRequest.requestStatus = status;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
@@ -397,7 +449,7 @@ let InventoryRequestService = class InventoryRequestService {
                 return res[0]["timestamp"];
             });
             inventoryRequest.dateLastUpdated = timestamp;
-            inventoryRequest = await entityManager.save(inventoryRequest);
+            inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
             inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
                 where: {
                     inventoryRequestId: inventoryRequest.inventoryRequestId,
@@ -407,7 +459,11 @@ let InventoryRequestService = class InventoryRequestService {
                         branch: true,
                     },
                     branch: true,
-                    inventoryRequestItems: true,
+                    inventoryRequestItems: {
+                        item: {
+                            itemCategory: true,
+                        },
+                    },
                     fromWarehouse: true,
                 },
             });
@@ -416,7 +472,7 @@ let InventoryRequestService = class InventoryRequestService {
                 for (const item of inventoryRequest.inventoryRequestItems) {
                     let itemBranch = await entityManager.findOne(ItemBranch_1.ItemBranch, {
                         where: {
-                            itemId: item.itemId,
+                            itemId: item.item.itemId,
                             branch: {
                                 branchId: inventoryRequest.branch.branchId,
                             },
@@ -432,7 +488,8 @@ let InventoryRequestService = class InventoryRequestService {
                         },
                     });
                     const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) - Number(item.quantity);
-                    itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                    itemWarehouse.orderedQuantity =
+                        newOrderedQuantity >= 0 ? newOrderedQuantity.toString() : "0";
                     await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
             }

@@ -1,8 +1,8 @@
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
 import { Repository } from "typeorm";
 export declare class WarehouseInventoryService {
-    private readonly itemBranchRepo;
-    constructor(itemBranchRepo: Repository<ItemWarehouse>);
+    private readonly itemWarehouse;
+    constructor(itemWarehouse: Repository<ItemWarehouse>);
     getPagination({ pageSize, pageIndex, order, columnDef }: {
         pageSize: any;
         pageIndex: any;
@@ -12,4 +12,5 @@ export declare class WarehouseInventoryService {
         results: ItemWarehouse[];
         total: number;
     }>;
+    getByItemCode(warehouseCode: string, itemCode: string): Promise<ItemWarehouse>;
 }

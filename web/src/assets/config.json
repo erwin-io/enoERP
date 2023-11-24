@@ -724,7 +724,8 @@
       "getByAdvanceSearch": "/inventoryMasterlist/page/"
     },
     "warehouseInventory": {
-      "getByAdvanceSearch": "/warehouseInventory/page/"
+      "getByAdvanceSearch": "/warehouseInventory/page/",
+      "getByItemCode": "/warehouseInventory/"
     },
     "inventoryRequest": {
       "getByAdvanceSearch": "/inventoryRequest/page/",

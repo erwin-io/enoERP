@@ -18,9 +18,5 @@ export class CreateInventoryRequestDto extends DefaultInventoryRequestDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumberString()
-  @Transform(({ obj, key }) => {
-    return obj[key]?.toString();
-  })
-  fromWarehouseId: string;
+  fromWarehouseCode: string;
 }

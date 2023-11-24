@@ -34,6 +34,19 @@ let WarehouseInventoryController = class WarehouseInventoryController {
             return res;
         }
     }
+    async getByItemCode(warehouseCode, itemCode) {
+        const res = {};
+        try {
+            res.data = await this.warehouseInventoryService.getByItemCode(warehouseCode, itemCode);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)("/page"),
@@ -42,6 +55,14 @@ __decorate([
     __metadata("design:paramtypes", [pagination_params_dto_1.PaginationParamsDto]),
     __metadata("design:returntype", Promise)
 ], WarehouseInventoryController.prototype, "getPaginated", null);
+__decorate([
+    (0, common_1.Get)("/:warehouseCode/getByItemCode/:itemCode"),
+    __param(0, (0, common_1.Param)("warehouseCode")),
+    __param(1, (0, common_1.Param)("itemCode")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], WarehouseInventoryController.prototype, "getByItemCode", null);
 WarehouseInventoryController = __decorate([
     (0, swagger_1.ApiTags)("warehouseInventory"),
     (0, common_1.Controller)("warehouseInventory"),

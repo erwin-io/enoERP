@@ -28,6 +28,14 @@ export class WarehouseInventoryService implements IServices {
     );
   }
 
+  getByItemCode(warehouseCode: string, itemCode: string): Observable<ApiResponse<ItemWarehouse>> {
+    return this.http.get<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.warehouseInventory.getByItemCode + warehouseCode + "/getByItemCode/" + itemCode)
+    .pipe(
+      tap(_ => this.log('warehouse-inventory')),
+      catchError(this.handleError('warehouse-inventory', []))
+    );
+  }
+
   handleError<T>(operation: string, result?: T) {
     return (error: any): Observable<T> => {
       this.log(`${operation} failed: ${Array.isArray(error.error.message) ? error.error.message[0] : error.error.message}`);

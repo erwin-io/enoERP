@@ -22,19 +22,9 @@ export class InventoryRequestFormComponent {
     });
   }
 
-  public setFormValue(value: InventoryRequest) {
+  public setFormValue(value: InventoryRequest, items: InventoryRequestItemTableColumn[]) {
     if(this.form) {
-      this.form.controls["description"].setValue(value.description);
-      const items = value.inventoryRequestItems.map(x=> {
-        return {
-          quantity: x.quantity,
-          itemId: x.item.itemId,
-          itemCode: x.item.itemCode,
-          itemName: x.item.itemDescription,
-          itemDescription: x.item.itemId,
-          itemCategory: x.item.itemCategory.name,
-        } as InventoryRequestItemTableColumn
-      })
+      this.form.controls["description"].setValue(value?.description ? value?.description : "");
       this.form.controls["inventoryRequestItems"].setValue(items);
     }
   }

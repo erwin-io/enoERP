@@ -72,6 +72,7 @@
                       placeholder="Select warehouse"
                       aria-label="Warehouse"
                       matInput
+                      [readonly]="!isNew"
                       [formControl]="warehouseSearchCtrl"
                       [matAutocomplete]="auto"
                       (input)="isOptionsWarehouseLoading = true"
@@ -93,7 +94,7 @@
         </div>
       </mat-card-content>
     </mat-card>
-    <h4 class="inner-content-title" [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}">Items</h4>
+    <h4 class="inner-content-title" [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}">Requested items</h4>
     <app-inventory-request-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="isReadOnly" #inventoryRequestItems></app-inventory-request-items>
   </div>
 </div>

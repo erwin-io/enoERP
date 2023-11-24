@@ -18,7 +18,11 @@ import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.
 import { SelectItemDialogComponent } from 'src/app/shared/select-item-dialog/select-item-dialog.component';
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { InventoryRequestRateSelectComponent } from './inventory-request-rate-select/inventory-request-rate-select.component';
-
+import { ItemWarehouse } from 'src/app/model/item-warehouse';
+import { WarehouseInventoryService } from 'src/app/services/warehouse-inventory.service';
+export class WarehouseInventory extends ItemWarehouse {
+  availableToRequest: string;
+}
 @Component({
   selector: 'app-inventory-request-items',
   templateUrl: './inventory-request-items.component.html',
@@ -65,6 +69,10 @@ export class InventoryRequestItemComponent {
     baseRate: false
   } as any;
 
+  currentWarehouseInventory: WarehouseInventory = {
+    availableToRequest: "0"
+  } as any;
+
   error;
 
   @Output() itemsChanged = new EventEmitter();
@@ -72,6 +80,7 @@ export class InventoryRequestItemComponent {
     private spinner: SpinnerVisibilityService,
     private inventoryRequestService: InventoryRequestService,
     private inventoryRequestRateService: InventoryRequestRateService,
+    private warehouseInventoryService: WarehouseInventoryService,
     private itemService: ItemService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -108,11 +117,52 @@ export class InventoryRequestItemComponent {
   ngAfterViewInit() {
     this.itemId.valueChanges
     .subscribe(async value => {
+      this.itemId.setErrors(null);
+      this.itemId.markAsDirty();
       if(this.dataSource.data.some(x=>x.itemId === this.itemId.value) && this.currentSelected?.itemId !== this.itemId.value) {
         this.snackBar.open("Item already exist in table!", 'close', {
           panelClass: ['style-error'],
         });
         this.itemId.setErrors({ exist: true});
+        this.itemId.markAsDirty();
+      } else if(this.warehouseCode && this.currentSelected?.itemCode) {
+        try {
+          this.spinner.show();
+          const res = await this.warehouseInventoryService.getByItemCode(this.warehouseCode, this.currentSelected.itemCode).toPromise();
+          this.spinner.hide();
+          if(res.success) {
+            this.currentWarehouseInventory = res.data as WarehouseInventory;
+            let available = 0;
+            if(this.isNew) {
+              available = Number(this.currentWarehouseInventory.quantity) - Number(this.currentWarehouseInventory.orderedQuantity);
+            } else if(this.currentSelected?.quantity && !isNaN(Number(this.currentSelected?.quantity))) {
+              const currentQuantity = Number(this.currentSelected?.quantity)
+              available = (currentQuantity + Number(this.currentWarehouseInventory.quantity)) - Number(this.currentWarehouseInventory.orderedQuantity);
+            }
+            this.currentWarehouseInventory.availableToRequest = available >= 0 ? available.toString() : "0";
+            if(available <= 0) {
+              this.snackBar.open("No stock available!", 'close', {
+                panelClass: ['style-error'],
+              });
+              this.itemId.setErrors({ stockError: true});
+              this.itemId.markAsDirty();
+            }
+          } else {
+            this.snackBar.open("No stock available!", 'close', {
+              panelClass: ['style-error'],
+            });
+            this.itemId.setErrors({ stockError: true});
+            this.itemId.markAsDirty();
+          }
+        } catch(ex) {
+          this.snackBar.open("No stock available!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.itemId.setErrors({ stockError: true});
+          this.itemId.markAsDirty();
+        }
+      } else {
+        this.itemId.setErrors(null);
         this.itemId.markAsDirty();
       }
     });
@@ -134,9 +184,14 @@ export class InventoryRequestItemComponent {
           this.snackBar.open("Quantity must not be less than 1!", 'close', {
             panelClass: ['style-error'],
           });
-          this.quantity.setErrors({ below: true});
-        } else if((value === '' || isNaN(Number(value))) && this.inventoryRequestRateCode.dirty && this.inventoryRequestRateCode.touched) {
+          this.quantity.setErrors({ min: true});
+        } else if(!this.isProcessing && (value === '' || isNaN(Number(value)) || Number(value) <= 0)) {
           this.snackBar.open("Quantity must not be less than 1!", 'close', {
+            panelClass: ['style-error'],
+          });
+          this.quantity.setErrors({ min: true});
+        } else if(!this.isProcessing && Number(this.currentWarehouseInventory.availableToRequest) < Number(this.quantity.value)) {
+          this.snackBar.open("Quantity must not be less than available stock!", 'close', {
             panelClass: ['style-error'],
           });
           this.quantity.setErrors({ below: true});
@@ -210,6 +265,7 @@ export class InventoryRequestItemComponent {
   }
 
   async onShowNewItem() {
+    this.isProcessing = true;
     this.resetCurrentSelected();
     this.itemId.reset();
     this.quantity.reset();
@@ -219,6 +275,7 @@ export class InventoryRequestItemComponent {
       disableClose: true,
       panelClass: 'inventory-request-items'
     });
+    this.isProcessing = false;
     dialogRef.afterOpened().subscribe(async res=> {
       this.inventoryRequestRateCode.markAsPristine();
       this.quantity.markAsPristine();
@@ -237,6 +294,7 @@ export class InventoryRequestItemComponent {
 
     this.spinner.show();
     try {
+      this.isProcessing = true;
       const res = await this.inventoryRequestRateService.getByCode(data.inventoryRequestRateCode).toPromise();
       if(res.success) {
         this.currentRateSelected.inventoryRequestRateId = res.data.inventoryRequestRateId;
@@ -246,12 +304,21 @@ export class InventoryRequestItemComponent {
         this.currentRateSelected.minQuantity = res.data.minQuantity;
         this.currentRateSelected.maxQuantity = res.data.maxQuantity;
         this.currentRateSelected.baseRate = res.data.baseRate;
-        this.currentSelected = data;
+        this.currentSelected = {
+          itemId: data.itemId,
+          itemCode: data.itemCode,
+          itemName: data.itemName,
+          itemCategory: data.itemCategory,
+          quantity: data.quantity,
+          inventoryRequestRateCode: data.inventoryRequestRateCode,
+          totalAmount: data.totalAmount,
+        } as any;
         this.itemId.setValue(this.currentSelected.itemId);
         this.quantity.setValue(this.currentSelected.quantity);
         this.inventoryRequestRateCode.setValue(this.currentSelected.inventoryRequestRateCode);
         this.isNew = false;
         this.spinner.hide();
+        this.isProcessing = false;
       } else {
         this.error = Array.isArray(res.message) ? res.message[0] : res.message;
         this.snackBar.open(this.error, 'close', {

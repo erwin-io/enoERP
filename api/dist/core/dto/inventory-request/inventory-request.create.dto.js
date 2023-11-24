@@ -34,12 +34,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumberString)(),
-    (0, class_transformer_1.Transform)(({ obj, key }) => {
-        var _a;
-        return (_a = obj[key]) === null || _a === void 0 ? void 0 : _a.toString();
-    }),
     __metadata("design:type", String)
-], CreateInventoryRequestDto.prototype, "fromWarehouseId", void 0);
+], CreateInventoryRequestDto.prototype, "fromWarehouseCode", void 0);
 exports.CreateInventoryRequestDto = CreateInventoryRequestDto;
 //# sourceMappingURL=inventory-request.create.dto.js.map

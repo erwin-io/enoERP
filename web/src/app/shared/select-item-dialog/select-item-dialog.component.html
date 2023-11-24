@@ -1,51 +1,64 @@
 
 <h4 mat-dialog-title>Search Item</h4>
 <div mat-dialog-content>
-  <div fxFlex="100" fxLayout="column" class="select-item-content">
-    <table class="select-item-table" mat-table matSort [dataSource]="dataSource">
-      <!-- Page Column -->
-      <ng-container matColumnDef="selected">
-        <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '5%', 'min-width': '0px!important'}"></th>
-        <td mat-cell *matCellDef="let element">
-          <div style="height: 76px!important;
-          display: flex;
-          align-items: center;" >
-            <mat-checkbox #selected [checked]="isSelected(element)" (change)="selectionChange(element, selected.checked)"></mat-checkbox>
-          </div>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="itemName">
-        <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%', 'min-width': '100px'}">
-          <span mat-sort-header>Item name</span>
-          <mat-form-field floatLabel="never" appearance="outline" >
-              <input matInput placeholder="Search item name" [(ngModel)]="filterItemName" (keyup.enter)="init()" />
-          </mat-form-field>
-        </th>
-        <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
-      </ng-container>
-      <ng-container matColumnDef="itemCategory">
-        <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%', 'min-width': '100px'}">
-          <span mat-sort-header>Item Category</span>
-          <mat-form-field floatLabel="never" appearance="outline" >
-              <input matInput placeholder="Search item category" [(ngModel)]="filterItemCategory" (keyup.enter)="init()" />
-          </mat-form-field>
-        </th>
-        <td mat-cell *matCellDef="let element">{{ element.itemCategory }}</td>
-      </ng-container>
+  <div class="select-item-content-holder">
+    <div fxFlex="100" fxLayout="column" class="select-item-content">
+      <table class="select-item-table" mat-table matSort [dataSource]="dataSource">
+        <!-- Page Column -->
+        <ng-container matColumnDef="selected">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '5%', 'min-width': '0px!important'}"></th>
+          <td mat-cell *matCellDef="let element">
+            <div style="height: 76px!important;
+            display: flex;
+            align-items: center;" >
+              <mat-checkbox #selected [checked]="isSelected(element)" (change)="selectionChange(element, selected.checked)"></mat-checkbox>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="itemName">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%', 'min-width': '100px'}">
+            <span mat-sort-header>Item name</span>
+            <mat-form-field floatLabel="never" appearance="outline" >
+                <input matInput placeholder="Search item name" [(ngModel)]="filterItemName" (keyup.enter)="init()" />
+            </mat-form-field>
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="itemCategory">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%', 'min-width': '100px'}">
+            <span mat-sort-header>Item Category</span>
+            <mat-form-field floatLabel="never" appearance="outline" >
+                <input matInput placeholder="Search item category" [(ngModel)]="filterItemCategory" (keyup.enter)="init()" />
+            </mat-form-field>
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.itemCategory }}</td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </div>
-  <div fxFlex="100" *ngIf="selected && selected?.itemId" class="select-item-selected">
-    <div fxFlex="100" fxLayout="column" class="select-item-selected-cancel">
-      <button mat-icon-button aria-label="Unselect" (click)="selectionChange(selected, false)">
-        <mat-icon>close</mat-icon>
-      </button>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
     </div>
-    <div fxFlex="100" fxLayout="column" class="select-item-selected-value">
-      <h4>{{selected?.itemName}}</h4><br>
-      <h4>{{selected?.itemCategory}}</h4>
+    <div class="select-item-footer">
+      <div fxFlex="100" *ngIf="selected && selected?.itemId" class="select-item-selected">
+        <div fxFlex="100" fxLayout="column" class="select-item-selected-cancel">
+          <button mat-icon-button aria-label="Unselect" (click)="selectionChange(selected, false)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div fxFlex="100" fxLayout="column" class="select-item-selected-value">
+          <h4>{{selected?.itemName}}</h4><br>
+          <h4>{{selected?.itemCategory}}</h4>
+        </div>
+      </div>
+      <div fxFlex="100">
+        <mat-paginator
+            [style]="{'display': dataSource.data.length === 0 ? 'none!important' : ''}"
+            #paginator
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            showFirstLastButtons
+            [length]="total">
+        </mat-paginator>
+      </div>
     </div>
   </div>
 </div>

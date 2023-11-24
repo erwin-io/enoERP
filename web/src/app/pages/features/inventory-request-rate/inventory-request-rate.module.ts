@@ -44,7 +44,7 @@ export const routes: Routes = [
   declarations: [
     InventoryRequestRateComponent,
     InventoryRequestRateDetailsComponent,
-    InventoryRequestRateFormComponent
+    InventoryRequestRateFormComponent,
   ],
   imports: [
     CommonModule,

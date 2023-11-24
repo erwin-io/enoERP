@@ -78,22 +78,33 @@ export class WarehouseInventoryComponent {
     .subscribe(async value => {
       await this.getWarehouseInventoryPaginated();
     });
-    this.initWarehouseOptions();
   }
 
   async initWarehouseOptions() {
-    this.isOptionsWarehouseLoading = true;
-    const res = await this.warehouseService.getByAdvanceSearch({
-      order: {},
-      columnDef: [{
-        apiNotation: "name",
-        filter: this.warehouseSearchInput.nativeElement.value
-      }],
-      pageIndex: 0,
-      pageSize: 10
-    }).toPromise();
-    this.optionWarehouse = res.data.results.map(a=> { return { name: a.name, code: a.warehouseCode }});
-    this.isOptionsWarehouseLoading = false;
+    try {
+      this.isOptionsWarehouseLoading = true;
+      const res = await this.warehouseService.getByAdvanceSearch({
+        order: {},
+        columnDef: [{
+          apiNotation: "name",
+          filter: this.warehouseSearchInput.nativeElement.value
+        }],
+        pageIndex: 0,
+        pageSize: 10
+      }).toPromise();
+      if(res.success) {
+        this.optionWarehouse = res.data.results.map(a=> { return { name: a.name, code: a.warehouseCode }});
+        this.isOptionsWarehouseLoading = false;
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {panelClass: ['style-error']});
+        this.isOptionsWarehouseLoading = false;
+      }
+    } catch (err) {
+      this.error = Array.isArray(err.message) ? err.message[0] : err.message;
+      this.snackBar.open(this.error, 'close', {panelClass: ['style-error']});
+      this.isOptionsWarehouseLoading = false;
+    }
   }
 
   displayWarehouseName(value?: number) {

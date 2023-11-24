@@ -75,28 +75,39 @@ export class InventoryMasterlistComponent {
         distinctUntilChanged()
     )
     .subscribe(async value => {
-        await this.initBranchOptions();
+        await this.initBranchOptions(this.branchSearchInput?.nativeElement?.value);
     });
     this.branchCode.valueChanges
     .subscribe(async value => {
       await this.getInventoryMasterlistPaginated();
     });
-    this.branchCode.setValue(this.currentUserProfile.branch.branchCode);
   }
 
-  async initBranchOptions() {
-    this.isOptionsBranchLoading = true;
-    const res = await this.branchService.getByAdvanceSearch({
-      order: {},
-      columnDef: [{
-        apiNotation: "name",
-        filter: this.branchSearchInput.nativeElement.value
-      }],
-      pageIndex: 0,
-      pageSize: 10
-    }).toPromise();
-    this.optionBranch = res.data.results.map(a=> { return { name: a.name, code: a.branchCode }});
-    this.isOptionsBranchLoading = false;
+  async initBranchOptions(keyword) {
+    try {
+      this.isOptionsBranchLoading = true;
+      const res = await this.branchService.getByAdvanceSearch({
+        order: {},
+        columnDef: [{
+          apiNotation: "name",
+          filter: keyword ? keyword : this.branchSearchInput?.nativeElement?.value
+        }],
+        pageIndex: 0,
+        pageSize: 10
+      }).toPromise();
+      if(res.success) {
+        this.optionBranch = res.data.results.map(a=> { return { name: a.name, code: a.branchCode }});
+        this.isOptionsBranchLoading = false;
+      } else {
+        this.error = Array.isArray(res.message) ? res.message[0] : res.message;
+        this.snackBar.open(this.error, 'close', {panelClass: ['style-error']});
+        this.isOptionsBranchLoading = false;
+      }
+    } catch (err) {
+      this.error = Array.isArray(err.message) ? err.message[0] : err.message;
+      this.snackBar.open(this.error, 'close', {panelClass: ['style-error']});
+      this.isOptionsBranchLoading = false;
+    }
   }
 
   displayBranchName(value?: number) {
@@ -104,8 +115,9 @@ export class InventoryMasterlistComponent {
   }
 
   async ngAfterViewInit() {
+    await this.initBranchOptions(this.currentUserProfile.branch.name);
     this.getInventoryMasterlistPaginated();
-    this.initBranchOptions();
+    this.branchCode.setValue(this.currentUserProfile.branch.branchCode);
     this.branchSearchCtrl.setValue(this.branchCode.value);
   }
 

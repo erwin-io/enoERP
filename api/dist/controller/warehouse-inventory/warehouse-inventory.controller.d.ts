@@ -9,4 +9,5 @@ export declare class WarehouseInventoryController {
         results: ItemWarehouse[];
         total: number;
     }>>;
+    getByItemCode(warehouseCode: string, itemCode: string): Promise<ApiResponseModel<ItemWarehouse>>;
 }

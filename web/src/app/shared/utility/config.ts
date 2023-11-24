@@ -86,6 +86,7 @@ export interface AppConfig {
       };
       warehouseInventory: {
         getByAdvanceSearch: string;
+        getByItemCode: string;
       };
       inventoryRequest: {
         getByAdvanceSearch: string;

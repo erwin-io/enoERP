@@ -87,6 +87,7 @@ export class InventoryRequestDetailsComponent {
   }
 
   ngAfterViewInit() {
+    this.initWarehouseOptions();
     if(!this.isNew) {
       this.initDetails();
     } else {
@@ -104,7 +105,6 @@ export class InventoryRequestDetailsComponent {
     this.warehouseCode.valueChanges
     .subscribe(async value => {
     });
-    this.initWarehouseOptions();
   }
 
   async initWarehouseOptions() {
@@ -134,7 +134,8 @@ export class InventoryRequestDetailsComponent {
         if (res.success) {
           this.inventoryRequest = res.data;
           this.canAddEdit = !((!this.isReadOnly || !this.isNew) && this.inventoryRequest.requestStatus !== "PENDING");
-          this.inventoryRequestForm.setFormValue(this.inventoryRequest);
+          this.warehouseCode.setValue(this.inventoryRequest.fromWarehouse.warehouseCode);
+          this.warehouseSearchCtrl.setValue(this.inventoryRequest.fromWarehouse.warehouseCode);
           const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
             return {
               quantity: x.quantity,
@@ -143,8 +144,11 @@ export class InventoryRequestDetailsComponent {
               itemName: x.item.itemDescription,
               itemDescription: x.item.itemId,
               itemCategory: x.item.itemCategory.name,
+              totalAmount: x.totalAmount,
+              inventoryRequestRateCode: x.inventoryRequestRate.inventoryRequestRateCode
             } as InventoryRequestItemTableColumn
           })
+          this.inventoryRequestForm.setFormValue(this.inventoryRequest, items);
           this.inventoryRequestItemComponent.init(items);
 
           if (this.isReadOnly) {
@@ -260,7 +264,8 @@ export class InventoryRequestDetailsComponent {
           formData = {
             ...formData,
             requestedByUserId: this.currentUserProfile.userId,
-            branchId: this.currentUserProfile.branch.branchId
+            branchId: this.currentUserProfile.branch.branchId,
+            fromWarehouseCode: this.warehouseCode.value
           }
           res = await this.inventoryRequestService.create(formData).toPromise();
         } else {

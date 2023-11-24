@@ -37,4 +37,25 @@ export class WarehouseInventoryController {
       return res;
     }
   }
+
+  @Get("/:warehouseCode/getByItemCode/:itemCode")
+  //   @UseGuards(JwtAuthGuard)
+  async getByItemCode(
+    @Param("warehouseCode") warehouseCode: string,
+    @Param("itemCode") itemCode: string
+  ) {
+    const res = {} as ApiResponseModel<ItemWarehouse>;
+    try {
+      res.data = await this.warehouseInventoryService.getByItemCode(
+        warehouseCode,
+        itemCode
+      );
+      res.success = true;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
 }

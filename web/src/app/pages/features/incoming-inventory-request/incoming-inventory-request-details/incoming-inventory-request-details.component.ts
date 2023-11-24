@@ -80,7 +80,6 @@ export class IncomingInventoryRequestDetailsComponent {
       this.inventoryRequestService.getByCode(this.inventoryRequestCode).subscribe(res=> {
         if (res.success) {
           this.inventoryRequest = res.data;
-          this.inventoryRequestForm.setFormValue(this.inventoryRequest);
           const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
             return {
               quantity: x.quantity,
@@ -89,8 +88,11 @@ export class IncomingInventoryRequestDetailsComponent {
               itemName: x.item.itemDescription,
               itemDescription: x.item.itemId,
               itemCategory: x.item.itemCategory.name,
+              totalAmount: x.totalAmount,
+              inventoryRequestRateCode: x.inventoryRequestRate.inventoryRequestRateCode
             } as InventoryRequestItemTableColumn
           })
+          this.inventoryRequestForm.setFormValue(this.inventoryRequest, items);
           this.inventoryRequestItemComponent.init(items);
           this.inventoryRequestForm.form.disable();
           this.isLoading = false;

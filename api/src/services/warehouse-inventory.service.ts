@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ITEM_ERROR_NOT_FOUND } from "src/common/constant/item.constant";
 import { columnDefToTypeORMCondition } from "src/common/utils/utils";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
 import { Repository } from "typeorm";
@@ -8,7 +9,7 @@ import { Repository } from "typeorm";
 export class WarehouseInventoryService {
   constructor(
     @InjectRepository(ItemWarehouse)
-    private readonly itemBranchRepo: Repository<ItemWarehouse>
+    private readonly itemWarehouse: Repository<ItemWarehouse>
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -25,7 +26,7 @@ export class WarehouseInventoryService {
       };
     }
     const [results, total] = await Promise.all([
-      this.itemBranchRepo.find({
+      this.itemWarehouse.find({
         where: {
           ...condition,
         },
@@ -39,7 +40,7 @@ export class WarehouseInventoryService {
           warehouse: true,
         },
       }),
-      this.itemBranchRepo.count({
+      this.itemWarehouse.count({
         where: {
           ...condition,
         },
@@ -49,5 +50,29 @@ export class WarehouseInventoryService {
       results,
       total,
     };
+  }
+
+  async getByItemCode(warehouseCode: string, itemCode: string) {
+    const result = await this.itemWarehouse.findOne({
+      where: {
+        item: {
+          itemCode: itemCode?.toString()?.toLowerCase(),
+          active: true,
+        },
+        warehouse: {
+          warehouseCode,
+        },
+      },
+      relations: {
+        item: {
+          itemCategory: true,
+        },
+        warehouse: true,
+      },
+    });
+    if (!result) {
+      throw Error(ITEM_ERROR_NOT_FOUND);
+    }
+    return result;
   }
 }

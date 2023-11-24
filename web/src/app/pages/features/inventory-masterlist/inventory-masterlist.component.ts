@@ -90,7 +90,7 @@ export class InventoryMasterlistComponent {
         order: {},
         columnDef: [{
           apiNotation: "name",
-          filter: keyword ? keyword : this.branchSearchInput?.nativeElement?.value
+          filter: this.currentUserProfile.branch.isMainBranch ? (keyword ? keyword : this.branchSearchInput?.nativeElement?.value) : this.currentUserProfile.branch.name
         }],
         pageIndex: 0,
         pageSize: 10
@@ -150,7 +150,7 @@ export class InventoryMasterlistComponent {
       const key = "branch.branchCode"
       const filter = {
         "apiNotation": key,
-        "filter": this.branchCode.value,
+        "filter": this.currentUserProfile.branch.isMainBranch ? (this.branchCode.value && this.branchCode.value !== '' ? this.branchCode.value : this.currentUserProfile.branch.branchCode) : this.currentUserProfile.branch.branchCode,
         "name": "branchCode",
         "type": "text"
       };

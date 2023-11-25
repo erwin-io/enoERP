@@ -31,7 +31,7 @@ export class AccessComponent {
   pageIndex = 0;
   pageSize = 10;
   total = 0;
-  order: any = { accessId: "DESC" };
+  order: any = { accessCode: "DESC" };
 
   filter: {
     apiNotation: string;
@@ -180,7 +180,7 @@ export class AccessComponent {
             panelClass: ['style-success'],
           });
           this.dialog.closeAll();
-          this.router.navigate(['/access/' + res.data.accessId]);
+          this.router.navigate(['/access/' + res.data.accessCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           dialogRef.close();

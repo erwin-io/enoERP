@@ -135,7 +135,7 @@ export class InventoryRequestItemComponent {
             this.currentWarehouseInventory = res.data as WarehouseInventory;
             let available = 0;
             if(this.isNew) {
-              available = Number(this.currentWarehouseInventory.quantity) - Number(this.currentWarehouseInventory.orderedQuantity);
+              available = Number(this.currentWarehouseInventory.quantity);
             } else if(this.currentSelected?.quantity && !isNaN(Number(this.currentSelected?.quantity))) {
               const currentQuantity = Number(this.currentSelected?.quantity)
               available = (currentQuantity + Number(this.currentWarehouseInventory.quantity)) - Number(this.currentWarehouseInventory.orderedQuantity);

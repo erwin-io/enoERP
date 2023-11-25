@@ -53,6 +53,24 @@
                 </mat-list-item>
               </mat-nav-list>
             </mat-expansion-panel>
+            <mat-expansion-panel
+              *ngIf="showGroupMenu(['Goods Receipt', 'Goods Issue'])"
+              [@.disabled]="disableGroupAnimation"
+              (afterExpand)="disableGroupAnimation = false"
+              [expanded]="expand('Purchasing')"
+              [ngClass]="{'mat-expansion-active':expand('Purchasing') }" [class.mat-elevation-z0]="true" >
+              <mat-expansion-panel-header>
+                  <mat-icon>shopping_cart</mat-icon><span>Purchasing</span>
+              </mat-expansion-panel-header>
+              <mat-nav-list>
+                <mat-list-item *ngIf="showMenu('Goods Receipt')" routerLink="goods-receipt" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>add_shopping_cart</mat-icon><span>Goods Receipt</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Goods Issue')" routerLink="goods-issue" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>keyboard_return</mat-icon><span>Goods Issue</span>
+                </mat-list-item>
+              </mat-nav-list>
+            </mat-expansion-panel>
             <mat-expansion-panel *ngIf="showGroupMenu(['Item', 'Item Category','Warehouse', 'Branch'])" [@.disabled]="disableGroupAnimation" (afterExpand)="disableGroupAnimation = false" [expanded]="expand('Configuration')" [ngClass]="{'mat-expansion-active':expand('Configuration') }" [class.mat-elevation-z0]="true" >
               <mat-expansion-panel-header>
                   <mat-icon>settings</mat-icon><span>Configuration</span>

@@ -115,6 +115,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'goods-receipt',
+        canActivate: [AuthGuard],
+        data: { title: 'Goods Receipt', group: 'Purchasing' },
+        loadChildren: () =>
+          import('./pages/features/goods-receipt/goods-receipt.module').then(
+            (m) => m.GoodsReceiptModule
+          ),
+      },
+      {
         path: 'access',
         canActivate: [AuthGuard],
         data: { title: 'Access', group: 'User Management' },

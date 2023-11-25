@@ -1,0 +1,168 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <button [disabled]="isLoading" style="margin-right: 10px!important;" mat-icon-button
+    matTooltip="{{ isReadOnly? 'Back' : 'Cancel'}}"
+    routerLink="/goods-receipt/{{isReadOnly ? goodsReceipt?.status.toLowerCase() : isNew ? '/goods-receipt/': '/goods-receipt/' + goodsReceiptCode + '/details'}}">
+    <mat-icon>
+      {{
+        isReadOnly? 'keyboard_arrow_left' : 'close'
+      }}
+    </mat-icon>
+  </button>
+  <span goodsReceiptCode="title">{{ isNew ? 'New goods receipt' : '#' + goodsReceiptCode }}</span>
+  <span class="toolbar-item-spacer"></span>
+  <div class="toolbar-action">
+    <button
+      *ngIf="!canAddEdit ? false : !isNew"
+      mat-flat-button
+      (click)="showUpdateStatusDialog('CANCELLED')">
+      Cancel
+    </button>
+    <button
+      *ngIf="!canAddEdit ? false : isReadOnly"
+      mat-raised-button
+      color="primary"
+      matTooltip="Save"
+      routerLink="/goods-receipt/{{goodsReceiptCode}}/edit"
+      replaceUrl="true"
+    >
+      Edit
+    </button>
+    <button
+      *ngIf="!canAddEdit ? false : !isReadOnly"
+      mat-flat-button
+      [disabled]="!goodsReceiptForm.valid || !goodsReceiptForm.ready"
+      color="primary"
+      (click)="onSubmit(goodsReceiptForm.getFormData)">
+      {{isNew ? 'Save' : 'Update'}}
+    </button>
+  </div>
+</mat-toolbar>
+<div class="content">
+  <div class="inner-content">
+    <div fxFlex="100" fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="16px">
+      <div fxFlex="100" fxLayout="row">
+        <div *ngIf="isReadOnly && !isNew && pageRights['Approval'] && goodsReceipt?.status === 'PENDING'" [ngStyle.gt-xs]="{ 'flex-direction': 'row' }" [ngStyle]="{ 'flex-direction': 'column'}" style=" display: flex; width: 100%; justify-content: flex-start;gap: 16px;">
+          <button aria-label="Complete" matTooltip="Complete" mat-fab extended color="primary" (click)="showUpdateStatusDialog('COMPLETED')">
+            <mat-icon>check</mat-icon>
+            Complete
+          </button>
+          <button aria-label="Complete" matTooltip="Complete" mat-fab extended (click)="showUpdateStatusDialog('REJECTED')">
+            <mat-icon>close</mat-icon>
+            Reject
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!isNew" style=" display: flex; width: 100%; justify-content: flex-end;">
+        <button class="goods-receipt-status {{goodsReceipt?.status?.toLowerCase()}}" aria-label="{{goodsReceipt?.status}}" matTooltip="{{goodsReceipt?.status}}" mat-fab extended disableRipple>
+          <mat-icon>{{
+          goodsReceipt?.status === 'PENDING' ? 'schedule' : '' ||
+          goodsReceipt?.status === 'REJECTED' ? 'cancel' : '' ||
+          goodsReceipt?.status === 'COMPLETED' ? 'check_circle' : '' ||
+          goodsReceipt?.status === 'CANCELLED' ? 'not_interested' : '' }}</mat-icon>
+          {{
+            goodsReceipt?.status === 'PENDING' ? 'Pending' : '' ||
+            goodsReceipt?.status === 'REJECTED' ? 'Rejected' : '' ||
+            goodsReceipt?.status === 'COMPLETED' ? 'Completed' : '' ||
+            goodsReceipt?.status === 'CANCELLED' ? 'Cancelled' : '' }}
+        </button>
+      </div>
+    </div>
+    <h4 class="inner-content-title">Goods Receipt details</h4>
+    <mat-card>
+      <mat-card-content>
+        <div fxFlex="100" fxLayout="column">
+          <div fxLayout="column" fxFlex="33.33%" fxLayout.gt-xs="row" >
+            <mat-form-field appearance="outline" >
+              <mat-label>Warehouse</mat-label>
+              <input type="text"
+                      placeholder="Select warehouse"
+                      aria-label="Warehouse"
+                      matInput
+                      [readonly]="!isNew"
+                      [formControl]="warehouseSearchCtrl"
+                      [matAutocomplete]="auto"
+                      (input)="isOptionsWarehouseLoading = true"
+                      #warehouseSearchInput>
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWarehouseName.bind(this)" (optionSelected)="warehouseCode.setValue($event.option.value)">
+                <mat-option *ngFor="let option of optionWarehouse" [value]="option.code">
+                  {{option.name}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-spinner *ngIf="isOptionsWarehouseLoading" style="position: absolute;
+              width: calc(48px / 2);
+              height: calc(48px / 2);
+              display: block;
+              top: calc(48px /3);
+              right: 0;"></mat-spinner>
+            </mat-form-field>
+          </div>
+          <app-goods-receipt-form [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" [isReadOnly]="isReadOnly" #goodsReceiptForm></app-goods-receipt-form>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <div fxFlex="100" fxLayout="column" *ngIf="!isLoading && isReadOnly && goodsReceipt?.status !== 'PENDING'">
+      <h4 class="inner-content-title">Notes</h4>
+      <mat-card>
+        <mat-card-content>
+          <div fxFlex="100" fxLayout="column" class="readonly">
+            <mat-form-field fxFlex="100" fxLayout="column" appearance="outline">
+              <mat-label>Notes</mat-label>
+              <textarea
+                matInput
+                disabled
+                placeholder="Notes.."
+                [ngModel]="goodsReceipt.notes">
+              </textarea>
+            </mat-form-field>
+        </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <h4 class="inner-content-title" [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}">Items</h4>
+    <app-goods-receipt-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [goodsReceipt]="{ goodsReceiptCode: goodsReceiptCode }" [isReadOnly]="isReadOnly" #goodsReceiptItems></app-goods-receipt-items>
+  </div>
+</div>
+
+<ng-template #cancelDialog>
+  <h4 mat-dialog-title>{{
+    updateStatusData?.status === 'REJECTED' ? 'Reject' : '' ||
+    updateStatusData?.status === 'COMPLETED' ? 'Complete' : '' ||
+    updateStatusData?.status === 'CANCELLED' ? 'Cancel' : '' }}</h4>
+
+<div mat-dialog-content>
+  <div style="display: flex;flex-direction: column;width: 100%;margin-top: 10px;">
+    <mat-form-field
+      appearance="outline"
+      fxFlex="100"
+      class="cell">
+      <mat-label>Notes</mat-label>
+      <textarea
+        (keydown.enter)="updateStatusData?.notes && updateStatusData?.notes.trim() !== '' ? updateStatus(updateStatusData) : false"
+        matInput
+        placeholder="Notes..."
+        [(ngModel)]="updateStatusData.notes">
+      </textarea>
+    </mat-form-field>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      mat-dialog-close>
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!updateStatusData?.notes || updateStatusData?.notes.trim() === ''"
+      color="primary"
+      type="submit"
+      (click)="updateStatus(updateStatusData)">
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>

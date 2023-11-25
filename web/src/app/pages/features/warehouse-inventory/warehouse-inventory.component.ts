@@ -135,7 +135,7 @@ export class WarehouseInventoryComponent {
 
   async sortChange(event: { active: string, direction: string }) {
     const { active, direction } = event;
-    const { apiNotation } = this.appConfig.config.tableColumns.warehouse.find(x=>x.name === active);
+    const { apiNotation } = this.appConfig.config.tableColumns.warehouseInventory.find(x=>x.name === active);
     this.order = convertNotationToObject(apiNotation, direction.toUpperCase());
     this.getWarehouseInventoryPaginated()
   }

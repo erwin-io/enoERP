@@ -1,7 +1,11 @@
 <mat-toolbar color="#fff" class="mat-elevation-z4">
   <button [disabled]="isLoading" style="margin-right: 10px!important;" mat-icon-button
     matTooltip="{{ isReadOnly? 'Back' : 'Cancel'}}"
-    [routerLink]="isReadOnly ? '/inventory-request/' : isNew ? '/inventory-request/': '/inventory-request/' + inventoryRequestCode">
+    routerLink="/inventory-request/{{isReadOnly ? (
+      inventoryRequest?.requestStatus === 'PENDING' ||
+      inventoryRequest?.requestStatus === 'PROCESSING' ||
+      inventoryRequest?.requestStatus === 'IN-TRANSIT'
+    ) ? inventoryRequest?.requestStatus.toLowerCase() : 'closed-request/' + inventoryRequest?.requestStatus.toLowerCase() : isNew ? '/inventory-request/': '/inventory-request/' + inventoryRequestCode + '/details'}}">
     <mat-icon>
       {{
         isReadOnly? 'keyboard_arrow_left' : 'close'
@@ -94,6 +98,28 @@
         </div>
       </mat-card-content>
     </mat-card>
+    <div fxFlex="100" fxLayout="column" *ngIf="!isLoading && isReadOnly &&
+    (inventoryRequest?.requestStatus === 'REJECTED' ||
+    inventoryRequest?.requestStatus === 'COMPLETED' ||
+    inventoryRequest?.requestStatus === 'CANCELLED')
+    ">
+      <h4 class="inner-content-title">Notes</h4>
+      <mat-card>
+        <mat-card-content>
+          <div fxFlex="100" fxLayout="column" class="readonly">
+            <mat-form-field fxFlex="100" fxLayout="column" appearance="outline">
+              <mat-label>Notes</mat-label>
+              <textarea
+                matInput
+                disabled
+                placeholder="Notes.."
+                [ngModel]="inventoryRequest.notes">
+              </textarea>
+            </mat-form-field>
+        </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
     <h4 class="inner-content-title" [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}">Requested items</h4>
     <app-inventory-request-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="isReadOnly" #inventoryRequestItems></app-inventory-request-items>
   </div>

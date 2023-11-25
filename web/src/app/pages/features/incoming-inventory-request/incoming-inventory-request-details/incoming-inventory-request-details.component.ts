@@ -37,7 +37,7 @@ export class IncomingInventoryRequestDetailsComponent {
   currentUserProfile:Users;
   inventoryRequestCode;
   error;
-  isLoading = false;
+  isLoading = true;
 
   mediaWatcher: Subscription;
   matcher = new MyErrorStateMatcher();
@@ -216,7 +216,7 @@ export class IncomingInventoryRequestDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
+          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode + '/details']);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();
@@ -284,7 +284,7 @@ export class IncomingInventoryRequestDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode]);
+          this.router.navigate(['/incoming-inventory-request/' + this.inventoryRequestCode + '/details']);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.initDetails();

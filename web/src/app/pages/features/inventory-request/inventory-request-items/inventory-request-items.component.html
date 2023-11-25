@@ -292,7 +292,7 @@
     </button>
     <button
       mat-flat-button
-      [disabled]="!form.valid || !form.dirty"
+      [disabled]="!form.valid && !form.dirty"
       color="primary"
       type="submit"
       (click)="onSubmit()">

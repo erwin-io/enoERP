@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateGoodsReceiptDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
-const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const goods_receipt_base_dto_1 = require("./goods-receipt-base.dto");
 class CreateGoodsReceiptDto extends goods_receipt_base_dto_1.DefaultGoodsReceiptDto {
@@ -24,12 +23,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumberString)(),
-    (0, class_transformer_1.Transform)(({ obj, key }) => {
-        var _a;
-        return (_a = obj[key]) === null || _a === void 0 ? void 0 : _a.toString();
-    }),
     __metadata("design:type", String)
-], CreateGoodsReceiptDto.prototype, "warehouseId", void 0);
+], CreateGoodsReceiptDto.prototype, "warehouseCode", void 0);
 exports.CreateGoodsReceiptDto = CreateGoodsReceiptDto;
 //# sourceMappingURL=goods-receipt.create.dto.js.map

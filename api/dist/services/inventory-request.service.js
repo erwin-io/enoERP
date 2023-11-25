@@ -100,6 +100,7 @@ let InventoryRequestService = class InventoryRequestService {
                         },
                         inventoryRequestRate: true,
                     },
+                    fromWarehouse: true,
                 },
             }),
             this.inventoryRequestRepo.count({
@@ -292,6 +293,10 @@ let InventoryRequestService = class InventoryRequestService {
                 return acc;
             }, []);
             for (const item of dto.inventoryRequestItems) {
+                let isNew = false;
+                if (isNaN(item.quantity) || item.quantity <= 0) {
+                    throw Error("Invalid item quantity");
+                }
                 let inventoryRequestItem = await entityManager.findOne(InventoryRequestItem_1.InventoryRequestItem, {
                     where: {
                         itemId: item.itemId,
@@ -299,12 +304,14 @@ let InventoryRequestService = class InventoryRequestService {
                     },
                 });
                 if (!inventoryRequestItem) {
+                    isNew = true;
                     inventoryRequestItem = new InventoryRequestItem_1.InventoryRequestItem();
                     inventoryRequestItem.item = await entityManager.findOne(Item_1.Item, {
                         where: { itemId: item.itemId },
                     });
                     inventoryRequestItem.inventoryRequestId =
                         inventoryRequest.inventoryRequestId;
+                    inventoryRequestItem.quantity = item.quantity.toString();
                 }
                 const inventoryRequestRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
                     where: {
@@ -315,12 +322,11 @@ let InventoryRequestService = class InventoryRequestService {
                 if (!inventoryRequestRate) {
                     throw Error(inventory_request_rate_constant_1.INVENTORYREQUESTRATE_ERROR_NOT_FOUND);
                 }
-                const totalAmount = Number(inventoryRequestRate.rate) *
-                    Number(inventoryRequestItem.quantity);
-                inventoryRequestItem.totalAmount = totalAmount.toString();
                 inventoryRequestItem.inventoryRequestRate = inventoryRequestRate;
                 const origReqQuantity = inventoryRequestItem.quantity;
                 inventoryRequestItem.quantity = item.quantity.toString();
+                const totalAmount = Number(inventoryRequestRate.rate) * item.quantity;
+                inventoryRequestItem.totalAmount = totalAmount.toString();
                 inventoryRequestItem = await entityManager.save(InventoryRequestItem_1.InventoryRequestItem, inventoryRequestItem);
                 const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
                     where: {
@@ -328,16 +334,62 @@ let InventoryRequestService = class InventoryRequestService {
                         warehouseId: inventoryRequest.fromWarehouse.warehouseId,
                     },
                 });
-                const oldOrderQuantiy = Number(itemWarehouse.orderedQuantity) - Number(origReqQuantity);
-                const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
-                itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
-                const oldQuantity = Number(itemWarehouse.quantity) + Number(origReqQuantity);
-                const newItemWarehouseQuantity = oldQuantity - Number(item.quantity);
+                if (isNew) {
+                    const newItemWarehouseOrderQuantity = Number(itemWarehouse.orderedQuantity) +
+                        Number(inventoryRequestItem.quantity);
+                    itemWarehouse.orderedQuantity =
+                        newItemWarehouseOrderQuantity.toString();
+                    const newItemWarehouseQuantity = Number(itemWarehouse.quantity) -
+                        Number(inventoryRequestItem.quantity);
+                    itemWarehouse.quantity =
+                        newItemWarehouseQuantity >= 0
+                            ? newItemWarehouseQuantity.toString()
+                            : "0";
+                }
+                else {
+                    const oldOrderQuantiy = Number(itemWarehouse.orderedQuantity) > Number(origReqQuantity)
+                        ? Number(itemWarehouse.orderedQuantity) -
+                            Number(origReqQuantity)
+                        : 0;
+                    const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
+                    itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+                    const oldQuantity = Number(itemWarehouse.quantity) + Number(origReqQuantity);
+                    const newItemWarehouseQuantity = oldQuantity - Number(item.quantity);
+                    itemWarehouse.quantity =
+                        newItemWarehouseQuantity >= 0
+                            ? newItemWarehouseQuantity.toString()
+                            : "0";
+                }
+                await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
+            }
+            let originalInventoryRequestItems = await entityManager.find(InventoryRequestItem_1.InventoryRequestItem, {
+                where: {
+                    inventoryRequestId: inventoryRequest.inventoryRequestId,
+                },
+                relations: {
+                    item: true,
+                },
+            });
+            originalInventoryRequestItems = originalInventoryRequestItems.filter((x) => !dto.inventoryRequestItems.some((i) => i.itemId === x.item.itemId));
+            for (const item of originalInventoryRequestItems) {
+                const itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
+                    where: {
+                        itemId: item.itemId,
+                        warehouseId: inventoryRequest.fromWarehouse.warehouseId,
+                    },
+                });
+                const newOrderedQuantity = Number(itemWarehouse.orderedQuantity) - Number(item.quantity);
+                itemWarehouse.orderedQuantity =
+                    newOrderedQuantity >= 0 ? newOrderedQuantity.toString() : "0";
+                const newItemWarehouseQuantity = Number(itemWarehouse.quantity) + Number(item.quantity);
                 itemWarehouse.quantity =
                     newItemWarehouseQuantity >= 0
                         ? newItemWarehouseQuantity.toString()
                         : "0";
                 await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
+            }
+            if (originalInventoryRequestItems.length > 0) {
+                await entityManager.delete(InventoryRequestItem_1.InventoryRequestItem, originalInventoryRequestItems);
             }
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
             inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {

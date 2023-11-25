@@ -10,16 +10,57 @@ import { DataTableModule } from 'src/app/shared/data-table/data-table.module';
 import { IncomingInventoryRequestDetailsComponent } from './incoming-inventory-request-details/incoming-inventory-request-details.component';
 import { IncomingInventoryRequestFormComponent } from './incoming-inventory-request-form/incoming-inventory-request-form.component';
 import { IncomingInventoryRequestItemComponent } from './incoming-inventory-request-items/incoming-inventory-request-items.component';
+import { IncomingInventoryRequestClosedComponent } from './incoming-inventory-request-closed/incoming-inventory-request-closed.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: IncomingInventoryRequestComponent,
     pathMatch: 'full',
-    data: { title: "Incoming Inventory Request" }
+    redirectTo: '/incoming-inventory-request/pending'
   },
   {
-    path: ':inventoryRequestCode',
+    path: 'pending',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestComponent,
+    data: { title: "Incoming Inventory Request", tab: 0 }
+  },
+  {
+    path: 'processing',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestComponent,
+    data: { title: "Incoming Inventory Request", tab: 1 }
+  },
+  {
+    path: 'in-transit',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestComponent,
+    data: { title: "Incoming Inventory Request", tab: 2 }
+  },
+  {
+    path: 'closed-request',
+    pathMatch: 'full',
+    redirectTo: '/incoming-inventory-request/closed-request/completed'
+  },
+  {
+    path: 'closed-request/completed',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 0 }
+  },
+  {
+    path: 'closed-request/rejected',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 1 }
+  },
+  {
+    path: 'closed-request/cancelled',
+    pathMatch: 'full',
+    component: IncomingInventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 2 }
+  },
+  {
+    path: ':inventoryRequestCode/details',
     component: IncomingInventoryRequestDetailsComponent,
     data: { title: "Incoming Inventory Request", details: true }
   },
@@ -27,6 +68,11 @@ export const routes: Routes = [
     path: ':inventoryRequestCode/edit',
     component: IncomingInventoryRequestDetailsComponent,
     data: { title: "Incoming Inventory Request", details: true, edit: true }
+  },
+  {
+    path: 'closed-request/:inventoryRequestCode/details',
+    component: IncomingInventoryRequestDetailsComponent,
+    data: { title: "Incoming Inventory Request", details: true }
   },
 ];
 
@@ -36,7 +82,8 @@ export const routes: Routes = [
     IncomingInventoryRequestComponent,
     IncomingInventoryRequestDetailsComponent,
     IncomingInventoryRequestFormComponent,
-    IncomingInventoryRequestItemComponent
+    IncomingInventoryRequestItemComponent,
+    IncomingInventoryRequestClosedComponent
   ],
   imports: [
     CommonModule,

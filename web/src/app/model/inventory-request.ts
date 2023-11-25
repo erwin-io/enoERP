@@ -22,6 +22,7 @@ export class InventoryRequest {
   requestedByUser: Users;
   fromWarehouse: Warehouse;
   inventoryRequestItems: InventoryRequestItem[];
+  notes: string = "";
 }
 export class InventoryRequestItem {
   quantity: string;

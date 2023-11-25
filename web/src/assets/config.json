@@ -409,6 +409,10 @@
         "label": "Date requested",
         "apiNotation": "dateRequested",
         "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
         "format": {
           "type": "date-time",
           "custom": "MMM dd, yyyy h:mm a"
@@ -420,9 +424,9 @@
         }
       },
       {
-        "name": "requestStatus",
-        "label": "Request status",
-        "apiNotation": "requestStatus",
+        "name": "fromWarehouse",
+        "label": "Warehouse",
+        "apiNotation": "fromWarehouse.name",
         "type": "string",
         "style": {
           "width": "100px",
@@ -430,7 +434,7 @@
         },
         "filterOptions": {
           "enable": true,
-          "placeholder": "Request status"
+          "placeholder": "Warehouse"
         }
       },
       {
@@ -474,6 +478,10 @@
           "type": "date-time",
           "custom": "MMM dd, yyyy h:mm a"
         },
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
         "filterOptions": {
           "enable": true,
           "label": "Date requested",
@@ -481,9 +489,9 @@
         }
       },
       {
-        "name": "requestStatus",
-        "label": "Request status",
-        "apiNotation": "requestStatus",
+        "name": "fromWarehouse",
+        "label": "Warehouse",
+        "apiNotation": "fromWarehouse.name",
         "type": "string",
         "style": {
           "width": "100px",
@@ -491,7 +499,7 @@
         },
         "filterOptions": {
           "enable": true,
-          "placeholder": "Request status"
+          "placeholder": "Warehouse"
         }
       },
       {
@@ -520,6 +528,71 @@
         "filterOptions": {
           "enable": true,
           "placeholder": "Requested by"
+        }
+      }
+    ],
+    "goodsReceipt": [
+      {
+        "sticky": true,
+        "name": "goodsReceiptCode",
+        "label": "Goods Receipt #",
+        "apiNotation": "goodsReceiptCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Goods Receipt #"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "dateCreated",
+        "label": "Date created",
+        "apiNotation": "dateCreated",
+        "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date created",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "warehouse",
+        "label": "Warehouse",
+        "apiNotation": "warehouse.name",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Warehouse"
+        }
+      },
+      {
+        "name": "createdByUser",
+        "label": "Created by",
+        "apiNotation": "createdByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Created by"
         }
       }
     ],
@@ -626,6 +699,18 @@
         "view": false,
         "modify": false,
         "rights": []
+      },
+      {
+        "page": "Goods Receipt",
+        "view": false,
+        "modify": false,
+        "rights": ["Approval"]
+      },
+      {
+        "page": "Goods Issue",
+        "view": false,
+        "modify": false,
+        "rights": ["Approval"]
       },
       {
         "page": "Item",
@@ -741,6 +826,13 @@
       "create": "/inventoryRequestRate/",
       "update": "/inventoryRequestRate/",
       "delete": "/inventoryRequestRate/"
+    },
+    "goodsReceipt": {
+      "getByAdvanceSearch": "/goodsReceipt/page/",
+      "getByCode": "/goodsReceipt/",
+      "create": "/goodsReceipt/",
+      "update": "/goodsReceipt/",
+      "updateStatus": "/goodsReceipt/updateStatus/"
     },
     "dashboard": {},
     "message": {

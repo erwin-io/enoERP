@@ -14,7 +14,10 @@ import {
   UPDATE_SUCCESS,
 } from "src/common/constant/api-response.constant";
 import { CreateGoodsReceiptDto } from "src/core/dto/goods-receipt/goods-receipt.create.dto";
-import { UpdateGoodsReceiptDto, UpdateGoodsReceiptStatusDto } from "src/core/dto/goods-receipt/goods-receipt.update.dto";
+import {
+  UpdateGoodsReceiptDto,
+  UpdateGoodsReceiptStatusDto,
+} from "src/core/dto/goods-receipt/goods-receipt.update.dto";
 import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { GoodsReceipt } from "src/db/entities/GoodsReceipt";

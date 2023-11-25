@@ -10,9 +10,5 @@ export class CreateGoodsReceiptDto extends DefaultGoodsReceiptDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumberString()
-  @Transform(({ obj, key }) => {
-    return obj[key]?.toString();
-  })
-  warehouseId: string;
+  warehouseCode: string;
 }

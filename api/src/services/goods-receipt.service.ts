@@ -146,7 +146,7 @@ export class GoodsReceiptService {
         goodsReceipt.createdByUser = createdByUser;
         const warehouse = await entityManager.findOne(Warehouse, {
           where: {
-            warehouseId: dto.warehouseId,
+            warehouseCode: dto.warehouseCode,
             active: true,
           },
         });
@@ -272,6 +272,28 @@ export class GoodsReceiptService {
           goodsReceiptItem = await entityManager.save(
             GoodsReceiptItem,
             goodsReceiptItem
+          );
+        }
+
+        let originalGoodsReceiptItems = await entityManager.find(
+          GoodsReceiptItem,
+          {
+            where: {
+              goodsReceiptId: goodsReceipt.goodsReceiptId,
+            },
+            relations: {
+              item: true,
+            },
+          }
+        );
+
+        originalGoodsReceiptItems = originalGoodsReceiptItems.filter(
+          (x) => !dto.goodsReceiptItems.some((i) => i.itemId === x.item.itemId)
+        );
+        if (originalGoodsReceiptItems.length > 0) {
+          await entityManager.delete(
+            GoodsReceiptItem,
+            originalGoodsReceiptItems
           );
         }
         //end update items

@@ -101,8 +101,7 @@ export class InventoryRequestTableColumn {
   inventoryRequestId?: string;
   inventoryRequestCode?: string;
   dateRequested?: string;
-  requestStatus?: string;
-  branch?: string;
+  fromWarehouse?: string;
   requestedByUser?: string;
   url?: string;
 }
@@ -123,8 +122,8 @@ export class IncomingInventoryRequestTableColumn {
   inventoryRequestId?: string;
   inventoryRequestCode?: string;
   dateRequested?: string;
-  requestStatus?: string;
   branch?: string;
+  fromWarehouse?: string;
   requestedByUser?: string;
   url?: string;
 }
@@ -137,6 +136,24 @@ export class InventoryRequestRateTableColumn {
   maxQuantity?: string;
   itemName?: string;
   url?: string;
+}
+
+export class GoodsReceiptTableColumn {
+  goodsReceiptId?: string;
+  goodsReceiptCode?: string;
+  dateCreated?: string;
+  warehouse?: string;
+  createdByUser?: string;
+  url?: string;
+}
+
+export class GoodsReceiptItemTableColumn {
+  quantity: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemDescription: string;
+  itemCategory: string;
 }
 
 

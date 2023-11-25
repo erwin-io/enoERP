@@ -25,6 +25,7 @@ export interface AppConfig {
       incomingInventoryRequest: ColumnDefinition[];
       inventoryRequestRate: ColumnDefinition[];
       warehouseInventory: ColumnDefinition[];
+      goodsReceipt: ColumnDefinition[];
     };
     sessionConfig: {
       sessionTimeout: string;
@@ -102,6 +103,13 @@ export interface AppConfig {
         create: string;
         update: string;
         delete: string;
+      },
+      goodsReceipt: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        updateStatus: string;
       };
       dashboard: {};
       message: { create: string };

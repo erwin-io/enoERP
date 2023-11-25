@@ -1,6 +1,13 @@
 <mat-toolbar color="#fff" class="mat-elevation-z4">
   <span id="title">Inventory Request</span>
   <span class="toolbar-item-spacer"></span>
+  <div class="toolbar-action">
+    <button
+      mat-flat-button
+      routerLink="/inventory-request/closed-request/">
+      View all closed request
+    </button>
+  </div>
 </mat-toolbar>
 <div class="component-floating-actions vertical-actions">
   <button mat-fab color="primary" aria-label="New inventoryRequest" matTooltip="New Inventory request" routerLink="/inventory-request/new">
@@ -8,20 +15,72 @@
   </button>
 </div>
 <div class="content">
-<div class="inner-content">
-  <mat-card [ngClass]="{ 'hidden': isLoading }">
-      <mat-card-content fxLayout="column" >
-        <app-data-table
-        [isLoading]="isLoading"
-        [dataSource]="dataSource"
-        [columnDefs]="appConfig.config.tableColumns.inventoryRequest"
-        [total]="total"
-        (pageChange)="pageChange($event)"
-        (sortChange)="sortChange($event)"
-        (filterChange)="filterChange($event)"
-        ></app-data-table>
-      </mat-card-content>
-  </mat-card>
+  <div class="inner-content">
+    <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)" [(selectedIndex)]="tabIndex">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.pending > 99 ? '99+' : total.pending }}" *ngIf="total.pending > 0; else matLabelPending" matBadgeOverlap="false">Pending</span>
+          <ng-template #matLabelPending>Pending</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['pending']"
+              [columnDefs]="appConfig.config.tableColumns.inventoryRequest"
+              [total]="total['pending']"
+              (pageChange)="pageChange($event, 'pending')"
+              (sortChange)="sortChange($event, 'pending')"
+              (filterChange)="filterChange($event, 'pending')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.processing > 99 ? '99+' : total.processing }}" *ngIf="total.processing > 0; else matLabelProcessing" matBadgeOverlap="false">Processing</span>
+          <ng-template #matLabelProcessing>Processing</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['processing']"
+              [columnDefs]="appConfig.config.tableColumns.inventoryRequest"
+              [total]="total['processing']"
+              (pageChange)="pageChange($event, 'processing')"
+              (sortChange)="sortChange($event, 'processing')"
+              (filterChange)="filterChange($event, 'processing')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total['in-transit'] > 99 ? '99+' : total['in-transit'] }}" *ngIf="total['in-transit'] > 0; else matLabelInTransit" matBadgeOverlap="false">In-Transit</span>
+          <ng-template #matLabelInTransit>In-Transit</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['in-transit']"
+              [columnDefs]="appConfig.config.tableColumns.inventoryRequest"
+              [total]="total['in-transit']"
+              (pageChange)="pageChange($event, 'in-transit')"
+              (sortChange)="sortChange($event, 'in-transit')"
+              (filterChange)="filterChange($event, 'in-transit')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
 

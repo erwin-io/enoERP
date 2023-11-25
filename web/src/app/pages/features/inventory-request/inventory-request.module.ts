@@ -11,21 +11,62 @@ import { InventoryRequestFormComponent } from './inventory-request-form/inventor
 import { InventoryRequestDetailsComponent } from './inventory-request-details/inventory-request-details.component';
 import { InventoryRequestItemComponent } from './inventory-request-items/inventory-request-items.component';
 import { InventoryRequestRateSelectComponent } from './inventory-request-items/inventory-request-rate-select/inventory-request-rate-select.component';
+import { InventoryRequestClosedComponent } from './inventory-request-closed/inventory-request-closed.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: InventoryRequestComponent,
     pathMatch: 'full',
-    data: { title: "Inventory Request" }
+    redirectTo: '/inventory-request/pending'
+  },
+  {
+    path: 'pending',
+    pathMatch: 'full',
+    component: InventoryRequestComponent,
+    data: { title: "Inventory Request", tab: 0 }
+  },
+  {
+    path: 'processing',
+    pathMatch: 'full',
+    component: InventoryRequestComponent,
+    data: { title: "Inventory Request", tab: 1 }
+  },
+  {
+    path: 'in-transit',
+    pathMatch: 'full',
+    component: InventoryRequestComponent,
+    data: { title: "Inventory Request", tab: 2 }
+  },
+  {
+    path: 'closed-request',
+    pathMatch: 'full',
+    redirectTo: '/inventory-request/closed-request/completed'
+  },
+  {
+    path: 'closed-request/completed',
+    pathMatch: 'full',
+    component: InventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 0 }
+  },
+  {
+    path: 'closed-request/rejected',
+    pathMatch: 'full',
+    component: InventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 1 }
+  },
+  {
+    path: 'closed-request/cancelled',
+    pathMatch: 'full',
+    component: InventoryRequestClosedComponent,
+    data: { title: "Closed Request", tab: 2 }
   },
   {
     path: 'new',
     component: InventoryRequestDetailsComponent,
-    data: { title: "New Inventory Request", details: true, isNew: true}
+    data: { title: "Inventory Request", details: true, isNew: true}
   },
   {
-    path: ':inventoryRequestCode',
+    path: ':inventoryRequestCode/details',
     component: InventoryRequestDetailsComponent,
     data: { title: "Inventory Request", details: true }
   },
@@ -33,6 +74,11 @@ export const routes: Routes = [
     path: ':inventoryRequestCode/edit',
     component: InventoryRequestDetailsComponent,
     data: { title: "Inventory Request", details: true, edit: true }
+  },
+  {
+    path: 'closed-request/:inventoryRequestCode/details',
+    component: InventoryRequestDetailsComponent,
+    data: { title: "Inventory Request", details: true }
   },
 ];
 
@@ -43,7 +89,8 @@ export const routes: Routes = [
     InventoryRequestDetailsComponent,
     InventoryRequestFormComponent,
     InventoryRequestItemComponent,
-    InventoryRequestRateSelectComponent
+    InventoryRequestRateSelectComponent,
+    InventoryRequestClosedComponent
   ],
   imports: [
     CommonModule,

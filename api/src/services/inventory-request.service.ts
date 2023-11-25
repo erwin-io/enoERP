@@ -25,7 +25,7 @@ import { ItemBranch } from "src/db/entities/ItemBranch";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
-import { Repository } from "typeorm";
+import { In, Not, Repository } from "typeorm";
 
 const deafaultInventoryRequestSelect = {
   inventoryRequestId: true,
@@ -103,6 +103,7 @@ export class InventoryRequestService {
             },
             inventoryRequestRate: true,
           },
+          fromWarehouse: true,
         },
       }),
       this.inventoryRequestRepo.count({
@@ -331,6 +332,10 @@ export class InventoryRequestService {
 
         //update items
         for (const item of dto.inventoryRequestItems) {
+          let isNew = false;
+          if (isNaN(item.quantity) || item.quantity <= 0) {
+            throw Error("Invalid item quantity");
+          }
           let inventoryRequestItem = await entityManager.findOne(
             InventoryRequestItem,
             {
@@ -341,12 +346,14 @@ export class InventoryRequestService {
             }
           );
           if (!inventoryRequestItem) {
+            isNew = true;
             inventoryRequestItem = new InventoryRequestItem();
             inventoryRequestItem.item = await entityManager.findOne(Item, {
               where: { itemId: item.itemId },
             });
             inventoryRequestItem.inventoryRequestId =
               inventoryRequest.inventoryRequestId;
+            inventoryRequestItem.quantity = item.quantity.toString();
           }
           const inventoryRequestRate = await entityManager.findOne(
             InventoryRequestRate,
@@ -360,13 +367,11 @@ export class InventoryRequestService {
           if (!inventoryRequestRate) {
             throw Error(INVENTORYREQUESTRATE_ERROR_NOT_FOUND);
           }
-          const totalAmount =
-            Number(inventoryRequestRate.rate) *
-            Number(inventoryRequestItem.quantity);
-          inventoryRequestItem.totalAmount = totalAmount.toString();
           inventoryRequestItem.inventoryRequestRate = inventoryRequestRate;
           const origReqQuantity = inventoryRequestItem.quantity;
           inventoryRequestItem.quantity = item.quantity.toString();
+          const totalAmount = Number(inventoryRequestRate.rate) * item.quantity;
+          inventoryRequestItem.totalAmount = totalAmount.toString();
           inventoryRequestItem = await entityManager.save(
             InventoryRequestItem,
             inventoryRequestItem
@@ -378,19 +383,82 @@ export class InventoryRequestService {
               warehouseId: inventoryRequest.fromWarehouse.warehouseId,
             },
           });
-          const oldOrderQuantiy =
-            Number(itemWarehouse.orderedQuantity) - Number(origReqQuantity);
-          const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
-          itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
+          if (isNew) {
+            const newItemWarehouseOrderQuantity =
+              Number(itemWarehouse.orderedQuantity) +
+              Number(inventoryRequestItem.quantity);
+            itemWarehouse.orderedQuantity =
+              newItemWarehouseOrderQuantity.toString();
+            const newItemWarehouseQuantity =
+              Number(itemWarehouse.quantity) -
+              Number(inventoryRequestItem.quantity);
+            itemWarehouse.quantity =
+              newItemWarehouseQuantity >= 0
+                ? newItemWarehouseQuantity.toString()
+                : "0";
+          } else {
+            const oldOrderQuantiy =
+              Number(itemWarehouse.orderedQuantity) > Number(origReqQuantity)
+                ? Number(itemWarehouse.orderedQuantity) -
+                  Number(origReqQuantity)
+                : 0;
+            const newOrderedQuantity = oldOrderQuantiy + Number(item.quantity);
+            itemWarehouse.orderedQuantity = newOrderedQuantity.toString();
 
-          const oldQuantity =
-            Number(itemWarehouse.quantity) + Number(origReqQuantity);
-          const newItemWarehouseQuantity = oldQuantity - Number(item.quantity);
+            const oldQuantity =
+              Number(itemWarehouse.quantity) + Number(origReqQuantity);
+            const newItemWarehouseQuantity =
+              oldQuantity - Number(item.quantity);
+            itemWarehouse.quantity =
+              newItemWarehouseQuantity >= 0
+                ? newItemWarehouseQuantity.toString()
+                : "0";
+          }
+          await entityManager.save(ItemWarehouse, itemWarehouse);
+        }
+
+        let originalInventoryRequestItems = await entityManager.find(
+          InventoryRequestItem,
+          {
+            where: {
+              inventoryRequestId: inventoryRequest.inventoryRequestId,
+            },
+            relations: {
+              item: true,
+            },
+          }
+        );
+
+        originalInventoryRequestItems = originalInventoryRequestItems.filter(
+          (x) =>
+            !dto.inventoryRequestItems.some((i) => i.itemId === x.item.itemId)
+        );
+        //remove ordered item from itemWarehouse table
+        for (const item of originalInventoryRequestItems) {
+          const itemWarehouse = await entityManager.findOne(ItemWarehouse, {
+            where: {
+              itemId: item.itemId,
+              warehouseId: inventoryRequest.fromWarehouse.warehouseId,
+            },
+          });
+          const newOrderedQuantity =
+            Number(itemWarehouse.orderedQuantity) - Number(item.quantity);
+          itemWarehouse.orderedQuantity =
+            newOrderedQuantity >= 0 ? newOrderedQuantity.toString() : "0";
+
+          const newItemWarehouseQuantity =
+            Number(itemWarehouse.quantity) + Number(item.quantity);
           itemWarehouse.quantity =
             newItemWarehouseQuantity >= 0
               ? newItemWarehouseQuantity.toString()
               : "0";
           await entityManager.save(ItemWarehouse, itemWarehouse);
+        }
+        if (originalInventoryRequestItems.length > 0) {
+          await entityManager.delete(
+            InventoryRequestItem,
+            originalInventoryRequestItems
+          );
         }
         //end update items
 

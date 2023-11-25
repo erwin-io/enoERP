@@ -1,0 +1,100 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <span id="title">Goods Receipt</span>
+  <span class="toolbar-item-spacer"></span>
+</mat-toolbar>
+<div class="component-floating-actions vertical-actions">
+  <button mat-fab color="primary" aria-label="New Goods Receipt" matTooltip="New Goods Receipt" routerLink="/goods-receipt/new">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+<div class="content">
+  <div class="inner-content">
+    <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)" [(selectedIndex)]="tabIndex">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.pending > 99 ? '99+' : total.pending }}" *ngIf="total.pending > 0; else matLabelPending" matBadgeOverlap="false">Pending</span>
+          <ng-template #matLabelPending>Pending</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['pending']"
+              [columnDefs]="appConfig.config.tableColumns.goodsReceipt"
+              [total]="total['pending']"
+              (pageChange)="pageChange($event, 'pending')"
+              (sortChange)="sortChange($event, 'pending')"
+              (filterChange)="filterChange($event, 'pending')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.completed > 99 ? '99+' : total.completed }}" *ngIf="total.completed > 0; else matLabelCompleted" matBadgeOverlap="false">Completed</span>
+          <ng-template #matLabelCompleted>Completed</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['completed']"
+              [columnDefs]="appConfig.config.tableColumns.goodsReceipt"
+              [total]="total['completed']"
+              (pageChange)="pageChange($event, 'completed')"
+              (sortChange)="sortChange($event, 'completed')"
+              (filterChange)="filterChange($event, 'completed')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.rejected > 99 ? '99+' : total.rejected }}" *ngIf="total.rejected > 0; else matLabelRejected" matBadgeOverlap="false">rejected</span>
+          <ng-template #matLabelRejected>Rejected</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['rejected']"
+              [columnDefs]="appConfig.config.tableColumns.goodsReceipt"
+              [total]="total['rejected']"
+              (pageChange)="pageChange($event, 'rejected')"
+              (sortChange)="sortChange($event, 'rejected')"
+              (filterChange)="filterChange($event, 'rejected')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label" matBadge="{{total.cancelled > 99 ? '99+' : total.cancelled }}" *ngIf="total.cancelled > 0; else matLabelCancelled" matBadgeOverlap="false">Cancelled</span>
+          <ng-template #matLabelCancelled>Cancelled</ng-template>
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-card [ngClass]="{ 'hidden': isLoading }">
+            <mat-card-content fxLayout="column" >
+              <app-data-table
+              [isLoading]="isLoading"
+              [dataSource]="dataSource['cancelled']"
+              [columnDefs]="appConfig.config.tableColumns.goodsReceipt"
+              [total]="total['cancelled']"
+              (pageChange)="pageChange($event, 'cancelled')"
+              (sortChange)="sortChange($event, 'cancelled')"
+              (filterChange)="filterChange($event, 'cancelled')"
+              ></app-data-table>
+            </mat-card-content>
+          </mat-card>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+

@@ -139,7 +139,7 @@ export class InventoryMasterlistComponent {
 
   async sortChange(event: { active: string, direction: string }) {
     const { active, direction } = event;
-    const { apiNotation } = this.appConfig.config.tableColumns.branch.find(x=>x.name === active);
+    const { apiNotation } = this.appConfig.config.tableColumns.inventoryMasterlist.find(x=>x.name === active);
     this.order = convertNotationToObject(apiNotation, direction.toUpperCase());
     this.getInventoryMasterlistPaginated()
   }

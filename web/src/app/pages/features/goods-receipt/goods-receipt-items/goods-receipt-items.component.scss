@@ -1,0 +1,16 @@
+::ng-deep {
+  .request-goodsReceiptItems-card-inner {
+    overflow: auto;
+  }
+  .mat-mdc-dialog-content {
+    .goods-receipt-item-content-holder {
+      max-height: inherit;
+      .goods-receipt-item-content {
+        overflow: auto;
+      }
+      .goods-receipt-item-content-footer {
+        padding-top: 16px!important;
+      }
+    }
+  }
+}

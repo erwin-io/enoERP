@@ -13,6 +13,8 @@ import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.c
 import { convertNotationToObject } from 'src/app/shared/utility/utility';
 import { InventoryRequestTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
+import { Title } from '@angular/platform-browser';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-inventory-request',
@@ -23,24 +25,58 @@ import { Users } from 'src/app/model/users';
   }
 })
 export class InventoryRequestComponent {
+  tabIndex = 0;
   currentUserProfile:Users;
   error:string;
-  dataSource = new MatTableDataSource<any>();
+  dataSource = {
+    pending: new MatTableDataSource<any>([]),
+    processing: new MatTableDataSource<any>([]),
+    'in-transit': new MatTableDataSource<any>([]),
+  }
   displayedColumns = [];
   isLoading = false;
   isProcessing = false;
-  pageIndex = 0;
-  pageSize = 10;
-  total = 0;
-  order: any = { inventoryRequestId: "DESC" };
+  pageIndex = {
+    pending: 0,
+    processing: 0,
+    'in-transit': 0,
+  };
+  pageSize = {
+    pending: 10,
+    processing: 10,
+    'in-transit': 10,
+  };
+  total = {
+    pending: 0,
+    processing: 0,
+    'in-transit': 0,
+  };
+  order = {
+    pending: { inventoryRequestId: "ASC" },
+    processing: { inventoryRequestId: "DESC" },
+    'in-transit': { inventoryRequestId: "DESC" },
+  };
 
-  filter: {
-    apiNotation: string;
-    filter: string;
-    name: string;
-    type: string;
-  }[] = [];
-
+  filter = {
+    pending: [] as {
+      apiNotation: string;
+      filter: string;
+      name: string;
+      type: string;
+    }[],
+    processing: [] as {
+      apiNotation: string;
+      filter: string;
+      name: string;
+      type: string;
+    }[],
+    'in-transit': [] as {
+      apiNotation: string;
+      filter: string;
+      name: string;
+      type: string;
+    }[]
+  };
   // pageInventoryRequest: InventoryRequest = {
   //   view: true,
   //   modify: false,
@@ -55,70 +91,94 @@ export class InventoryRequestComponent {
     public appConfig: AppConfigService,
     private storageService: StorageService,
     private route: ActivatedRoute,
+    private titleService: Title,
+    private _location: Location,
     public router: Router) {
       this.currentUserProfile = this.storageService.getLoginProfile();
-      this.dataSource = new MatTableDataSource([]);
+      this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
         // this.pageInventoryRequest = {
         //   ...this.pageInventoryRequest,
         //   ...this.route.snapshot.data["inventoryRequest"]
         // };
       }
+      this.onSelectedTabChange({index: this.tabIndex}, false);
     }
 
   ngOnInit(): void {
   }
 
   ngAfterViewInit() {
-    this.getInventoryRequestPaginated();
+    this.getInventoryRequestPaginated("pending");
+    this.getInventoryRequestPaginated("processing");
+    this.getInventoryRequestPaginated("in-transit");
 
   }
-
   filterChange(event: {
     apiNotation: string;
     filter: string;
     name: string;
     type: string;
-  }[]) {
-    this.filter = event;
-    this.getInventoryRequestPaginated();
+  }[], table: string) {
+    this.filter[table] = event;
+    this.getInventoryRequestPaginated(table as any);
   }
 
-  async pageChange(event: { pageIndex: number, pageSize: number }) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    await this.getInventoryRequestPaginated();
+  async pageChange(event: { pageIndex: number, pageSize: number }, table: string) {
+    this.pageIndex[table] = event.pageIndex;
+    this.pageSize[table] = event.pageSize;
+    await this.getInventoryRequestPaginated(table as any);
   }
 
-  async sortChange(event: { active: string, direction: string }) {
+  async sortChange(event: { active: string, direction: string }, table: string) {
     const { active, direction } = event;
     const { apiNotation } = this.appConfig.config.tableColumns.inventoryRequest.find(x=>x.name === active);
-    this.order = convertNotationToObject(apiNotation, direction.toUpperCase());
-    this.getInventoryRequestPaginated()
+    this.order[table] = convertNotationToObject(apiNotation, direction === "" ? "ASC" : direction.toUpperCase());
+    this.getInventoryRequestPaginated(table as any)
   }
 
-  async getInventoryRequestPaginated(){
+  async getInventoryRequestPaginated(table: "pending" | "processing" | "in-transit"){
     try{
-      const key = "branch.branchCode"
-      const filter = {
-        "apiNotation": key,
-        "filter": this.currentUserProfile?.branch?.branchCode,
-        "name": "branchCode",
-        "type": "text"
-      };
-      const findIndex = this.filter.findIndex(x=>x.apiNotation === key);
+      let findIndex = this.filter[table].findIndex(x=>x.apiNotation === "branch.branchCode");
       if(findIndex >= 0) {
-        this.filter[findIndex] = filter;
+        this.filter[table][findIndex] = {
+          "apiNotation": "branch.branchCode",
+          "filter": this.currentUserProfile?.branch?.branchCode,
+          "name": "branchCode",
+          "type": "text"
+        };
       } else {
-        this.filter.push(filter);
+        this.filter[table].push({
+          "apiNotation": "branch.branchCode",
+          "filter": this.currentUserProfile?.branch?.branchCode,
+          "name": "branchCode",
+          "type": "text"
+        });
+      }
+      findIndex = this.filter[table].findIndex(x=>x.apiNotation === "requestStatus");
+      if(findIndex >= 0) {
+        this.filter[table][findIndex] = {
+          "apiNotation": "requestStatus",
+          "filter": table.toUpperCase(),
+          "name": "requestStatus",
+          "type": "text"
+        };
+      } else {
+        this.filter[table].push({
+          "apiNotation": "requestStatus",
+          "filter": table.toUpperCase(),
+          "name": "requestStatus",
+          "type": "text"
+        });
       }
 
       this.isLoading = true;
       this.spinner.show();
       await this.inventoryRequestService.getByAdvanceSearch({
-        order: this.order,
-        columnDef: this.filter,
-        pageIndex: this.pageIndex, pageSize: this.pageSize
+        order: this.order[table],
+        columnDef: this.filter[table],
+        pageIndex: this.pageIndex[table],
+        pageSize: this.pageSize[table]
       })
       .subscribe(async res => {
         if(res.success){
@@ -128,13 +188,14 @@ export class InventoryRequestComponent {
               inventoryRequestCode: d.inventoryRequestCode,
               dateRequested: d.dateRequested.toString(),
               requestStatus: d.requestStatus,
+              fromWarehouse: d.fromWarehouse.name,
               branch: d.branch?.name,
               requestedByUser: d.requestedByUser?.fullName,
-              url: `/inventory-request/${d.inventoryRequestCode}`,
+              url: `/inventory-request/${d.inventoryRequestCode}/details`,
             } as InventoryRequestTableColumn
           });
-          this.total = res.data.total;
-          this.dataSource = new MatTableDataSource(data);
+          this.total[table] = res.data.total;
+          this.dataSource[table] = new MatTableDataSource(data);
           this.isLoading = false;
           this.spinner.hide();
         }
@@ -160,67 +221,22 @@ export class InventoryRequestComponent {
 
   }
 
-  showAddDialog() {
-    this.dialog.open(this.inventoryRequestFormDialogTemp)
-  }
-
-  closeNewInventoryRequestDialog() {
-    this.dialog.closeAll();
-  }
-
-  saveNewInventoryRequest(formData) {
-    const dialogData = new AlertDialogModel();
-    dialogData.title = 'Confirm';
-    dialogData.message = 'Save item category?';
-    dialogData.confirmButton = {
-      visible: true,
-      text: 'yes',
-      color: 'primary',
-    };
-    dialogData.dismissButton = {
-      visible: true,
-      text: 'cancel',
-    };
-    const dialogRef = this.dialog.open(AlertDialogComponent, {
-      maxWidth: '400px',
-      closeOnNavigation: true,
-    });
-    dialogRef.componentInstance.alertDialogConfig = dialogData;
-
-    dialogRef.componentInstance.conFirm.subscribe(async (data: any) => {
-      this.isProcessing = true;
-      dialogRef.componentInstance.isProcessing = this.isProcessing;
-      try {
-        let res = await this.inventoryRequestService.create(formData).toPromise();
-        if (res.success) {
-          this.snackBar.open('Saved!', 'close', {
-            panelClass: ['style-success'],
-          });
-          this.dialog.closeAll();
-          this.router.navigate(['/inventory-request/' + res.data.inventoryRequestId]);
-          this.isProcessing = false;
-          dialogRef.componentInstance.isProcessing = this.isProcessing;
-          dialogRef.close();
-        } else {
-          this.isProcessing = false;
-          dialogRef.componentInstance.isProcessing = this.isProcessing;
-          this.error = Array.isArray(res.message)
-            ? res.message[0]
-            : res.message;
-          this.snackBar.open(this.error, 'close', {
-            panelClass: ['style-error'],
-          });
-          dialogRef.close();
-        }
-      } catch (e) {
-        this.isProcessing = false;
-        dialogRef.componentInstance.isProcessing = this.isProcessing;
-        this.error = Array.isArray(e.message) ? e.message[0] : e.message;
-        this.snackBar.open(this.error, 'close', {
-          panelClass: ['style-error'],
-        });
-        dialogRef.close();
+  onSelectedTabChange({ index }, redirect = true) {
+    if(index === 1) {
+      if(redirect) {
+        this._location.go("/inventory-request/processing");
       }
-    });
+      this.titleService.setTitle(`Processing | ${this.appConfig.config.appName}`);
+    } else if(index === 2) {
+      if(redirect) {
+        this._location.go("/inventory-request/in-transit");
+      }
+      this.titleService.setTitle(`In-Transit | ${this.appConfig.config.appName}`);
+    } else {
+      if(redirect) {
+        this._location.go("/inventory-request/pending");
+      }
+      this.titleService.setTitle(`Pending | ${this.appConfig.config.appName}`);
+    }
   }
 }

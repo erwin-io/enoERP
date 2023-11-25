@@ -247,25 +247,25 @@ export class UserDetailsComponent implements OnInit {
             panelClass: ['style-error'],
           });
         }
-        this.f['email'].valueChanges.subscribe(res=> {
-          if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
-            this.f['email'].setErrors({ pattern: true})
-          } else if(res && res !== "") {
-            this.f['email'].setErrors(null)
-          }
-        })
-        this.f['accessCode'].valueChanges.subscribe(async res=> {
-          if(!this.isReadOnly) {
-            this.spinner.show();
-            const access = await this.accessService.getByCode(res).toPromise();
-            if(access.data && access.data.accessPages) {
-              this.accessPagesTable.setDataSource(access.data.accessPages)
-            }
-            this.spinner.hide();
-          }
-        })
       });
     }
+    this.f['email'].valueChanges.subscribe(res=> {
+      if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
+        this.f['email'].setErrors({ pattern: true})
+      } else if(res && res !== "") {
+        this.f['email'].setErrors(null)
+      }
+    })
+    this.f['accessCode'].valueChanges.subscribe(async res=> {
+      if(!this.isReadOnly) {
+        this.spinner.show();
+        const access = await this.accessService.getByCode(res).toPromise();
+        if(access.data && access.data.accessPages) {
+          this.accessPagesTable.setDataSource(access.data.accessPages)
+        }
+        this.spinner.hide();
+      }
+    })
     this.branchSearchCtrl.valueChanges
     .pipe(
         debounceTime(2000),

@@ -47,6 +47,7 @@ const defaultUserSelect = {
     },
     access: {
         accessId: true,
+        accessCode: true,
         name: true,
         accessPages: [],
         active: true,

@@ -80,6 +80,23 @@ let InventoryRequestRateService = class InventoryRequestRateService {
             if (!item) {
                 throw Error(item_constant_1.ITEM_ERROR_NOT_FOUND);
             }
+            if (Number(inventoryRequestRate.minQuantity) === 1 ||
+                Number(inventoryRequestRate.maxQuantity) === 1) {
+                throw Error("Not allowed!, max and min quantity should not be equal to base rate!");
+            }
+            const baseRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
+                where: {
+                    item: {
+                        itemId: dto.itemId,
+                    },
+                    active: true,
+                    baseRate: true,
+                },
+            });
+            if (Number(dto.rate) <= Number(baseRate.rate) &&
+                Number(dto.minQuantity) > 1) {
+                throw Error(`Invalid rate!, rate should not be less than the base rate, since min quantity is ${dto.minQuantity}!`);
+            }
             inventoryRequestRate.item = item;
             inventoryRequestRate = await entityManager.save(inventoryRequestRate);
             inventoryRequestRate.inventoryRequestRateCode = (0, utils_1.generateIndentityCode)(inventoryRequestRate.inventoryRequestRateId);
@@ -93,9 +110,37 @@ let InventoryRequestRateService = class InventoryRequestRateService {
                     inventoryRequestRateCode,
                     active: true,
                 },
+                relations: {
+                    item: {
+                        itemCategory: true,
+                    },
+                },
             });
             if (!inventoryRequestRate) {
                 throw Error(inventory_request_rate_constant_1.INVENTORYREQUESTRATE_ERROR_NOT_FOUND);
+            }
+            if (inventoryRequestRate.baseRate &&
+                dto.minQuantity !== Number(inventoryRequestRate.minQuantity) &&
+                dto.maxQuantity !== Number(inventoryRequestRate.maxQuantity)) {
+                throw Error("Not allowed to update base rate!");
+            }
+            if ((!inventoryRequestRate.baseRate &&
+                Number(inventoryRequestRate.minQuantity) === 1) ||
+                Number(inventoryRequestRate.maxQuantity) === 1) {
+                throw Error("Not allowed!, max and min quantity should not be equal to base rate!");
+            }
+            const baseRate = await entityManager.findOne(InventoryRequestRate_1.InventoryRequestRate, {
+                where: {
+                    item: {
+                        itemId: inventoryRequestRate.item.itemId,
+                    },
+                    active: true,
+                    baseRate: true,
+                },
+            });
+            if (!inventoryRequestRate.baseRate &&
+                Number(baseRate.rate) > Number(dto.rate) * Number(dto.minQuantity)) {
+                throw Error(`Invalid rate!, rate should not be less than the base rate, since min quantity is ${dto.minQuantity}!`);
             }
             inventoryRequestRate.rateName = dto.rateName;
             inventoryRequestRate.rate = dto.rate.toString();

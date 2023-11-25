@@ -155,7 +155,7 @@ export class WarehouseComponent {
   saveNewWarehouse(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Save item category?';
+    dialogData.message = 'Save warehouse?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

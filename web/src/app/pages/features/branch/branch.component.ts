@@ -156,7 +156,7 @@ export class BranchComponent {
   saveNewBranch(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Save item category?';
+    dialogData.message = 'Save branch?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

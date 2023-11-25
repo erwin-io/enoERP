@@ -154,7 +154,7 @@ export class BranchDetailsComponent {
   onUpdate(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Update Item category?';
+    dialogData.message = 'Update branch?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

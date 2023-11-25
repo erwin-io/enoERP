@@ -162,6 +162,9 @@
         "label": "Rate",
         "apiNotation": "rate",
         "type": "number",
+        "format": {
+          "type": "currency"
+        },
         "filterOptions": {
           "enable": true,
           "placeholder": "Rate",
@@ -232,7 +235,10 @@
         "name": "price",
         "label": "Item price",
         "apiNotation": "price",
-        "type": "string",
+        "type": "number",
+        "format": {
+          "type": "currency"
+        },
         "filterOptions": {
           "enable": true,
           "placeholder": "Item price"
@@ -301,6 +307,9 @@
         "label": "Item price",
         "apiNotation": "item.price",
         "type": "number",
+        "format": {
+          "type": "currency"
+        },
         "filterOptions": {
           "enable": true,
           "placeholder": "Item price",

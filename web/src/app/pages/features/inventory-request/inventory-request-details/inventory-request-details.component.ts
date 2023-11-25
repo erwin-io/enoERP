@@ -262,7 +262,7 @@ export class InventoryRequestDetailsComponent {
   onSubmit(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Update Item category?';
+    dialogData.message = 'Update inventory request?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

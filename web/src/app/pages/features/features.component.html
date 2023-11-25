@@ -26,6 +26,9 @@
 <mat-sidenav-container class="app-container" >
     <mat-sidenav #sidenav mode="side" className="mat-elevation-z4" [opened]="drawerDefaultOpened" [mode]="!drawerDefaultOpened ? 'over': 'side'" style="position: fixed;">
         <mat-nav-list>
+            <mat-list-item (mouseup)="sidenav.close()" class="mobile-close-sidenav">
+                <mat-icon>keyboard_backspace</mat-icon>
+            </mat-list-item>
             <mat-list-item routerLink="dashboard" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                 <mat-icon>dashboard</mat-icon><span>Dashboard</span>
             </mat-list-item>

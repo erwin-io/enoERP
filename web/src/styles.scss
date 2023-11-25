@@ -81,8 +81,8 @@ p, label, input, textarea, span, div, button {
         column-gap: 10px;
     }
     &.side-bar-open {
-        margin-left: 290px!important;
-        width: calc(100% - 290px)!important;
+        margin-left: 310px!important;
+        width: calc(100% - 310px)!important;
     }
 }
 
@@ -97,8 +97,11 @@ p, label, input, textarea, span, div, button {
     position: static!important;
     z-index: 9!important;
     .mat-sidenav {
-        width: 290px!important;
+        width: 310px!important;
         z-index: 999;
+        @media only screen and (max-width: 360px)  {
+          width: 100%!important;
+        }
         &.mat-drawer-opened {
             &:not(.mat-drawer-over) {
                 background-color: #fafafa!important;
@@ -127,6 +130,13 @@ p, label, input, textarea, span, div, button {
                 }
                 &:hover,&:focus {
                     background-color: rgba($color: (#212121), $alpha: 0.07)!important;
+                }
+                &.mobile-close-sidenav {
+                  width: fit-content!important;
+                  align-self: end!important;
+                  @media only screen and (min-width: 361px)  {
+                    display: none!important;
+                  }
                 }
             }
             .mat-expansion-panel {

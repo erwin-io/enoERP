@@ -227,7 +227,7 @@ export class GoodsReceiptComponent {
   saveNewGoodsReceipt(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Save item category?';
+    dialogData.message = 'Save goods receipt?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

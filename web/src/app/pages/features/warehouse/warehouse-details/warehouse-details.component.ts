@@ -154,7 +154,7 @@ export class WarehouseDetailsComponent {
   onUpdate(formData) {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = 'Update Item category?';
+    dialogData.message = 'Update warehouse?';
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',

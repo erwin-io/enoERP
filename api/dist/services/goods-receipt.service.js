@@ -16,6 +16,7 @@ exports.GoodsReceiptService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const goods_receipt_constant_1 = require("../common/constant/goods-receipt.constant");
+const supplier_constant_1 = require("../common/constant/supplier.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
@@ -24,6 +25,7 @@ const GoodsReceipt_1 = require("../db/entities/GoodsReceipt");
 const GoodsReceiptItem_1 = require("../db/entities/GoodsReceiptItem");
 const Item_1 = require("../db/entities/Item");
 const ItemWarehouse_1 = require("../db/entities/ItemWarehouse");
+const Supplier_1 = require("../db/entities/Supplier");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
@@ -65,6 +67,7 @@ const deafaultGoodsReceiptSelect = {
         quantity: true,
         goodsReceipt: true,
     },
+    supplier: true,
 };
 let GoodsReceiptService = class GoodsReceiptService {
     constructor(goodsReceiptRepo) {
@@ -91,6 +94,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                             itemCategory: true,
                         },
                     },
+                    supplier: true,
                 },
             }),
             this.goodsReceiptRepo.count({
@@ -116,6 +120,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                         itemCategory: true,
                     },
                 },
+                supplier: true,
             },
         });
         if (!result) {
@@ -146,6 +151,16 @@ let GoodsReceiptService = class GoodsReceiptService {
                 throw Error(warehouse_constant_1.WAREHOUSE_ERROR_NOT_FOUND);
             }
             goodsReceipt.warehouse = warehouse;
+            const supplier = await entityManager.findOne(Supplier_1.Supplier, {
+                where: {
+                    supplierCode: dto.supplierCode,
+                    active: true,
+                },
+            });
+            if (!supplier) {
+                throw Error(supplier_constant_1.SUPPLIER_ERROR_NOT_FOUND);
+            }
+            goodsReceipt.supplier = supplier;
             goodsReceipt.description = dto.description;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
@@ -191,6 +206,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                             itemCategory: true,
                         },
                     },
+                    supplier: true,
                 },
             });
             delete goodsReceipt.createdByUser.password;
@@ -209,6 +225,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                         branch: true,
                     },
                     warehouse: true,
+                    supplier: true,
                 },
             });
             if (!goodsReceipt) {
@@ -217,6 +234,16 @@ let GoodsReceiptService = class GoodsReceiptService {
             if (goodsReceipt.status !== "PENDING") {
                 throw Error("Not allowed to update request, goods receipt was already being - processed");
             }
+            const supplier = await entityManager.findOne(Supplier_1.Supplier, {
+                where: {
+                    supplierCode: dto.supplierCode,
+                    active: true,
+                },
+            });
+            if (!supplier) {
+                throw Error(supplier_constant_1.SUPPLIER_ERROR_NOT_FOUND);
+            }
+            goodsReceipt.supplier = supplier;
             goodsReceipt.description = dto.description;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
@@ -280,6 +307,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                             itemCategory: true,
                         },
                     },
+                    supplier: true,
                 },
             });
             delete goodsReceipt.createdByUser.password;
@@ -304,6 +332,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                             itemCategory: true,
                         },
                     },
+                    supplier: true,
                 },
             });
             if (!goodsReceipt) {
@@ -353,6 +382,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                             itemCategory: true,
                         },
                     },
+                    supplier: true,
                 },
             });
             delete goodsReceipt.createdByUser.password;

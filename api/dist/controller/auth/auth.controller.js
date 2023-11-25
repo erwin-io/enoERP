@@ -28,7 +28,7 @@ let AuthController = class AuthController {
         try {
             res.data = await this.authService.register(createUserDto);
             res.success = true;
-            res.message = `Member ${api_response_constant_1.REGISTER_SUCCESS}`;
+            res.message = `${api_response_constant_1.REGISTER_SUCCESS}`;
             return res;
         }
         catch (e) {

@@ -84,8 +84,8 @@ __decorate([
     __metadata("design:type", Array)
 ], Item.prototype, "itemWarehouses", void 0);
 Item = __decorate([
-    (0, typeorm_1.Index)("u_item_itemName", ["active", "itemName"], { unique: true }),
     (0, typeorm_1.Index)("u_item_itemCode", ["active", "itemCode"], { unique: true }),
+    (0, typeorm_1.Index)("u_item_itemName", ["active", "itemName"], { unique: true }),
     (0, typeorm_1.Index)("Item_pkey", ["itemId"], { unique: true }),
     (0, typeorm_1.Entity)("Item", { schema: "dbo" })
 ], Item);

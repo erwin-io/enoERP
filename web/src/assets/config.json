@@ -101,6 +101,34 @@
         }
       }
     ],
+    "supplier": [
+      {
+        "sticky": true,
+        "name": "supplierCode",
+        "label": "Supplier code",
+        "apiNotation": "supplierCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Supplier code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "name",
+        "label": "Supplier name",
+        "apiNotation": "name",
+        "type": "string",
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Supplier name"
+        }
+      }
+    ],
     "branch": [
       {
         "sticky": true,
@@ -591,6 +619,20 @@
         }
       },
       {
+        "name": "supplier",
+        "label": "Supplier",
+        "apiNotation": "supplier.name",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Supplier"
+        }
+      },
+      {
         "name": "createdByUser",
         "label": "Created by",
         "apiNotation": "createdByUser.fullName",
@@ -740,6 +782,12 @@
         "rights": []
       },
       {
+        "page": "Supplier",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
         "page": "Inventory Request Rate",
         "view": false,
         "modify": false,
@@ -806,6 +854,13 @@
       "create": "/warehouse/",
       "update": "/warehouse/",
       "delete": "/warehouse/"
+    },
+    "supplier": {
+      "getByAdvanceSearch": "/supplier/page/",
+      "getByCode": "/supplier/",
+      "create": "/supplier/",
+      "update": "/supplier/",
+      "delete": "/supplier/"
     },
     "branch": {
       "getByAdvanceSearch": "/branch/page/",

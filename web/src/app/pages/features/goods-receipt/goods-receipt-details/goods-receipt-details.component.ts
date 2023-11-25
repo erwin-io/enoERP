@@ -18,6 +18,7 @@ import { GoodsReceiptItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { Access, AccessPages } from 'src/app/model/access';
+import { SupplierService } from 'src/app/services/supplier.service';
 export class UpdateStatusModel {
   status: "REJECTED"
   | "COMPLETED"
@@ -52,6 +53,12 @@ export class GoodsReceiptDetailsComponent {
 
   goodsReceipt: GoodsReceipt;
 
+  supplierCode = new FormControl();
+  isOptionsSupplierLoading = false;
+  optionSupplier: {code: string; name: string}[] = [];
+  supplierSearchCtrl = new FormControl();
+  @ViewChild('supplierSearchInput', { static: true}) supplierSearchInput: ElementRef<HTMLInputElement>;
+
   warehouseCode = new FormControl();
   isOptionsWarehouseLoading = false;
   optionWarehouse: {code: string; name: string}[] = [];
@@ -68,6 +75,7 @@ export class GoodsReceiptDetailsComponent {
   constructor(
     private goodsReceiptService: GoodsReceiptService,
     private warehouseService: WarehouseService,
+    private supplierService: SupplierService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private appconfig: AppConfigService,
@@ -100,13 +108,29 @@ export class GoodsReceiptDetailsComponent {
   ngOnInit(): void {
   }
 
-  ngAfterViewInit() {
-    this.initWarehouseOptions();
+  async ngAfterViewInit() {
+    await Promise.all([
+      this.initSupplierOptions(),
+      this.initWarehouseOptions(),
+    ])
     if(!this.isNew) {
       this.initDetails();
     } else {
       this.canAddEdit = true;
     }
+
+    this.supplierSearchCtrl.valueChanges
+    .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+    )
+    .subscribe(async value => {
+        await this.initSupplierOptions();
+    });
+    this.supplierCode.valueChanges
+    .subscribe(async value => {
+      this.supplierCode.markAsDirty();
+    });
 
     this.warehouseSearchCtrl.valueChanges
     .pipe(
@@ -121,9 +145,28 @@ export class GoodsReceiptDetailsComponent {
     });
   }
 
+  async initSupplierOptions() {
+    this.isOptionsSupplierLoading = true;
+    const res = await this.supplierService.getByAdvanceSearch({
+      order: {},
+      columnDef: [{
+        apiNotation: "name",
+        filter: this.supplierSearchInput.nativeElement.value
+      }],
+      pageIndex: 0,
+      pageSize: 10
+    }).toPromise();
+    this.optionSupplier = res.data.results.map(a=> { return { name: a.name, code: a.supplierCode }});
+    this.isOptionsSupplierLoading = false;
+  }
+
+  displaySupplierName(value?: number) {
+    return value ? this.optionSupplier.find(_ => _.code === value?.toString())?.name : undefined;
+  }
+
   async initWarehouseOptions() {
     this.isOptionsWarehouseLoading = true;
-    this.warehouseService.getByAdvanceSearch({
+    const res = await this.warehouseService.getByAdvanceSearch({
       order: {},
       columnDef: [{
         apiNotation: "name",
@@ -131,10 +174,9 @@ export class GoodsReceiptDetailsComponent {
       }],
       pageIndex: 0,
       pageSize: 10
-    }).subscribe(res=> {
-      this.optionWarehouse = res.data.results.map(a=> { return { name: a.name, code: a.warehouseCode }});
-      this.isOptionsWarehouseLoading = false;
-    })
+    }).toPromise();
+    this.optionWarehouse = res.data.results.map(a=> { return { name: a.name, code: a.warehouseCode }});
+    this.isOptionsWarehouseLoading = false;
   }
 
   displayWarehouseName(value?: number) {
@@ -148,8 +190,11 @@ export class GoodsReceiptDetailsComponent {
         if (res.success) {
           this.goodsReceipt = res.data;
           this.canAddEdit = !((!this.isReadOnly || !this.isNew) && this.goodsReceipt.status !== "PENDING");
+          this.supplierCode.setValue(this.goodsReceipt.supplier.supplierCode);
+          this.supplierSearchCtrl.setValue(this.goodsReceipt.supplier.supplierCode);
           this.warehouseCode.setValue(this.goodsReceipt.warehouse.warehouseCode);
           this.warehouseSearchCtrl.setValue(this.goodsReceipt.warehouse.warehouseCode);
+          this.supplierCode.markAsPristine();
           const items = this.goodsReceipt.goodsReceiptItems.map(x=> {
             return {
               quantity: x.quantity,
@@ -245,7 +290,7 @@ export class GoodsReceiptDetailsComponent {
           this.router.navigate(['/goods-receipt/' + this.goodsReceiptCode + '/details']);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
-          this.initDetails();
+          await this.ngAfterViewInit();
           dialogRef.close();
           this.dialog.closeAll();
         } else {
@@ -295,11 +340,15 @@ export class GoodsReceiptDetailsComponent {
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
         let res;
+        formData = {
+          ...formData,
+          supplierCode: this.supplierCode.value,
+        }
         if(this.isNew) {
           formData = {
             ...formData,
             createdByUserId: this.currentUserProfile.userId,
-            warehouseCode: this.warehouseCode.value
+            warehouseCode: this.warehouseCode.value,
           }
           res = await this.goodsReceiptService.create(formData).toPromise();
         } else {
@@ -317,7 +366,7 @@ export class GoodsReceiptDetailsComponent {
           this.isReadOnly = true;
           this.isNew = false;
           this.canAddEdit = true;
-          this.initDetails();
+          await this.ngAfterViewInit();
           dialogRef.close();
         } else {
           this.isProcessing = false;

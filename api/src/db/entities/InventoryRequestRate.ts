@@ -10,6 +10,12 @@ import {
 import { InventoryRequestItem } from "./InventoryRequestItem";
 import { Item } from "./Item";
 
+@Index("u_inventoryrequestrate_rate", ["active", "itemId", "rate"], {
+  unique: true,
+})
+@Index("u_inventoryrequestrate", ["active", "itemId", "rateName"], {
+  unique: true,
+})
 @Index("InventoryRequestRate_pkey", ["inventoryRequestRateId"], {
   unique: true,
 })
@@ -17,6 +23,9 @@ import { Item } from "./Item";
 export class InventoryRequestRate {
   @PrimaryGeneratedColumn({ type: "bigint", name: "InventoryRequestRateId" })
   inventoryRequestRateId: string;
+
+  @Column("bigint", { name: "ItemId" })
+  itemId: string;
 
   @Column("numeric", { name: "Rate" })
   rate: string;

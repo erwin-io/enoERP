@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Users } from "./Users";
+import { Supplier } from "./Supplier";
 import { Warehouse } from "./Warehouse";
 import { GoodsReceiptItem } from "./GoodsReceiptItem";
 
@@ -17,8 +18,8 @@ export class GoodsReceipt {
   @PrimaryGeneratedColumn({ type: "bigint", name: "GoodsReceiptId" })
   goodsReceiptId: string;
 
-  @Column("character varying", { name: "GoodsReceiptCode" })
-  goodsReceiptCode: string;
+  @Column("character varying", { name: "GoodsReceiptCode", nullable: true })
+  goodsReceiptCode: string | null;
 
   @Column("character varying", { name: "Description" })
   description: string;
@@ -51,6 +52,10 @@ export class GoodsReceipt {
   @ManyToOne(() => Users, (users) => users.goodsReceipts)
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])
   createdByUser: Users;
+
+  @ManyToOne(() => Supplier, (supplier) => supplier.goodsReceipts)
+  @JoinColumn([{ name: "SupplierId", referencedColumnName: "supplierId" }])
+  supplier: Supplier;
 
   @ManyToOne(() => Warehouse, (warehouse) => warehouse.goodsReceipts)
   @JoinColumn([{ name: "WarehouseId", referencedColumnName: "warehouseId" }])

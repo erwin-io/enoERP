@@ -30,7 +30,7 @@ export class AuthController {
     try {
       res.data = await this.authService.register(createUserDto);
       res.success = true;
-      res.message = `Member ${REGISTER_SUCCESS}`;
+      res.message = `${REGISTER_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

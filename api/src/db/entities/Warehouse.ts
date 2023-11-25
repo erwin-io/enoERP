@@ -10,10 +10,10 @@ import { GoodsReceipt } from "./GoodsReceipt";
 import { InventoryRequest } from "./InventoryRequest";
 import { ItemWarehouse } from "./ItemWarehouse";
 
-@Index("u_warehouse_name", ["active", "name"], { unique: true })
 @Index("u_warehouse_warehouseCode", ["active", "warehouseCode"], {
   unique: true,
 })
+@Index("u_warehouse_name", ["active", "name"], { unique: true })
 @Index("Warehouse_pkey", ["warehouseId"], { unique: true })
 @Entity("Warehouse", { schema: "dbo" })
 export class Warehouse {

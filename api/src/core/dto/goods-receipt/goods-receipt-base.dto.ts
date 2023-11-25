@@ -43,4 +43,8 @@ export class DefaultGoodsReceiptDto {
   @Type(() => GoodsReceiptItemDto)
   @ValidateNested()
   goodsReceiptItems: GoodsReceiptItemDto[] = [];
+
+  @ApiProperty()
+  @IsNotEmpty()
+  supplierCode: string;;
 }

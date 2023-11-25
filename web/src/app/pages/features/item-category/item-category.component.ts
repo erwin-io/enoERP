@@ -181,7 +181,7 @@ export class ItemCategoryComponent {
             panelClass: ['style-success'],
           });
           this.dialog.closeAll();
-          this.router.navigate(['/item-category/' + res.data.itemCategoryId]);
+          this.router.navigate(['/item-category/' + res.data.itemCategoryCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           dialogRef.close();

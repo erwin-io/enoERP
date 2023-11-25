@@ -26,6 +26,7 @@ export interface AppConfig {
       inventoryRequestRate: ColumnDefinition[];
       warehouseInventory: ColumnDefinition[];
       goodsReceipt: ColumnDefinition[];
+      supplier: ColumnDefinition[];
     };
     sessionConfig: {
       sessionTimeout: string;
@@ -78,6 +79,13 @@ export interface AppConfig {
       branch: {
         getByAdvanceSearch: string;
         getById: string;
+        create: string;
+        update: string;
+        delete: string;
+      };
+      supplier: {
+        getByAdvanceSearch: string;
+        getByCode: string;
         create: string;
         update: string;
         delete: string;

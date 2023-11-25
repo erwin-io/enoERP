@@ -1,5 +1,6 @@
 import { Branch } from "./branch";
 import { Item } from "./item";
+import { Supplier } from "./supplier";
 import { Users } from "./users";
 import { Warehouse } from "./warehouse";
 
@@ -18,6 +19,7 @@ export class GoodsReceipt {
   warehouse: Warehouse;
   notes: string;
   goodsReceiptItems: GoodsReceiptItem[];
+  supplier: Supplier;
 }
 export class GoodsReceiptItem {
   quantity: string;

@@ -2,6 +2,7 @@ import { InventoryRequestItem } from "./InventoryRequestItem";
 import { Item } from "./Item";
 export declare class InventoryRequestRate {
     inventoryRequestRateId: string;
+    itemId: string;
     rate: string;
     rateName: string;
     minQuantity: string;

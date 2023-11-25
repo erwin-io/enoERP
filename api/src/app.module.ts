@@ -18,6 +18,7 @@ import { InventoryRequestModule } from "./controller/inventory-request/inventory
 import { WarehouseInventoryModule } from "./controller/warehouse-inventory/warehouse-inventory.module";
 import { InventoryRequestRateModule } from "./controller/inventory-request-rate/inventory-request-rate.module";
 import { GoodsReceiptModule } from "./controller/goods-receipt/goods-receipt.module";
+import { SupplierModule } from "./controller/supplier/supplier.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 @Module({
   imports: [
@@ -41,6 +42,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     WarehouseInventoryModule,
     InventoryRequestRateModule,
     GoodsReceiptModule,
+    SupplierModule,
     FirebaseProviderModule,
   ],
   providers: [AppService],

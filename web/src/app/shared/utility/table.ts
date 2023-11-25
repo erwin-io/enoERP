@@ -143,6 +143,7 @@ export class GoodsReceiptTableColumn {
   goodsReceiptCode?: string;
   dateCreated?: string;
   warehouse?: string;
+  supplier?: string;
   createdByUser?: string;
   url?: string;
 }
@@ -154,6 +155,13 @@ export class GoodsReceiptItemTableColumn {
   itemName: string;
   itemDescription: string;
   itemCategory: string;
+}
+
+export class SupplierTableColumn {
+  supplierId?: string;
+  supplierCode?: string;
+  name?: string;
+  url?: string;
 }
 
 

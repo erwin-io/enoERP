@@ -41,6 +41,7 @@ class DefaultGoodsReceiptDto {
     constructor() {
         this.goodsReceiptItems = [];
     }
+    ;
 }
 __decorate([
     (0, swagger_1.ApiProperty)(),
@@ -58,5 +59,10 @@ __decorate([
     (0, class_validator_1.ValidateNested)(),
     __metadata("design:type", Array)
 ], DefaultGoodsReceiptDto.prototype, "goodsReceiptItems", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], DefaultGoodsReceiptDto.prototype, "supplierCode", void 0);
 exports.DefaultGoodsReceiptDto = DefaultGoodsReceiptDto;
 //# sourceMappingURL=goods-receipt-base.dto.js.map

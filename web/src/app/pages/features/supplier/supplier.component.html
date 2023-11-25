@@ -1,0 +1,57 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <span id="title">Supplier</span>
+  <span class="toolbar-item-spacer"></span>
+</mat-toolbar>
+<div class="component-floating-actions vertical-actions">
+  <button mat-fab color="primary" aria-label="New supplier" matTooltip="New supplier" (click)="showAddDialog()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+<div class="content">
+<div class="inner-content">
+  <mat-card [ngClass]="{ 'hidden': isLoading }">
+      <mat-card-content fxLayout="column" >
+        <app-data-table
+        [isLoading]="isLoading"
+        [dataSource]="dataSource"
+        [columnDefs]="appConfig.config.tableColumns.supplier"
+        [total]="total"
+        (pageChange)="pageChange($event)"
+        (sortChange)="sortChange($event)"
+        (filterChange)="filterChange($event)"
+        ></app-data-table>
+      </mat-card-content>
+  </mat-card>
+  </div>
+</div>
+
+<ng-template #supplierFormDialog>
+  <h4 mat-dialog-title>New supplier</h4>
+
+<div mat-dialog-content>
+  <app-supplier-form #supplierForm></app-supplier-form>
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      (click)="closeNewSupplierDialog()"
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!supplierForm.valid || !supplierForm.ready"
+      color="primary"
+      type="submit"
+      (click)="saveNewSupplier(supplierForm.getFormData)"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>
+

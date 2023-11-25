@@ -185,6 +185,7 @@ export class GoodsReceiptComponent {
               dateCreated: d.dateCreated.toString(),
               status: d.status,
               warehouse: d.warehouse.name,
+              supplier: d.supplier.name,
               createdByUser: d.createdByUser?.fullName,
               url: `/goods-receipt/${d.goodsReceiptCode}/details`,
             } as GoodsReceiptTableColumn

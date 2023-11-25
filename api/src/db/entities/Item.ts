@@ -15,8 +15,8 @@ import { ItemCategory } from "./ItemCategory";
 import { ItemBranch } from "./ItemBranch";
 import { ItemWarehouse } from "./ItemWarehouse";
 
-@Index("u_item_itemName", ["active", "itemName"], { unique: true })
 @Index("u_item_itemCode", ["active", "itemCode"], { unique: true })
+@Index("u_item_itemName", ["active", "itemName"], { unique: true })
 @Index("Item_pkey", ["itemId"], { unique: true })
 @Entity("Item", { schema: "dbo" })
 export class Item {

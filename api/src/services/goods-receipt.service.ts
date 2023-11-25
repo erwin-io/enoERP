@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GOODSRECEIPT_ERROR_NOT_FOUND } from "src/common/constant/goods-receipt.constant";
+import { SUPPLIER_ERROR_NOT_FOUND } from "src/common/constant/supplier.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { WAREHOUSE_ERROR_NOT_FOUND } from "src/common/constant/warehouse.constant";
@@ -17,6 +18,7 @@ import { GoodsReceipt } from "src/db/entities/GoodsReceipt";
 import { GoodsReceiptItem } from "src/db/entities/GoodsReceiptItem";
 import { Item } from "src/db/entities/Item";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
+import { Supplier } from "src/db/entities/Supplier";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
 import { Repository } from "typeorm";
@@ -59,6 +61,7 @@ const deafaultGoodsReceiptSelect = {
     quantity: true,
     goodsReceipt: true,
   },
+  supplier: true,
 };
 @Injectable()
 export class GoodsReceiptService {
@@ -93,6 +96,7 @@ export class GoodsReceiptService {
               itemCategory: true,
             },
           },
+          supplier: true,
         },
       }),
       this.goodsReceiptRepo.count({
@@ -122,6 +126,7 @@ export class GoodsReceiptService {
             itemCategory: true,
           },
         },
+        supplier: true,
       },
     });
     if (!result) {
@@ -154,6 +159,18 @@ export class GoodsReceiptService {
           throw Error(WAREHOUSE_ERROR_NOT_FOUND);
         }
         goodsReceipt.warehouse = warehouse;
+
+        const supplier = await entityManager.findOne(Supplier, {
+          where: {
+            supplierCode: dto.supplierCode,
+            active: true,
+          },
+        });
+        if (!supplier) {
+          throw Error(SUPPLIER_ERROR_NOT_FOUND);
+        }
+        goodsReceipt.supplier = supplier;
+
         goodsReceipt.description = dto.description;
         const timestamp = await entityManager
           .query(CONST_QUERYCURRENT_TIMESTAMP)
@@ -201,6 +218,7 @@ export class GoodsReceiptService {
                 itemCategory: true,
               },
             },
+            supplier: true,
           },
         });
         delete goodsReceipt.createdByUser.password;
@@ -222,6 +240,7 @@ export class GoodsReceiptService {
               branch: true,
             },
             warehouse: true,
+            supplier: true,
           },
         });
         if (!goodsReceipt) {
@@ -232,6 +251,18 @@ export class GoodsReceiptService {
             "Not allowed to update request, goods receipt was already being - processed"
           );
         }
+
+        const supplier = await entityManager.findOne(Supplier, {
+          where: {
+            supplierCode: dto.supplierCode,
+            active: true,
+          },
+        });
+        if (!supplier) {
+          throw Error(SUPPLIER_ERROR_NOT_FOUND);
+        }
+        goodsReceipt.supplier = supplier;
+
         goodsReceipt.description = dto.description;
         const timestamp = await entityManager
           .query(CONST_QUERYCURRENT_TIMESTAMP)
@@ -313,6 +344,7 @@ export class GoodsReceiptService {
                 itemCategory: true,
               },
             },
+            supplier: true,
           },
         });
         delete goodsReceipt.createdByUser.password;
@@ -340,6 +372,7 @@ export class GoodsReceiptService {
                 itemCategory: true,
               },
             },
+            supplier: true,
           },
         });
         if (!goodsReceipt) {
@@ -399,6 +432,7 @@ export class GoodsReceiptService {
                 itemCategory: true,
               },
             },
+            supplier: true,
           },
         });
         delete goodsReceipt.createdByUser.password;

@@ -5,4 +5,5 @@ export declare class GoodsReceiptItemDto {
 export declare class DefaultGoodsReceiptDto {
     description: string;
     goodsReceiptItems: GoodsReceiptItemDto[];
+    supplierCode: string;
 }

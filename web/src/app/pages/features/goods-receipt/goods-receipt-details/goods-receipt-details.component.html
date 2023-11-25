@@ -30,7 +30,7 @@
     <button
       *ngIf="!canAddEdit ? false : !isReadOnly"
       mat-flat-button
-      [disabled]="!goodsReceiptForm.valid || !goodsReceiptForm.ready"
+      [disabled]="(!goodsReceiptForm.valid || !goodsReceiptForm.ready) && (!supplierCode.valid || !supplierCode.dirty)"
       color="primary"
       (click)="onSubmit(goodsReceiptForm.getFormData)">
       {{isNew ? 'Save' : 'Update'}}
@@ -70,7 +70,32 @@
     <h4 class="inner-content-title">Goods Receipt details</h4>
     <mat-card>
       <mat-card-content>
-        <div fxFlex="100" fxLayout="column">
+        <div fxFlex="100" fxLayout="column" fxLayoutGap="16px">
+          <div fxLayout="column" fxFlex="33.33%" fxLayout.gt-xs="row" >
+            <mat-form-field appearance="outline" >
+              <mat-label>Supplier</mat-label>
+              <input type="text"
+                      placeholder="Select supplier"
+                      aria-label="Supplier"
+                      matInput
+                      [readonly]="isReadOnly"
+                      [formControl]="supplierSearchCtrl"
+                      [matAutocomplete]="autoSupplier"
+                      (input)="isOptionsSupplierLoading = true"
+                      #supplierSearchInput>
+              <mat-autocomplete #autoSupplier="matAutocomplete" [displayWith]="displaySupplierName.bind(this)" (optionSelected)="supplierCode.setValue($event.option.value)">
+                <mat-option *ngFor="let option of optionSupplier" [value]="option.code">
+                  {{option.name}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-spinner *ngIf="isOptionsSupplierLoading" style="position: absolute;
+              width: calc(48px / 2);
+              height: calc(48px / 2);
+              display: block;
+              top: calc(48px /3);
+              right: 0;"></mat-spinner>
+            </mat-form-field>
+          </div>
           <div fxLayout="column" fxFlex="33.33%" fxLayout.gt-xs="row" >
             <mat-form-field appearance="outline" >
               <mat-label>Warehouse</mat-label>
@@ -80,10 +105,10 @@
                       matInput
                       [readonly]="!isNew"
                       [formControl]="warehouseSearchCtrl"
-                      [matAutocomplete]="auto"
+                      [matAutocomplete]="autoWarehouse"
                       (input)="isOptionsWarehouseLoading = true"
                       #warehouseSearchInput>
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWarehouseName.bind(this)" (optionSelected)="warehouseCode.setValue($event.option.value)">
+              <mat-autocomplete #autoWarehouse="matAutocomplete" [displayWith]="displayWarehouseName.bind(this)" (optionSelected)="warehouseCode.setValue($event.option.value)">
                 <mat-option *ngFor="let option of optionWarehouse" [value]="option.code">
                   {{option.name}}
                 </mat-option>

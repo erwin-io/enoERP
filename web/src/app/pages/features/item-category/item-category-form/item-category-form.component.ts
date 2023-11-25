@@ -16,7 +16,8 @@ export class ItemCategoryFormComponent {
   ) {
     this.form = this.formBuilder.group({
       name: ['',[Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
-      description: [[],Validators.required]});
+      description: ['',Validators.required]
+    });
   }
 
   public setFormValue(value: ItemCategory) {

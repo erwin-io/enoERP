@@ -179,7 +179,7 @@ export class ItemCategoryDetailsComponent {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
-          this.router.navigate(['/item-category/' + res.data.itemCategoryId]);
+          this.router.navigate(['/item-category/' + res.data.itemCategoryCode]);
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           dialogRef.close();

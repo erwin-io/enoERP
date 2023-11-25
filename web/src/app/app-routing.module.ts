@@ -97,6 +97,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'supplier',
+        canActivate: [AuthGuard],
+        data: { title: 'Supplier', group: 'Configuration' },
+        loadChildren: () =>
+          import('./pages/features/supplier/supplier.module').then(
+            (m) => m.SupplierModule
+          ),
+      },
+      {
         path: 'branch',
         canActivate: [AuthGuard],
         data: { title: 'Branch', group: 'Configuration' },

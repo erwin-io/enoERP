@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoodsReceipt = void 0;
 const typeorm_1 = require("typeorm");
 const Users_1 = require("./Users");
+const Supplier_1 = require("./Supplier");
 const Warehouse_1 = require("./Warehouse");
 const GoodsReceiptItem_1 = require("./GoodsReceiptItem");
 let GoodsReceipt = class GoodsReceipt {
@@ -21,7 +22,7 @@ __decorate([
     __metadata("design:type", String)
 ], GoodsReceipt.prototype, "goodsReceiptId", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "GoodsReceiptCode" }),
+    (0, typeorm_1.Column)("character varying", { name: "GoodsReceiptCode", nullable: true }),
     __metadata("design:type", String)
 ], GoodsReceipt.prototype, "goodsReceiptCode", void 0);
 __decorate([
@@ -63,6 +64,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)([{ name: "CreatedByUserId", referencedColumnName: "userId" }]),
     __metadata("design:type", Users_1.Users)
 ], GoodsReceipt.prototype, "createdByUser", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Supplier_1.Supplier, (supplier) => supplier.goodsReceipts),
+    (0, typeorm_1.JoinColumn)([{ name: "SupplierId", referencedColumnName: "supplierId" }]),
+    __metadata("design:type", Supplier_1.Supplier)
+], GoodsReceipt.prototype, "supplier", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Warehouse_1.Warehouse, (warehouse) => warehouse.goodsReceipts),
     (0, typeorm_1.JoinColumn)([{ name: "WarehouseId", referencedColumnName: "warehouseId" }]),

@@ -9,14 +9,15 @@ import {
 } from "typeorm";
 import { GoodsIssueItem } from "./GoodsIssueItem";
 import { GoodsReceiptItem } from "./GoodsReceiptItem";
+import { InventoryAdjustmentReportItem } from "./InventoryAdjustmentReportItem";
 import { InventoryRequestItem } from "./InventoryRequestItem";
 import { InventoryRequestRate } from "./InventoryRequestRate";
 import { ItemCategory } from "./ItemCategory";
 import { ItemBranch } from "./ItemBranch";
 import { ItemWarehouse } from "./ItemWarehouse";
 
-@Index("u_item_itemCode", ["active", "itemCode"], { unique: true })
 @Index("u_item_itemName", ["active", "itemName"], { unique: true })
+@Index("u_item_itemCode", ["active", "itemCode"], { unique: true })
 @Index("Item_pkey", ["itemId"], { unique: true })
 @Entity("Item", { schema: "dbo" })
 export class Item {
@@ -52,6 +53,12 @@ export class Item {
     (goodsReceiptItem) => goodsReceiptItem.item
   )
   goodsReceiptItems: GoodsReceiptItem[];
+
+  @OneToMany(
+    () => InventoryAdjustmentReportItem,
+    (inventoryAdjustmentReportItem) => inventoryAdjustmentReportItem.item
+  )
+  inventoryAdjustmentReportItems: InventoryAdjustmentReportItem[];
 
   @OneToMany(
     () => InventoryRequestItem,

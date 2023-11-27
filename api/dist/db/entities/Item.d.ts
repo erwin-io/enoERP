@@ -1,5 +1,6 @@
 import { GoodsIssueItem } from "./GoodsIssueItem";
 import { GoodsReceiptItem } from "./GoodsReceiptItem";
+import { InventoryAdjustmentReportItem } from "./InventoryAdjustmentReportItem";
 import { InventoryRequestItem } from "./InventoryRequestItem";
 import { InventoryRequestRate } from "./InventoryRequestRate";
 import { ItemCategory } from "./ItemCategory";
@@ -16,6 +17,7 @@ export declare class Item {
     active: boolean;
     goodsIssueItems: GoodsIssueItem[];
     goodsReceiptItems: GoodsReceiptItem[];
+    inventoryAdjustmentReportItems: InventoryAdjustmentReportItem[];
     inventoryRequestItems: InventoryRequestItem[];
     inventoryRequestRates: InventoryRequestRate[];
     itemCategory: ItemCategory;

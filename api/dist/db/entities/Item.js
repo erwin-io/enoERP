@@ -13,6 +13,7 @@ exports.Item = void 0;
 const typeorm_1 = require("typeorm");
 const GoodsIssueItem_1 = require("./GoodsIssueItem");
 const GoodsReceiptItem_1 = require("./GoodsReceiptItem");
+const InventoryAdjustmentReportItem_1 = require("./InventoryAdjustmentReportItem");
 const InventoryRequestItem_1 = require("./InventoryRequestItem");
 const InventoryRequestRate_1 = require("./InventoryRequestRate");
 const ItemCategory_1 = require("./ItemCategory");
@@ -61,6 +62,10 @@ __decorate([
     __metadata("design:type", Array)
 ], Item.prototype, "goodsReceiptItems", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, (inventoryAdjustmentReportItem) => inventoryAdjustmentReportItem.item),
+    __metadata("design:type", Array)
+], Item.prototype, "inventoryAdjustmentReportItems", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => InventoryRequestItem_1.InventoryRequestItem, (inventoryRequestItem) => inventoryRequestItem.item),
     __metadata("design:type", Array)
 ], Item.prototype, "inventoryRequestItems", void 0);
@@ -84,8 +89,8 @@ __decorate([
     __metadata("design:type", Array)
 ], Item.prototype, "itemWarehouses", void 0);
 Item = __decorate([
-    (0, typeorm_1.Index)("u_item_itemCode", ["active", "itemCode"], { unique: true }),
     (0, typeorm_1.Index)("u_item_itemName", ["active", "itemName"], { unique: true }),
+    (0, typeorm_1.Index)("u_item_itemCode", ["active", "itemCode"], { unique: true }),
     (0, typeorm_1.Index)("Item_pkey", ["itemId"], { unique: true }),
     (0, typeorm_1.Entity)("Item", { schema: "dbo" })
 ], Item);

@@ -20,6 +20,9 @@ export class InventoryRequestItem {
   @Column("numeric", { name: "TotalAmount", default: () => "0" })
   totalAmount: string;
 
+  @Column("numeric", { name: "QuantityReceived", default: () => "0" })
+  quantityReceived: string;
+
   @ManyToOne(
     () => InventoryRequest,
     (inventoryRequest) => inventoryRequest.inventoryRequestItems

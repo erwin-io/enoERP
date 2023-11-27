@@ -39,6 +39,13 @@
       (click)="onSubmit(inventoryRequestForm.getFormData)">
       {{isNew ? 'Save' : 'Update'}}
     </button>
+    <button
+      *ngIf="inventoryRequest?.requestStatus === 'IN-TRANSIT'"
+      mat-flat-button
+      color="primary"
+      (click)="showUpdateStatusDialog('COMPLETED')">
+      Complete
+    </button>
   </div>
 </mat-toolbar>
 <div class="content">
@@ -121,12 +128,14 @@
       </mat-card>
     </div>
     <h4 class="inner-content-title" [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}">Requested items</h4>
-    <app-inventory-request-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="isReadOnly" #inventoryRequestItems></app-inventory-request-items>
+    <app-inventory-request-items [ngClass]="{ 'hidden': !warehouseCode.value || warehouseCode.value === ''}" [warehouseCode]="warehouseCode.value" (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode, requestStatus: inventoryRequest?.requestStatus }" [isReadOnly]="isReadOnly" #inventoryRequestItems></app-inventory-request-items>
   </div>
 </div>
 
-<ng-template #cancelDialog>
-  <h4 mat-dialog-title>Cancel request</h4>
+<ng-template #updateStatusDialog>
+  <h4 mat-dialog-title>Mark request as - {{
+    updateStatusData?.status === 'COMPLETED' ? 'Completed' : '' ||
+    updateStatusData?.status === 'CANCELLED' ? 'Cancelled' : ''}}</h4>
 
 <div mat-dialog-content>
   <div style="display: flex;flex-direction: column;width: 100%;margin-top: 10px;">

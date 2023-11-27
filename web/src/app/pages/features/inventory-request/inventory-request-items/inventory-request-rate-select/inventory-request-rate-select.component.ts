@@ -136,4 +136,8 @@ export class InventoryRequestRateSelectComponent {
       this.spinner.hide();
     }
   }
+
+  Number(value: any = "0") {
+    return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
+  }
 }

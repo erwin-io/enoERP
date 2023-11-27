@@ -352,4 +352,7 @@ export class GoodsReceiptItemComponent {
     return this.f && this.f[key] ? this.f[key].errors : null;
   }
 
+  Number(value: any = "0") {
+    return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
+  }
 }

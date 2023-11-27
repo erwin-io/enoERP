@@ -23,7 +23,7 @@ export class IncomingInventoryRequestItemComponent {
   isProcessing = false;
   isNew = false;
   accTotalAmount = 0;
-  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount'];
+  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount', 'quantityReceived'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
   @Input() inventoryRequest!: InventoryRequest;
   @Input() isReadOnly = true;
@@ -51,6 +51,10 @@ export class IncomingInventoryRequestItemComponent {
         return Number(curr) + Number(prev);
       });
     }
+  }
+
+  Number(value: any = "0") {
+    return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
   }
 
 }

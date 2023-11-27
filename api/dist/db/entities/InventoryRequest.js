@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryRequest = void 0;
 const typeorm_1 = require("typeorm");
+const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 const Branch_1 = require("./Branch");
 const Warehouse_1 = require("./Warehouse");
 const Users_1 = require("./Users");
@@ -62,6 +63,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], InventoryRequest.prototype, "notes", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryAdjustmentReport_1.InventoryAdjustmentReport, (inventoryAdjustmentReport) => inventoryAdjustmentReport.inventoryRequest),
+    __metadata("design:type", Array)
+], InventoryRequest.prototype, "inventoryAdjustmentReports", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Branch_1.Branch, (branch) => branch.inventoryRequests),
     (0, typeorm_1.JoinColumn)([{ name: "BranchId", referencedColumnName: "branchId" }]),

@@ -26,6 +26,7 @@ export class InventoryRequest {
 }
 export class InventoryRequestItem {
   quantity: string;
+  quantityReceived: string;
   inventoryRequest: InventoryRequest;
   item: Item;
   totalAmount: number;

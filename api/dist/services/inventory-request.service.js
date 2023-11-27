@@ -562,6 +562,17 @@ let InventoryRequestService = class InventoryRequestService {
                     },
                 });
                 for (const item of inventoryRequest.inventoryRequestItems) {
+                    let inventoryRequestItem = await entityManager.findOne(InventoryRequestItem_1.InventoryRequestItem, {
+                        where: {
+                            itemId: item.item.itemId,
+                            inventoryRequest: {
+                                inventoryRequestId: inventoryRequest.inventoryRequestId,
+                            },
+                        },
+                    });
+                    inventoryRequestItem.quantityReceived =
+                        inventoryRequestItem.quantity;
+                    inventoryRequestItem = await entityManager.save(InventoryRequestItem_1.InventoryRequestItem, inventoryRequestItem);
                     let itemBranch = await entityManager.findOne(ItemBranch_1.ItemBranch, {
                         where: {
                             itemId: item.item.itemId,

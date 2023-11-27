@@ -108,6 +108,7 @@ export class InventoryRequestTableColumn {
 
 export class InventoryRequestItemTableColumn {
   quantity: string;
+  quantityReceived: string;
   itemId: string;
   itemCode: string;
   itemName: string;

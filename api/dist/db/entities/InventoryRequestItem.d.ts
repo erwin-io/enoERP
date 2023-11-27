@@ -6,6 +6,7 @@ export declare class InventoryRequestItem {
     itemId: string;
     quantity: string;
     totalAmount: string;
+    quantityReceived: string;
     inventoryRequest: InventoryRequest;
     inventoryRequestRate: InventoryRequestRate;
     item: Item;

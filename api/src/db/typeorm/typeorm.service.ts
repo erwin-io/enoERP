@@ -17,6 +17,8 @@ import { GoodsIssueItem } from "../entities/GoodsIssueItem";
 import { GoodsReceipt } from "../entities/GoodsReceipt";
 import { GoodsReceiptItem } from "../entities/GoodsReceiptItem";
 import { Supplier } from "../entities/Supplier";
+import { InventoryAdjustmentReport } from "../entities/InventoryAdjustmentReport";
+import { InventoryAdjustmentReportItem } from "../entities/InventoryAdjustmentReportItem";
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -49,6 +51,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         GoodsReceipt,
         GoodsReceiptItem,
         Supplier,
+        InventoryAdjustmentReport,
+        InventoryAdjustmentReportItem,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

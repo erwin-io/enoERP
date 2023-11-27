@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { Branch } from "./Branch";
 import { Warehouse } from "./Warehouse";
 import { Users } from "./Users";
@@ -51,6 +52,12 @@ export class InventoryRequest {
     default: () => "''",
   })
   notes: string | null;
+
+  @OneToMany(
+    () => InventoryAdjustmentReport,
+    (inventoryAdjustmentReport) => inventoryAdjustmentReport.inventoryRequest
+  )
+  inventoryAdjustmentReports: InventoryAdjustmentReport[];
 
   @ManyToOne(() => Branch, (branch) => branch.inventoryRequests)
   @JoinColumn([{ name: "BranchId", referencedColumnName: "branchId" }])

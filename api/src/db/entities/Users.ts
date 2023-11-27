@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { GoodsIssue } from "./GoodsIssue";
 import { GoodsReceipt } from "./GoodsReceipt";
+import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { InventoryRequest } from "./InventoryRequest";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
@@ -60,6 +61,12 @@ export class Users {
 
   @OneToMany(() => GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser)
   goodsReceipts: GoodsReceipt[];
+
+  @OneToMany(
+    () => InventoryAdjustmentReport,
+    (inventoryAdjustmentReport) => inventoryAdjustmentReport.reportedByUser
+  )
+  inventoryAdjustmentReports: InventoryAdjustmentReport[];
 
   @OneToMany(
     () => InventoryRequest,

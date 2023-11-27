@@ -34,7 +34,7 @@ export class InventoryRequestItemComponent {
   isProcessing = false;
   isNew = false;
   accTotalAmount = 0;
-  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount', 'controls'];
+  displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount', 'quantityReceived', 'controls'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
   @Input() inventoryRequest!: InventoryRequest;
   @Input() isReadOnly = true;
@@ -533,6 +533,10 @@ export class InventoryRequestItemComponent {
 
   getError(key: string) {
     return this.f && this.f[key] ? this.f[key].errors : null;
+  }
+
+  Number(value: any = "0") {
+    return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
   }
 
 }

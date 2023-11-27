@@ -142,7 +142,7 @@ export class ItemService {
       await entityManager.insert(ItemBranch, itemBranches);
 
       let inventoryRequestRate = new InventoryRequestRate();
-      inventoryRequestRate.rateName = "1pcs";
+      inventoryRequestRate.rateName = "1pc";
       inventoryRequestRate.rate = dto.price.toString();
       inventoryRequestRate.minQuantity = "1";
       inventoryRequestRate.maxQuantity = "1";

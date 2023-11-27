@@ -13,6 +13,7 @@ exports.Users = void 0;
 const typeorm_1 = require("typeorm");
 const GoodsIssue_1 = require("./GoodsIssue");
 const GoodsReceipt_1 = require("./GoodsReceipt");
+const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 const InventoryRequest_1 = require("./InventoryRequest");
 const Access_1 = require("./Access");
 const Branch_1 = require("./Branch");
@@ -74,6 +75,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => GoodsReceipt_1.GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "goodsReceipts", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryAdjustmentReport_1.InventoryAdjustmentReport, (inventoryAdjustmentReport) => inventoryAdjustmentReport.reportedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "inventoryAdjustmentReports", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.requestedByUser),
     __metadata("design:type", Array)

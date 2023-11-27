@@ -33,6 +33,10 @@ __decorate([
     __metadata("design:type", String)
 ], InventoryRequestItem.prototype, "totalAmount", void 0);
 __decorate([
+    (0, typeorm_1.Column)("numeric", { name: "QuantityReceived", default: () => "0" }),
+    __metadata("design:type", String)
+], InventoryRequestItem.prototype, "quantityReceived", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.inventoryRequestItems),
     (0, typeorm_1.JoinColumn)([
         { name: "InventoryRequestId", referencedColumnName: "inventoryRequestId" },

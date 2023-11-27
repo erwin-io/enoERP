@@ -56,7 +56,7 @@ export class InventoryRequestDetailsComponent {
   @ViewChild('warehouseSearchInput', { static: true}) warehouseSearchInput: ElementRef<HTMLInputElement>;
   updateStatusData: UpdateStatusModel = { } as any
 
-  @ViewChild('cancelDialog') cancelDialog: TemplateRef<any>;
+  @ViewChild('updateStatusDialog') updateStatusDialog: TemplateRef<any>;
   constructor(
     private inventoryRequestService: InventoryRequestService,
     private warehouseService: WarehouseService,
@@ -145,6 +145,7 @@ export class InventoryRequestDetailsComponent {
           const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
             return {
               quantity: x.quantity,
+              quantityReceived: x.quantityReceived,
               itemId: x.item.itemId,
               itemCode: x.item.itemCode,
               itemName: x.item.itemDescription,
@@ -186,11 +187,11 @@ export class InventoryRequestDetailsComponent {
     this.inventoryRequestForm.form.controls["inventoryRequestItems"].markAsDirty();
   }
 
-  async showCancelDialog() {
+  showUpdateStatusDialog(status: "CANCELLED" | "COMPLETED") {
     this.updateStatusData = {
-      status:"CANCELLED"
+      status
     } as any;
-    const dialogRef = this.dialog.open(this.cancelDialog, {
+    const dialogRef = this.dialog.open(this.updateStatusDialog, {
       maxWidth: "300px",
       disableClose: true,
     });

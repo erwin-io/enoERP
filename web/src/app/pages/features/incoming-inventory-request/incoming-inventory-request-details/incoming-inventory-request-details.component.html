@@ -39,13 +39,6 @@
       (click)="processStatus('IN-TRANSIT')">
       Mark as in-transit
     </button>
-    <button
-      *ngIf="showAction('COMPLETED')"
-      mat-flat-button
-      color="primary"
-      (click)="showUpdateStatusDialog('COMPLETED')">
-      Complete
-    </button>
   </div>
 </mat-toolbar>
 <div class="content">
@@ -103,7 +96,7 @@
       </mat-card>
     </div>
     <h4 class="inner-content-title">Requested items</h4>
-    <app-incoming-inventory-request-items (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode }" [isReadOnly]="true" #inventoryRequestItems></app-incoming-inventory-request-items>
+    <app-incoming-inventory-request-items (itemsChanged)="itemsChanged($event)" [inventoryRequest]="{ inventoryRequestCode: inventoryRequestCode, requestStatus: inventoryRequest?.requestStatus }" [isReadOnly]="true" #inventoryRequestItems></app-incoming-inventory-request-items>
   </div>
 </div>
 

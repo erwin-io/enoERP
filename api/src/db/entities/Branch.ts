@@ -5,12 +5,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { InventoryRequest } from "./InventoryRequest";
 import { ItemBranch } from "./ItemBranch";
 import { Users } from "./Users";
 
-@Index("u_branch_name", ["active", "name"], { unique: true })
 @Index("u_branch_branchCode", ["active", "branchCode"], { unique: true })
+@Index("u_branch_name", ["active", "name"], { unique: true })
 @Index("Branch_pkey", ["branchId"], { unique: true })
 @Entity("Branch", { schema: "dbo" })
 export class Branch {
@@ -28,6 +29,12 @@ export class Branch {
 
   @Column("boolean", { name: "IsMainBranch", default: () => "false" })
   isMainBranch: boolean;
+
+  @OneToMany(
+    () => InventoryAdjustmentReport,
+    (inventoryAdjustmentReport) => inventoryAdjustmentReport.branch
+  )
+  inventoryAdjustmentReports: InventoryAdjustmentReport[];
 
   @OneToMany(
     () => InventoryRequest,

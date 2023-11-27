@@ -94,6 +94,7 @@ export class IncomingInventoryRequestDetailsComponent {
           const items = this.inventoryRequest.inventoryRequestItems.map(x=> {
             return {
               quantity: x.quantity,
+              quantityReceived: x.quantityReceived,
               itemId: x.item.itemId,
               itemCode: x.item.itemCode,
               itemName: x.item.itemDescription,
@@ -150,9 +151,6 @@ export class IncomingInventoryRequestDetailsComponent {
       if(status === "IN-TRANSIT" && this.inventoryRequest.requestStatus === "PROCESSING") {
         show = true;
       }
-      if(status === "COMPLETED" && this.inventoryRequest.requestStatus === "IN-TRANSIT") {
-        show = true;
-      }
       if(status === "CANCELLED" && this.inventoryRequest.requestStatus === "PENDING") {
         show = true;
       }
@@ -164,7 +162,6 @@ export class IncomingInventoryRequestDetailsComponent {
   | "REJECTED"
   | "PROCESSING"
   | "IN-TRANSIT"
-  | "COMPLETED"
   | "CANCELLED"
   | "PARTIALLY-FULFILLED") {
     this.updateStatusData = {
@@ -177,12 +174,8 @@ export class IncomingInventoryRequestDetailsComponent {
   }
 
   processStatus(status: "PENDING"
-  | "REJECTED"
   | "PROCESSING"
-  | "IN-TRANSIT"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "PARTIALLY-FULFILLED") {
+  | "IN-TRANSIT") {
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
     if(status === "PROCESSING") {

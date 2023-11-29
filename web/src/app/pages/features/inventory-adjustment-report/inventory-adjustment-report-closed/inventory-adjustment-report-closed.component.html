@@ -1,0 +1,80 @@
+<mat-toolbar color="#fff" class="mat-elevation-z4">
+  <button
+    style="margin-right: 10px!important;"
+    mat-icon-button
+    matTooltip="Back"
+    routerLink="/inventory-adjustment-report/pending" keyboard_arrow_left>
+    <mat-icon>keyboard_arrow_left</mat-icon>
+  </button>
+  <span id="title">Closed Reports</span>
+  <span class="toolbar-item-spacer"></span>
+</mat-toolbar>
+<div class="content">
+<div class="inner-content">
+  <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)" [(selectedIndex)]="tabIndex">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span class="tab-label" matBadge="{{total.closed > 99 ? '99+' : total.closed }}" *ngIf="total.closed > 0; else matLabelClosed" matBadgeOverlap="false">Closed</span>
+        <ng-template #matLabelClosed>Closed</ng-template>
+      </ng-template>
+      <ng-template matTabContent>
+        <mat-card [ngClass]="{ 'hidden': isLoading }">
+          <mat-card-content fxLayout="column" >
+            <app-data-table
+            [isLoading]="isLoading"
+            [dataSource]="dataSource['closed']"
+            [columnDefs]="appConfig.config.tableColumns.inventoryAdjustmentReport"
+            [total]="total['closed']"
+            (pageChange)="pageChange($event, 'closed')"
+            (sortChange)="sortChange($event, 'closed')"
+            (filterChange)="filterChange($event, 'closed')"
+            ></app-data-table>
+          </mat-card-content>
+        </mat-card>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span class="tab-label" matBadge="{{total.rejected > 99 ? '99+' : total.rejected }}" *ngIf="total.rejected > 0; else matLabelRejected" matBadgeOverlap="false">Rejected</span>
+        <ng-template #matLabelRejected>Rejected</ng-template>
+      </ng-template>
+      <ng-template matTabContent>
+        <mat-card [ngClass]="{ 'hidden': isLoading }">
+          <mat-card-content fxLayout="column" >
+            <app-data-table
+            [isLoading]="isLoading"
+            [dataSource]="dataSource['rejected']"
+            [columnDefs]="appConfig.config.tableColumns.inventoryAdjustmentReport"
+            [total]="total['rejected']"
+            (pageChange)="pageChange($event, 'rejected')"
+            (sortChange)="sortChange($event, 'rejected')"
+            (filterChange)="filterChange($event, 'rejected')"
+            ></app-data-table>
+          </mat-card-content>
+        </mat-card>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span class="tab-label" matBadge="{{total.cancelled > 99 ? '99+' : total.cancelled }}" *ngIf="total.cancelled > 0; else matLabelCancelled" matBadgeOverlap="false">Cancelled</span>
+        <ng-template #matLabelCancelled>Cancelled</ng-template>
+      </ng-template>
+      <ng-template matTabContent>
+        <mat-card [ngClass]="{ 'hidden': isLoading }">
+          <mat-card-content fxLayout="column" >
+            <app-data-table
+            [isLoading]="isLoading"
+            [dataSource]="dataSource['cancelled']"
+            [columnDefs]="appConfig.config.tableColumns.inventoryAdjustmentReport"
+            [total]="total['cancelled']"
+            (pageChange)="pageChange($event, 'cancelled')"
+            (sortChange)="sortChange($event, 'cancelled')"
+            (filterChange)="filterChange($event, 'cancelled')"></app-data-table>
+          </mat-card-content>
+        </mat-card>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+  </div>
+</div>
+

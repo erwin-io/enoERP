@@ -1,0 +1,20 @@
+::ng-deep {
+  .report-inventoryReportItems-card-inner {
+    overflow: auto;
+  }
+
+  .mat-mdc-dialog-content {
+    .report-item-content-holder {
+      max-height: inherit;
+      .report-item-content {
+        overflow: auto;
+      }
+      .report-item-content-footer {
+        padding-top: 16px!important;
+      }
+    }
+  }
+  .hidden {
+    display: none!important;
+  }
+}

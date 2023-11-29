@@ -424,6 +424,150 @@
         }
       }
     ],
+    "inventoryAdjustmentReport": [
+      {
+        "sticky": true,
+        "name": "inventoryAdjustmentReportCode",
+        "label": "Report code",
+        "apiNotation": "inventoryAdjustmentReportCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Report code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "dateReported",
+        "label": "Date reported",
+        "apiNotation": "dateRequested",
+        "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date reported",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "reportType",
+        "label": "Report Type",
+        "apiNotation": "reportType",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Report Type"
+        }
+      },
+      {
+        "name": "reportedByUser",
+        "label": "Reported by",
+        "apiNotation": "reportedByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Reported by"
+        }
+      }
+    ],
+    "adjustmentConfirmation": [
+      {
+        "sticky": true,
+        "name": "inventoryAdjustmentReportCode",
+        "label": "Report code",
+        "apiNotation": "inventoryAdjustmentReportCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Report code"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "branch",
+        "label": "From Branch",
+        "apiNotation": "branch.name",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "From Branch"
+        }
+      },
+      {
+        "name": "dateReported",
+        "label": "Date reported",
+        "apiNotation": "dateRequested",
+        "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date reported",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "reportType",
+        "label": "Report Type",
+        "apiNotation": "reportType",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Report Type"
+        }
+      },
+      {
+        "name": "reportedByUser",
+        "label": "Reported by",
+        "apiNotation": "reportedByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Reported by"
+        }
+      }
+    ],
     "inventoryRequest": [
       {
         "sticky": true,
@@ -647,6 +791,85 @@
         }
       }
     ],
+    "goodsIssue": [
+      {
+        "sticky": true,
+        "name": "goodsIssueCode",
+        "label": "Goods Issue #",
+        "apiNotation": "goodsIssueCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Goods Issue #"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "issueType",
+        "label": "Type",
+        "apiNotation": "issueType",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Type"
+        }
+      },
+      {
+        "name": "dateCreated",
+        "label": "Date created",
+        "apiNotation": "dateCreated",
+        "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date created",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "warehouse",
+        "label": "Warehouse",
+        "apiNotation": "warehouse.name",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Warehouse"
+        }
+      },
+      {
+        "name": "createdByUser",
+        "label": "Created by",
+        "apiNotation": "createdByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Created by"
+        }
+      }
+    ],
     "users": [
       {
         "name": "fullName",
@@ -735,6 +958,18 @@
       },
       {
         "page": "Inventory Masterlist",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Inventory Adjustment Report",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Adjustment Confirmation",
         "view": false,
         "modify": false,
         "rights": []
@@ -876,6 +1111,14 @@
       "getByAdvanceSearch": "/warehouseInventory/page/",
       "getByItemCode": "/warehouseInventory/"
     },
+    "inventoryAdjustmentReport": {
+      "getByAdvanceSearch": "/inventoryAdjustmentReport/page/",
+      "getByCode": "/inventoryAdjustmentReport/",
+      "create": "/inventoryAdjustmentReport/",
+      "update": "/inventoryAdjustmentReport/",
+      "processStatus": "/inventoryAdjustmentReport/processStatus/",
+      "closeReport": "/inventoryAdjustmentReport/closeReport/"
+    },
     "inventoryRequest": {
       "getByAdvanceSearch": "/inventoryRequest/page/",
       "getByCode": "/inventoryRequest/",
@@ -897,6 +1140,13 @@
       "create": "/goodsReceipt/",
       "update": "/goodsReceipt/",
       "updateStatus": "/goodsReceipt/updateStatus/"
+    },
+    "goodsIssue": {
+      "getByAdvanceSearch": "/goodsIssue/page/",
+      "getByCode": "/goodsIssue/",
+      "create": "/goodsIssue/",
+      "update": "/goodsIssue/",
+      "updateStatus": "/goodsIssue/updateStatus/"
     },
     "dashboard": {},
     "message": {

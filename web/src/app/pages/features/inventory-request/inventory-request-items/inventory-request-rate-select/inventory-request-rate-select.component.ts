@@ -137,7 +137,7 @@ export class InventoryRequestRateSelectComponent {
     }
   }
 
-  Number(value: any = "0") {
+  toNumber(value: any = "0") {
     return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
   }
 }

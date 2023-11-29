@@ -31,7 +31,7 @@
         </ng-container>
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">quantity</th>
-          <td mat-cell *matCellDef="let element">{{element.quantity}}{{ Number(element.quantity) > 1 ? 'pcs' : 'pc' }}</td>
+          <td mat-cell *matCellDef="let element">{{element.quantity}}{{ toNumber(element.quantity) > 1 ? 'pcs' : 'pc' }}</td>
         </ng-container>
         <ng-container matColumnDef="totalAmount">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Amount</th>
@@ -39,7 +39,7 @@
         </ng-container>
         <ng-container matColumnDef="quantityReceived">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">Received</th>
-          <td mat-cell *matCellDef="let element" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">{{element.quantityReceived}}{{ Number(element.quantityReceived) > 1 ? 'pcs' : 'pc' }}</td>
+          <td mat-cell *matCellDef="let element" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">{{element.quantityReceived}}{{ toNumber(element.quantityReceived) > 1 ? 'pcs' : 'pc' }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

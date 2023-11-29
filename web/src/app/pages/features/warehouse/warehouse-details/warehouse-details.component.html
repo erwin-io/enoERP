@@ -15,7 +15,7 @@
       *ngIf="isReadOnly"
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Edit"
       routerLink="/warehouse/{{id}}/edit"
       replaceUrl="true"
     >
@@ -24,7 +24,7 @@
     <button
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Delete"
       (click)="onDelete()"
       replaceUrl="true"
     >
@@ -33,6 +33,7 @@
     <button
       *ngIf="!isReadOnly"
       mat-flat-button
+      matTooltip="Update"
       [disabled]="!warehouseForm.valid || !warehouseForm.ready"
       color="primary"
       (click)="onUpdate(warehouseForm.getFormData)">

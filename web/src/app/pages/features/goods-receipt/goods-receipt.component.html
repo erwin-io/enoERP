@@ -54,7 +54,7 @@
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <span class="tab-label" matBadge="{{total.rejected > 99 ? '99+' : total.rejected }}" *ngIf="total.rejected > 0; else matLabelRejected" matBadgeOverlap="false">rejected</span>
+          <span class="tab-label" matBadge="{{total.rejected > 99 ? '99+' : total.rejected }}" *ngIf="total.rejected > 0; else matLabelRejected" matBadgeOverlap="false">Rejected</span>
           <ng-template #matLabelRejected>Rejected</ng-template>
         </ng-template>
         <ng-template matTabContent>

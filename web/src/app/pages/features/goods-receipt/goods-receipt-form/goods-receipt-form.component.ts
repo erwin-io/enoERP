@@ -36,7 +36,7 @@ export class GoodsReceiptFormComponent {
   public get goodsReceiptItemsData() {
     if(this.form.controls["goodsReceiptItems"].value &&
     (this.form.controls["goodsReceiptItems"].value as GoodsReceiptItemTableColumn[]).length > 0 &&
-    (this.form.controls["goodsReceiptItems"].value as GoodsReceiptItemTableColumn[]).every(x=>x && x.itemId && x.quantity)) {
+    (this.form.controls["goodsReceiptItems"].value as GoodsReceiptItemTableColumn[]).every(x=>x && x.itemId && x.quantity && Number(x.quantity) > 0)) {
       return (this.form.controls["goodsReceiptItems"].value as GoodsReceiptItemTableColumn[]);
     } else {
       return null;
@@ -48,7 +48,7 @@ export class GoodsReceiptFormComponent {
   }
 
   public get ready() {
-    return this.form.valid && this.form.dirty && (this.form.controls["goodsReceiptItems"].value??[] as GoodsReceiptItemTableColumn[]).length > 0;
+    return this.form.valid && this.form.dirty && this.goodsReceiptItemsData && this.goodsReceiptItemsData.length > 0;
   }
 
   getError(key: string) {

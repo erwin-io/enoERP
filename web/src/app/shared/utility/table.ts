@@ -119,6 +119,55 @@ export class InventoryRequestItemTableColumn {
   totalAmount: number;
 }
 
+export class InventoryAdjustmentReportTableColumn {
+  inventoryAdjustmentReportId?: string;
+  inventoryAdjustmentReportCode?: string;
+  dateReported?: string;
+  reportedByUser?: string;
+  reportType?: string;
+  url?: string;
+}
+
+export class InventoryAdjustmentReportItemTableColumn {
+  returnedQuantity?: string;
+  totalRefund?: number;
+  proposedUnitReturnRate?: number;
+  quantityReceived?: string;
+  itemId?: string;
+  itemCode?: string;
+  itemName?: string;
+  itemDescription?: string;
+  itemCategory?: string;
+  isEditMode?: boolean;
+  isInvalidReturnedQuantity?: boolean;
+  isReturnedQuantityChanged?: boolean;
+}
+
+export class AdjustmentConfirmationTableColumn {
+  inventoryAdjustmentReportId?: string;
+  inventoryAdjustmentReportCode?: string;
+  branch?: string;
+  dateReported?: string;
+  reportedByUser?: string;
+  reportType?: string;
+  url?: string;
+}
+
+export class AdjustmentConfirmationItemTableColumn {
+  returnedQuantity?: string;
+  totalRefund?: number;
+  proposedUnitReturnRate?: number;
+  quantityReceived?: string;
+  itemId?: string;
+  itemCode?: string;
+  itemName?: string;
+  itemDescription?: string;
+  itemCategory?: string;
+  isEditMode?: boolean;
+  isInvalidProposedUnitReturnRate?: boolean;
+  isProposedUnitReturnRateChanged?: boolean;
+}
+
 export class IncomingInventoryRequestTableColumn {
   inventoryRequestId?: string;
   inventoryRequestCode?: string;
@@ -139,6 +188,7 @@ export class InventoryRequestRateTableColumn {
   url?: string;
 }
 
+
 export class GoodsReceiptTableColumn {
   goodsReceiptId?: string;
   goodsReceiptCode?: string;
@@ -150,6 +200,25 @@ export class GoodsReceiptTableColumn {
 }
 
 export class GoodsReceiptItemTableColumn {
+  quantity: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemDescription: string;
+  itemCategory: string;
+}
+
+export class GoodsIssueTableColumn {
+  goodsReceiptId?: string;
+  goodsReceiptCode?: string;
+  dateCreated?: string;
+  warehouse?: string;
+  issueType?: string;
+  createdByUser?: string;
+  url?: string;
+}
+
+export class GoodsIssueItemTableColumn {
   quantity: string;
   itemId: string;
   itemCode: string;

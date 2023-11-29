@@ -15,7 +15,7 @@
       *ngIf="isReadOnly"
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Edit"
       routerLink="/item-category/{{code}}/edit"
       replaceUrl="true"
     >
@@ -24,7 +24,7 @@
     <button
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Delete"
       (click)="onDelete()"
       replaceUrl="true"
     >
@@ -35,6 +35,7 @@
       mat-flat-button
       [disabled]="!itemCategoryForm.valid || !itemCategoryForm.ready"
       color="primary"
+      matTooltip="Update"
       (click)="onUpdate(itemCategoryForm.getFormData)">
       Update
     </button>

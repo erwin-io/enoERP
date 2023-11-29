@@ -23,7 +23,6 @@ export class UpdateStatusModel {
 | "PROCESSING"
 | "IN-TRANSIT"
 | "COMPLETED"
-| "CANCELLED"
 | "PARTIALLY-FULFILLED" };
 @Component({
   selector: 'app-incoming-inventory-request-details',
@@ -138,7 +137,6 @@ export class IncomingInventoryRequestDetailsComponent {
   | "PROCESSING"
   | "IN-TRANSIT"
   | "COMPLETED"
-  | "CANCELLED"
   | "PARTIALLY-FULFILLED") {
     let show = false;
     if(this.inventoryRequest) {
@@ -151,9 +149,6 @@ export class IncomingInventoryRequestDetailsComponent {
       if(status === "IN-TRANSIT" && this.inventoryRequest.requestStatus === "PROCESSING") {
         show = true;
       }
-      if(status === "CANCELLED" && this.inventoryRequest.requestStatus === "PENDING") {
-        show = true;
-      }
     }
     return show;
   }
@@ -162,7 +157,6 @@ export class IncomingInventoryRequestDetailsComponent {
   | "REJECTED"
   | "PROCESSING"
   | "IN-TRANSIT"
-  | "CANCELLED"
   | "PARTIALLY-FULFILLED") {
     this.updateStatusData = {
       status
@@ -248,8 +242,6 @@ export class IncomingInventoryRequestDetailsComponent {
     dialogData.title = 'Confirm';
     if(params.status === "REJECTED") {
       dialogData.message = 'Reject request?';
-    } else if(params.status === "CANCELLED") {
-      dialogData.message = 'Cancel request?';
     } else {
       dialogData.message = 'Mark as completed?';
     }

@@ -1,0 +1,16 @@
+::ng-deep {
+  .request-goodsIssueItems-card-inner {
+    overflow: auto;
+  }
+  .mat-mdc-dialog-content {
+    .goods-issue-item-content-holder {
+      max-height: inherit;
+      .goods-issue-item-content {
+        overflow: auto;
+      }
+      .goods-issue-item-content-footer {
+        padding-top: 16px!important;
+      }
+    }
+  }
+}

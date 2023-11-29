@@ -58,7 +58,7 @@
     <div fxFlex="100" fxLayout="column" class="select-rate-selected-value" style="gap: 5px;">
       <h4>{{selected?.rate}}</h4>
       <h4>{{selected?.rateName}}</h4>
-      <h4>{{selected?.maxQuantity}}{{Number(selected?.minQuantity) > 1 ? 'pcs' : 'pc' }}pcs-{{selected?.maxQuantity}}{{Number(selected?.maxQuantity) > 1 ? 'pcs' : 'pc'}}</h4>
+      <h4>{{selected?.maxQuantity}}{{toNumber(selected?.minQuantity) > 1 ? 'pcs' : 'pc' }}pcs-{{selected?.maxQuantity}}{{toNumber(selected?.maxQuantity) > 1 ? 'pcs' : 'pc'}}</h4>
     </div>
   </div>
 </div>

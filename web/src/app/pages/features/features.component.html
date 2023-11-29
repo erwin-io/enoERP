@@ -33,7 +33,7 @@
                 <mat-icon>dashboard</mat-icon><span>Dashboard</span>
             </mat-list-item>
             <mat-expansion-panel
-              *ngIf="showGroupMenu(['Inventory Masterlist', 'Inventory Request','Incoming Inventory Request','Warehouse Inventory'])"
+              *ngIf="showGroupMenu(['Inventory Masterlist', 'Inventory Adjustment Report', 'Inventory Request','Incoming Inventory Request','Warehouse Inventory'])"
               [@.disabled]="disableGroupAnimation"
               (afterExpand)="disableGroupAnimation = false"
               [expanded]="expand('Inventory')"
@@ -53,6 +53,12 @@
                 </mat-list-item>
                 <mat-list-item *ngIf="showMenu('Incoming Inventory Request')" routerLink="incoming-inventory-request" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
                     <mat-icon>assignment_returned</mat-icon><span>Incoming Inventory Request</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Inventory Adjustment Report')" routerLink="inventory-adjustment-report" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>report</mat-icon><span>Inventory Adjustment Report</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="showMenu('Adjustment Confirmation')" routerLink="adjustment-confirmation" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>feedback</mat-icon><span>Adjustment Confirmation</span>
                 </mat-list-item>
               </mat-nav-list>
             </mat-expansion-panel>

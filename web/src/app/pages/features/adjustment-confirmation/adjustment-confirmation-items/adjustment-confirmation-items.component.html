@@ -1,0 +1,96 @@
+<mat-card>
+  <mat-card-header>
+  </mat-card-header>
+  <mat-card-content fxFlex="100" fxLayout="column" >
+    <div
+      fxFlex="33.33%"
+      fxLayout="column"
+      fxLayout.gt-xs="row">
+      <mat-form-field
+        appearance="outline">
+        <mat-label>Total refund&nbsp;&nbsp;</mat-label>
+        <input
+          type="text"
+          placeholder="Total amount"
+          aria-label="Total amount"
+          matInput
+          readonly
+          [ngModel]="accTotalRefund | currency: 'PHP'"/>
+      </mat-form-field>
+    </div>
+    <div fxFlex="100" fxLayout="column" class="report-inventoryReportItems-card-inner">
+      <table class="table-report-inventoryReportItems" mat-table [dataSource]="dataSource">
+        <!-- Page Column -->
+        <ng-container matColumnDef="itemName" [sticky]="true">
+          <th mat-header-cell *matHeaderCellDef >Item name</th>
+          <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="itemCategory">
+          <th mat-header-cell *matHeaderCellDef >Item category</th>
+          <td mat-cell *matCellDef="let element">{{ element.itemCategory }}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantityReceived">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Revceived Quantity</th>
+          <td mat-cell *matCellDef="let element">{{element.quantityReceived}}{{ toNumber(element.quantityReceived) > 1 ? 'pcs' : 'pc' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="returnedQuantity">
+          <th mat-header-cell *matHeaderCellDef >Returned Quantity</th>
+          <td mat-cell *matCellDef="let element">{{element?.returnedQuantity}}{{ toNumber(element?.returnedQuantity) > 1 ? 'pcs' : 'pc' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="proposedUnitReturnRate">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '20%' }">Proposed Return Rate(1pc)</th>
+          <td mat-cell *matCellDef="let element" [ngStyle]="{ 'width': '140px'}">
+            <ng-container *ngIf="!element.isEditMode; else editProposedUnitReturnRate">
+              {{ element.proposedUnitReturnRate | currency: 'PHP' }}
+            </ng-container>
+            <ng-template #editProposedUnitReturnRate>
+              <div style="margin-top: 10px;width: 140px;display: flex;flex-direction: column;">
+                <mat-form-field
+                  fxFlex="100"
+                  fxLayout="column"
+                  appearance="outline"
+                  [ngClass]="{ 'mdc-text-field--invalid': element?.isProposedUnitReturnRateChanged && (!element?.proposedUnitReturnRate || element?.proposedUnitReturnRate === '' || toNumber(element?.proposedUnitReturnRate) <= 0 )}">
+                  <input
+                    type="number"
+                    placeholder="Proposed Return Rate(1pc)"
+                    aria-label="Proposed Return Rate(1pc)"
+                    matInput
+                    (input)="element.isProposedUnitReturnRateChanged = true"
+                    [(ngModel)]="element.proposedUnitReturnRate"/>
+                </mat-form-field>
+                <span style="color: red;" *ngIf="element?.isProposedUnitReturnRateChanged && (!element?.proposedUnitReturnRate || element?.proposedUnitReturnRate === '' || toNumber(element?.proposedUnitReturnRate) <= 0)">Invalid proposed unit return rate</span>
+              </div>
+            </ng-template>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="totalRefund">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '20%'}" >Total Refund</th>
+          <td mat-cell *matCellDef="let element" >{{ element.totalRefund | currency: 'PHP' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="controls">
+          <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'hidden': isReadOnly }"> </th>
+          <td mat-cell *matCellDef="let element" [ngClass]="{ 'hidden': isReadOnly }" [ngStyle]="{ 'width': element.isEditMode || (!element?.proposedUnitReturnRate || element?.proposedUnitReturnRate === '' || toNumber(element?.proposedUnitReturnRate) <= 0 || !element?.isProposedUnitReturnRateChanged) ? '80px' : '132px'}">
+            <div style="display: flex;flex-direction: row;">
+              <button matTooltip="Edit" (click)="element.isEditMode = true" mat-icon-button *ngIf="!isReadOnly && !element.isEditMode">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button matTooltip="Edit" [disabled]="!element?.proposedUnitReturnRate || toNumber(element?.proposedUnitReturnRate) <= 0" (click)="updateRow(element)" mat-icon-button *ngIf="!isReadOnly && element.isEditMode">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button matTooltip="Reset" mat-icon-button (click)="element.proposedUnitReturnRate = 0;element.isInvalidProposedUnitReturnRate = true" *ngIf="!isReadOnly && !element.isEditMode && toNumber(element?.proposedUnitReturnRate) > 0 && element?.isProposedUnitReturnRateChanged">
+                <mat-icon>repeat</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <div class="table-no-data" *ngIf="dataSource.data.length === 0">
+      <span>No item added</span>
+    </div>
+  </mat-card-content>
+</mat-card>

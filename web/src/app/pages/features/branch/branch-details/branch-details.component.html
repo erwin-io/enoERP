@@ -15,7 +15,7 @@
       *ngIf="isReadOnly"
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Edit"
       routerLink="/branch/{{id}}/edit"
       replaceUrl="true"
     >
@@ -24,7 +24,7 @@
     <button
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Delete"
       (click)="onDelete()"
       replaceUrl="true"
     >

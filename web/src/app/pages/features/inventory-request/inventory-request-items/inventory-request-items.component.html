@@ -36,7 +36,7 @@
         </ng-container>
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Requested Quantity</th>
-          <td mat-cell *matCellDef="let element">{{element.quantity}}{{ Number(element.quantity) > 1 ? 'pcs' : 'pc' }}</td>
+          <td mat-cell *matCellDef="let element">{{element.quantity}}{{ toNumber(element.quantity) > 1 ? 'pcs' : 'pc' }}</td>
         </ng-container>
         <ng-container matColumnDef="totalAmount">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '20%'}">Amount</th>
@@ -44,7 +44,7 @@
         </ng-container>
         <ng-container matColumnDef="quantityReceived">
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">Received</th>
-          <td mat-cell *matCellDef="let element" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">{{element.quantityReceived}}{{ Number(element.quantityReceived) > 1 ? 'pcs' : 'pc' }}</td>
+          <td mat-cell *matCellDef="let element" [ngClass]="{ 'hidden': !inventoryRequest?.requestStatus || inventoryRequest?.requestStatus !== 'COMPLETED'} ">{{element.quantityReceived}}{{ toNumber(element.quantityReceived) > 1 ? 'pcs' : 'pc' }}</td>
         </ng-container>
         <ng-container matColumnDef="controls">
           <th mat-header-cell *matHeaderCellDef></th>
@@ -77,7 +77,7 @@
 
 
 <ng-template #inventoryRequestItemFormDialog>
-  <h4 mat-dialog-title>{{isNew ? 'Add Item': 'Update Item'}}</h4>
+  <h4 mat-dialog-title>{{isNewItem ? 'Add Item': 'Update Item'}}</h4>
 
 <div mat-dialog-content>
   <div class="inner-content request-item-content-holder" fxFlex="100" fxLayout="column" >
@@ -92,7 +92,7 @@
             fxFlex="100"
             fxLayout="column"
             appearance="outline"
-            (dblclick)="isNew ? showSelectItemDialog() : false">
+            (dblclick)="isNewItem ? showSelectItemDialog() : false">
             <mat-label>Item&nbsp;&nbsp;</mat-label>
             <input
               type="text"
@@ -102,7 +102,7 @@
               readonly
               [(ngModel)]="currentSelected.itemName"/>
               <mat-icon
-                *ngIf="isNew"
+                *ngIf="isNewItem"
                 class="icon-right"
                 (click)="showSelectItemDialog()"
                 style="cursor: pointer;"
@@ -296,7 +296,7 @@
     </button>
     <button
       mat-flat-button
-      [disabled]="!form.valid && !form.dirty"
+      [disabled]="!form.valid || !form.dirty"
       color="primary"
       type="submit"
       (click)="onSubmit()">

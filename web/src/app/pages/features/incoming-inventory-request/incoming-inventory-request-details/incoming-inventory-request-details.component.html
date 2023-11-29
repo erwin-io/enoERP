@@ -14,14 +14,9 @@
   <span class="toolbar-item-spacer"></span>
   <div class="toolbar-action">
     <button
-      *ngIf="showAction('CANCELLED')"
-      mat-flat-button
-      (click)="showUpdateStatusDialog('CANCELLED')">
-      Cancel
-    </button>
-    <button
       *ngIf="showAction('REJECTED')"
       mat-flat-button
+      matTooltip="Mark as rejected"
       (click)="showUpdateStatusDialog('REJECTED')">
       Reject
     </button>
@@ -29,6 +24,7 @@
       *ngIf="showAction('PROCESSING')"
       mat-flat-button
       color="primary"
+      matTooltip="Mark as processing"
       (click)="processStatus('PROCESSING')">
       Process
     </button>
@@ -36,6 +32,7 @@
       *ngIf="showAction('IN-TRANSIT')"
       mat-flat-button
       color="primary"
+      matTooltip="Mark as in-transit"
       (click)="processStatus('IN-TRANSIT')">
       Mark as in-transit
     </button>
@@ -45,7 +42,7 @@
   <div class="inner-content">
     <div fxFlex="100" fxLayout="row">
       <div style=" display: flex; width: 100%; justify-content: flex-end;">
-        <button class="request-status {{inventoryRequest?.requestStatus?.toLowerCase()}}" aria-label="Close request" matTooltip="Pending" mat-fab extended disableRipple>
+        <button class="request-status {{inventoryRequest?.requestStatus?.toLowerCase()}}" aria-label="Close request" matTooltip="{{inventoryRequest?.requestStatus?.toLowerCase()}}" mat-fab extended disableRipple>
           <mat-icon>{{
           inventoryRequest?.requestStatus === 'PENDING' ? 'schedule' : '' ||
           inventoryRequest?.requestStatus === 'REJECTED' ? 'cancel' : '' ||
@@ -104,7 +101,6 @@
   <h4 mat-dialog-title>Mark request as - {{
     updateStatusData?.status === 'REJECTED' ? 'Rejected' : '' ||
     updateStatusData?.status === 'COMPLETED' ? 'Completed' : '' ||
-    updateStatusData?.status === 'CANCELLED' ? 'Cancelled' : '' ||
     updateStatusData?.status === 'PARTIALLY-FULFILLED' ? 'Partially fulfilled' : '' }}</h4>
 
 <div mat-dialog-content>

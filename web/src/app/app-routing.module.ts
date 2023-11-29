@@ -52,6 +52,24 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'inventory-adjustment-report',
+        canActivate: [AuthGuard],
+        data: { title: 'Inventory Adjustment Report', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/inventory-adjustment-report/inventory-adjustment-report.module').then(
+            (m) => m.InventoryAdjustmentReportModule
+          ),
+      },
+      {
+        path: 'adjustment-confirmation',
+        canActivate: [AuthGuard],
+        data: { title: 'Adjustment Confirmation', group: 'Inventory' },
+        loadChildren: () =>
+          import('./pages/features/adjustment-confirmation/adjustment-confirmation.module').then(
+            (m) => m.AdjustmentConfirmationModule
+          ),
+      },
+      {
         path: 'inventory-request',
         canActivate: [AuthGuard],
         data: { title: 'Inventory Request', group: 'Inventory' },
@@ -130,6 +148,15 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/features/goods-receipt/goods-receipt.module').then(
             (m) => m.GoodsReceiptModule
+          ),
+      },
+      {
+        path: 'goods-issue',
+        canActivate: [AuthGuard],
+        data: { title: 'Goods Receipt', group: 'Purchasing' },
+        loadChildren: () =>
+          import('./pages/features/goods-issue/goods-issue.module').then(
+            (m) => m.GoodsIssueModule
           ),
       },
       {

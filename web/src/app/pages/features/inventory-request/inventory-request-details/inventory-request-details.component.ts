@@ -1,4 +1,4 @@
-import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -98,6 +98,7 @@ export class InventoryRequestDetailsComponent {
       this.initDetails();
     } else {
       this.canAddEdit = true;
+      this.isLoading = false;
     }
 
     this.warehouseSearchCtrl.valueChanges

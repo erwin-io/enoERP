@@ -50,7 +50,7 @@ export class UserDetailsComponent implements OnInit {
   isReadOnly = true;
 
   error;
-  isLoading = false;
+  isLoading = true;
 
   userForm: FormGroup;
   mediaWatcher: Subscription;
@@ -72,6 +72,8 @@ export class UserDetailsComponent implements OnInit {
   optionsAccess: { name: string; code: string}[] = [];
   @ViewChild('accessPagesTable', { static: true}) accessPagesTable: AccessPagesTableComponent;
   @ViewChild('accessSearchInput', { static: true}) accessSearchInput: ElementRef<HTMLInputElement>;
+
+  user: Users;
 
   constructor(
     private userService: UserService,
@@ -129,13 +131,55 @@ export class UserDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.initDetails();
   }
 
   async initDetails() {
-    if (this.isNew) {
-      this.userForm = this.formBuilder.group(
-        {
+    try {
+      if (this.isNew) {
+        this.userForm = this.formBuilder.group(
+          {
+            userName: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')]],
+            fullName: [
+              '',
+              [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')],
+            ],
+            gender: ['',[Validators.required]],
+            birthDate: ['',[Validators.required]],
+            mobileNumber: [
+              '',
+              [
+                Validators.minLength(11),
+                Validators.maxLength(11),
+                Validators.pattern('^[0-9]*$'),
+                Validators.required,
+              ],
+            ],
+            email: ['',[Validators.required]],
+            address: ['',[Validators.required]],
+            password: [
+              '',
+              [
+                Validators.minLength(6),
+                Validators.maxLength(16),
+                Validators.required,
+              ],
+            ],
+            confirmPassword: '',
+            accessCode: ['', Validators.required],
+            branchId: ['', Validators.required],
+          },
+          { validators: this.checkPasswords }
+        );
+        this.f['userName'].valueChanges.subscribe(value=> {
+          if(/\s/.test(value)) {
+            this.f['userName'].setErrors({ whitespace: true})
+          }
+        })
+        this.isLoading = false;
+      } else {
+        this.userForm = this.formBuilder.group({
           userName: [null],
           fullName: [
             '',
@@ -152,138 +196,117 @@ export class UserDetailsComponent implements OnInit {
               Validators.required,
             ],
           ],
-          email: ['',[Validators.required]],
+          email: ['',[
+            Validators.required,
+            Validators.email]],
           address: ['',[Validators.required]],
-          password: [
-            '',
-            [
-              Validators.minLength(6),
-              Validators.maxLength(16),
-              Validators.required,
-            ],
-          ],
-          confirmPassword: '',
           accessCode: ['', Validators.required],
           branchId: ['', Validators.required],
-        },
-        { validators: this.checkPasswords }
-      );
-    } else {
-      this.userForm = this.formBuilder.group({
-        userName: [null],
-        fullName: [
-          '',
-          [Validators.required, Validators.pattern('^[a-zA-Z0-9\\-\\s]+$')],
-        ],
-        gender: ['',[Validators.required]],
-        birthDate: ['',[Validators.required]],
-        mobileNumber: [
-          '',
-          [
-            Validators.minLength(11),
-            Validators.maxLength(11),
-            Validators.pattern('^[0-9]*$'),
-            Validators.required,
-          ],
-        ],
-        email: ['',[
-          Validators.required,
-          Validators.email]],
-        address: ['',[Validators.required]],
-        accessCode: ['', Validators.required],
-        branchId: ['', Validators.required],
-      });
+        });
 
 
-      forkJoin([
-        this.userService.getByCode(this.userCode).toPromise(),
-        this.branchService.getByAdvanceSearch({
-        order: {},
-        columnDef: [],
-        pageIndex: 0,
-        pageSize: 10
-      }),
-        this.accessService.getByAdvanceSearch({
-        order: {},
-        columnDef: [],
-        pageIndex: 0,
-        pageSize: 10
+        forkJoin([
+          this.userService.getByCode(this.userCode).toPromise(),
+          this.branchService.getByAdvanceSearch({
+          order: {},
+          columnDef: [],
+          pageIndex: 0,
+          pageSize: 10
+        }),
+          this.accessService.getByAdvanceSearch({
+          order: {},
+          columnDef: [],
+          pageIndex: 0,
+          pageSize: 10
+        })
+        ]).subscribe(([user, branchOptions, accessOptions])=> {
+          if(branchOptions.success) {
+            this.optionsBranch = branchOptions.data.results.map(x=> {
+              return { name: x.name, id: x.branchId }
+            });
+          }
+          if(accessOptions.success) {
+            this.optionsAccess = accessOptions.data.results.map(x=> {
+              return { name: x.name, code: x.accessCode }
+            });
+          }
+          if (user.success) {
+            this.user = user.data;
+            this.userForm.patchValue({
+              userName: user.data.userName,
+              fullName: user.data.fullName,
+              gender: user.data.gender && ["MALE", "FEMALE"].includes(user.data.gender) ? user.data.gender : "OTHERS",
+              birthDate: user.data.birthDate,
+              mobileNumber: user.data.mobileNumber,
+              email: user.data.email,
+              address: user.data.address,
+              branchId: user.data.branch?.branchId,
+              accessCode: user.data.access?.accessCode,
+            });
+            this.userForm.updateValueAndValidity();
+            if(user.data.access?.accessPages) {
+              this.accessPagesTable.setDataSource(user.data.access?.accessPages);
+            }
+            this.f['userName'].disable();
+            this.branchSearchCtrl.disable();
+            if (this.isReadOnly) {
+              this.userForm.disable();
+              this.accessSearchCtrl.disable();
+            }
+            this.branchSearchCtrl.setValue(user.data.branch?.branchId);
+            this.accessSearchCtrl.setValue(user.data.access?.accessCode);
+            this.isLoading = false;
+          } else {
+            this.isLoading = false;
+            this.error = Array.isArray(user.message) ? user.message[0] : user.message;
+            this.snackBar.open(this.error, 'close', {
+              panelClass: ['style-error'],
+            });
+          }
+        });
+      }
+      this.f['email'].valueChanges.subscribe(res=> {
+        if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
+          this.f['email'].setErrors({ pattern: true})
+        } else if(res && res !== "") {
+          this.f['email'].setErrors(null)
+        }
       })
-      ]).subscribe(([user, branchOptions, accessOptions])=> {
-        if(branchOptions.success) {
-          this.optionsBranch = branchOptions.data.results.map(x=> {
-            return { name: x.name, id: x.branchId }
-          });
-        }
-        if(accessOptions.success) {
-          this.optionsAccess = accessOptions.data.results.map(x=> {
-            return { name: x.name, code: x.accessCode }
-          });
-        }
-        if (user.success) {
-          this.f['userName'].setValue(user.data.userName);
-          this.f['fullName'].setValue(user.data.fullName);
-          this.f['gender'].setValue(user.data.gender && ["MALE", "FEMALE"].includes(user.data.gender) ? user.data.gender : "OTHERS");
-          this.f['birthDate'].setValue(user.data.birthDate);
-          this.f['mobileNumber'].setValue(user.data.mobileNumber);
-          this.f['email'].setValue(user.data.email);
-          this.f['address'].setValue(user.data.address);
-          this.f['branchId'].setValue(user.data.branch?.branchId);
-          this.f['accessCode'].setValue(user.data.access?.accessCode);
-          if(user.data.access?.accessPages) {
-            this.accessPagesTable.setDataSource(user.data.access?.accessPages);
+      this.f['accessCode'].valueChanges.subscribe(async res=> {
+        if(!this.isReadOnly) {
+          this.spinner.show();
+          const access = await this.accessService.getByCode(res).toPromise();
+          if(access.data && access.data.accessPages) {
+            this.accessPagesTable.setDataSource(access.data.accessPages)
           }
-          this.f['userName'].disable();
-          this.branchSearchCtrl.disable();
-          if (this.isReadOnly) {
-            this.userForm.disable();
-            this.accessSearchCtrl.disable();
-          }
-          this.branchSearchCtrl.setValue(user.data.branch?.branchId);
-          this.accessSearchCtrl.setValue(user.data.access?.accessCode);
-        } else {
-          this.error = Array.isArray(user.message) ? user.message[0] : user.message;
-          this.snackBar.open(this.error, 'close', {
-            panelClass: ['style-error'],
-          });
+          this.spinner.hide();
         }
+      })
+      this.branchSearchCtrl.valueChanges
+      .pipe(
+          debounceTime(2000),
+          distinctUntilChanged()
+      )
+      .subscribe(async value => {
+          await this.initBranchOptions();
+      });
+      this.accessSearchCtrl.valueChanges
+      .pipe(
+          debounceTime(2000),
+          distinctUntilChanged()
+      )
+      .subscribe(async value => {
+          await this.initAccessOptions();
+      });
+      await this.initBranchOptions();
+      await this.initAccessOptions();
+    } catch(ex) {
+      this.isLoading = false;
+      this.error = Array.isArray(ex.message) ? ex.message[0] : ex.message;
+      this.snackBar.open(this.error, 'close', {
+        panelClass: ['style-error'],
       });
     }
-    this.f['email'].valueChanges.subscribe(res=> {
-      if(res && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(res))) {
-        this.f['email'].setErrors({ pattern: true})
-      } else if(res && res !== "") {
-        this.f['email'].setErrors(null)
-      }
-    })
-    this.f['accessCode'].valueChanges.subscribe(async res=> {
-      if(!this.isReadOnly) {
-        this.spinner.show();
-        const access = await this.accessService.getByCode(res).toPromise();
-        if(access.data && access.data.accessPages) {
-          this.accessPagesTable.setDataSource(access.data.accessPages)
-        }
-        this.spinner.hide();
-      }
-    })
-    this.branchSearchCtrl.valueChanges
-    .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-    )
-    .subscribe(async value => {
-        await this.initBranchOptions();
-    });
-    this.accessSearchCtrl.valueChanges
-    .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-    )
-    .subscribe(async value => {
-        await this.initAccessOptions();
-    });
-    await this.initBranchOptions();
-    await this.initAccessOptions();
   }
 
   async initBranchOptions() {

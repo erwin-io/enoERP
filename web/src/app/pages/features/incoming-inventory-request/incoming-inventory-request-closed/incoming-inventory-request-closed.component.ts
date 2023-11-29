@@ -24,7 +24,6 @@ export class IncomingInventoryRequestClosedComponent {
   dataSource = {
     completed: new MatTableDataSource<any>([]),
     rejected: new MatTableDataSource<any>([]),
-    cancelled: new MatTableDataSource<any>([]),
   }
   displayedColumns = [];
   isLoading = false;
@@ -32,22 +31,18 @@ export class IncomingInventoryRequestClosedComponent {
   pageIndex = {
     completed: 0,
     rejected: 0,
-    cancelled: 0,
   };
   pageSize = {
     completed: 10,
     rejected: 10,
-    cancelled: 10,
   };
   total = {
     completed: 0,
     rejected: 0,
-    cancelled: 0,
   };
   order = {
     completed: { inventoryRequestId: "DESC" },
     rejected: { inventoryRequestId: "DESC" },
-    cancelled: { inventoryRequestId: "DESC" },
   };
 
   filter = {
@@ -58,12 +53,6 @@ export class IncomingInventoryRequestClosedComponent {
       type: string;
     }[],
     rejected: [] as {
-      apiNotation: string;
-      filter: string;
-      name: string;
-      type: string;
-    }[],
-    cancelled: [] as {
       apiNotation: string;
       filter: string;
       name: string;
@@ -102,7 +91,6 @@ export class IncomingInventoryRequestClosedComponent {
   ngAfterViewInit() {
     this.getInventoryRequestPaginated("completed");
     this.getInventoryRequestPaginated("rejected");
-    this.getInventoryRequestPaginated("cancelled");
 
   }
   filterChange(event: {
@@ -128,7 +116,7 @@ export class IncomingInventoryRequestClosedComponent {
     this.getInventoryRequestPaginated(table as any)
   }
 
-  async getInventoryRequestPaginated(table: "completed" | "rejected" | "cancelled"){
+  async getInventoryRequestPaginated(table: "completed" | "rejected"){
     try{
       const findIndex = this.filter[table].findIndex(x=>x.apiNotation === "requestStatus");
       if(findIndex >= 0) {
@@ -202,11 +190,6 @@ export class IncomingInventoryRequestClosedComponent {
         this._location.go("/incoming-inventory-request/closed-request/rejected");
       }
       this.titleService.setTitle(`Rejected | ${this.appConfig.config.appName}`);
-    } else if(index === 2) {
-      if(redirect) {
-        this._location.go("/incoming-inventory-request/closed-request/cancelled");
-      }
-      this.titleService.setTitle(`Cancelled | ${this.appConfig.config.appName}`);
     } else {
       if(redirect) {
         this._location.go("/incoming-inventory-request/closed-request/completed");

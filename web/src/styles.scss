@@ -81,8 +81,8 @@ p, label, input, textarea, span, div, button {
         column-gap: 10px;
     }
     &.side-bar-open {
-        margin-left: 310px!important;
-        width: calc(100% - 310px)!important;
+        margin-left: 320px!important;
+        width: calc(100% - 320px)!important;
     }
 }
 
@@ -97,7 +97,7 @@ p, label, input, textarea, span, div, button {
     position: static!important;
     z-index: 9!important;
     .mat-sidenav {
-        width: 310px!important;
+        width: 320px!important;
         z-index: 999;
         @media only screen and (max-width: 360px)  {
           width: 100%!important;
@@ -430,6 +430,9 @@ app-auth {
 
   ::ng-deep .mdc-text-field--invalid:not(form){
     border: 1px solid red;
+    .mat-error {
+      color: red!important;
+    }
   }
 
   ::ng-deep .hidden {

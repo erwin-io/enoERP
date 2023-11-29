@@ -14,6 +14,7 @@
     <button
       *ngIf="!canAddEdit ? false : !isNew"
       mat-flat-button
+      matTooltip="Cancel this goods receipt"
       (click)="showUpdateStatusDialog('CANCELLED')">
       Cancel
     </button>
@@ -21,7 +22,7 @@
       *ngIf="!canAddEdit ? false : isReadOnly"
       mat-raised-button
       color="primary"
-      matTooltip="Save"
+      matTooltip="Edit"
       routerLink="/goods-receipt/{{goodsReceiptCode}}/edit"
       replaceUrl="true"
     >
@@ -30,8 +31,9 @@
     <button
       *ngIf="!canAddEdit ? false : !isReadOnly"
       mat-flat-button
-      [disabled]="(!goodsReceiptForm.valid || !goodsReceiptForm.ready) && (!supplierCode.valid || !supplierCode.dirty)"
+      [disabled]="(!goodsReceiptForm.valid || !goodsReceiptForm.ready) || (!supplierCode.valid || !supplierCode.dirty)"
       color="primary"
+      matTooltip="{{isNew ? 'Save' : 'Update'}}"
       (click)="onSubmit(goodsReceiptForm.getFormData)">
       {{isNew ? 'Save' : 'Update'}}
     </button>

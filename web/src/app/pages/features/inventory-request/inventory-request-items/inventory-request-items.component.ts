@@ -32,7 +32,8 @@ export class InventoryRequestItemComponent {
   @Input() warehouseCode;
   id;
   isProcessing = false;
-  isNew = false;
+  @Input() isNew = false;
+  isNewItem = false;
   accTotalAmount = 0;
   displayedColumns = ['itemName', 'itemCategory', 'quantity', 'totalAmount', 'quantityReceived', 'controls'];
   dataSource = new MatTableDataSource<InventoryRequestItemTableColumn>();
@@ -99,7 +100,7 @@ export class InventoryRequestItemComponent {
 
   get form() {
     return {
-      valid: this.itemId.valid && this.quantity.valid && this.inventoryRequestRateCode.valid,
+      valid: this.itemId.valid && this.itemId.value && this.itemId.value !== '' && this.quantity.valid && this.quantity.value && Number(this.quantity.valid) > 0 && this.inventoryRequestRateCode.valid && this.inventoryRequestRateCode?.value && this.inventoryRequestRateCode?.value !== '',
       dirty: this.itemId.dirty || this.quantity.dirty || this.inventoryRequestRateCode.dirty,
       value: {
         itemId: this.itemId.value,
@@ -118,8 +119,6 @@ export class InventoryRequestItemComponent {
   ngAfterViewInit() {
     this.itemId.valueChanges
     .subscribe(async value => {
-      this.itemId.setErrors(null);
-      this.itemId.markAsDirty();
       if(this.dataSource.data.some(x=>x.itemId === this.itemId.value) && this.currentSelected?.itemId !== this.itemId.value) {
         this.snackBar.open("Item already exist in table!", 'close', {
           panelClass: ['style-error'],
@@ -134,11 +133,12 @@ export class InventoryRequestItemComponent {
           if(res.success) {
             this.currentWarehouseInventory = res.data as WarehouseInventory;
             let available = 0;
-            if(this.isNew) {
-              available = Number(this.currentWarehouseInventory.quantity);
-            } else if(this.currentSelected?.quantity && !isNaN(Number(this.currentSelected?.quantity))) {
+            if(!this.isNew && this.inventoryRequest.inventoryRequestItems.find(x=>x.item.itemId ===this.itemId.value) && this.currentSelected?.quantity && !isNaN(Number(this.currentSelected?.quantity))) {
               const currentQuantity = Number(this.currentSelected?.quantity)
-              available = (currentQuantity + Number(this.currentWarehouseInventory.quantity)) - Number(this.currentWarehouseInventory.orderedQuantity);
+              available = currentQuantity + Number(this.currentWarehouseInventory.quantity);
+            }
+            else {
+              available = Number(this.currentWarehouseInventory.quantity);
             }
             this.currentWarehouseInventory.availableToRequest = available >= 0 ? available.toString() : "0";
             if(available <= 0) {
@@ -278,7 +278,7 @@ export class InventoryRequestItemComponent {
     this.itemId.reset();
     this.quantity.reset();
     this.inventoryRequestRateCode.reset();
-    this.isNew = true;
+    this.isNewItem = true;
     const dialogRef = this.dialog.open(this.inventoryRequestItemFormDialogTemp, {
       disableClose: true,
       panelClass: 'inventory-request-items'
@@ -324,7 +324,7 @@ export class InventoryRequestItemComponent {
         this.itemId.setValue(this.currentSelected.itemId);
         this.quantity.setValue(this.currentSelected.quantity);
         this.inventoryRequestRateCode.setValue(this.currentSelected.inventoryRequestRateCode);
-        this.isNew = false;
+        this.isNewItem = false;
         this.spinner.hide();
         this.isProcessing = false;
       } else {
@@ -376,12 +376,15 @@ export class InventoryRequestItemComponent {
           this.currentSelected.itemName = res.itemName;
           this.currentSelected.itemCategory = res.itemCategory.name;
           this.itemId.setValue(this.currentSelected.itemId);
+          this.itemId.markAsDirty();
+          this.itemId.markAsTouched();
         } else {
           this.snackBar.open("Item already exist in table!", 'close', {
             panelClass: ['style-error'],
           });
           this.itemId.setErrors({ exist: true});
           this.itemId.markAsDirty();
+          this.itemId.markAsTouched();
         }
       }
     })
@@ -467,7 +470,7 @@ export class InventoryRequestItemComponent {
     }
     const dialogData = new AlertDialogModel();
     dialogData.title = 'Confirm';
-    dialogData.message = this.isNew ? "New item?" : "Update item?";
+    dialogData.message = this.isNewItem ? "New item?" : "Update item?";
     dialogData.confirmButton = {
       visible: true,
       text: 'yes',
@@ -535,7 +538,7 @@ export class InventoryRequestItemComponent {
     return this.f && this.f[key] ? this.f[key].errors : null;
   }
 
-  Number(value: any = "0") {
+  toNumber(value: any = "0") {
     return isNaN(Number(value ? value.toString() : "0")) ? 0 : Number(value.toString());
   }
 

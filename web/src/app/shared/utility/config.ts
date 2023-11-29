@@ -22,10 +22,13 @@ export interface AppConfig {
       branch: ColumnDefinition[];
       inventoryMasterlist: ColumnDefinition[];
       inventoryRequest: ColumnDefinition[];
+      inventoryAdjustmentReport: ColumnDefinition[];
+      adjustmentConfirmation: ColumnDefinition[];
       incomingInventoryRequest: ColumnDefinition[];
       inventoryRequestRate: ColumnDefinition[];
       warehouseInventory: ColumnDefinition[];
       goodsReceipt: ColumnDefinition[];
+      goodsIssue: ColumnDefinition[];
       supplier: ColumnDefinition[];
     };
     sessionConfig: {
@@ -105,6 +108,14 @@ export interface AppConfig {
         processStatus: string;
         closeRequest: string;
       },
+      inventoryAdjustmentReport: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        processStatus: string;
+        closeReport: string;
+      },
       inventoryRequestRate: {
         getByAdvanceSearch: string;
         getByCode: string;
@@ -113,6 +124,13 @@ export interface AppConfig {
         delete: string;
       },
       goodsReceipt: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        update: string;
+        updateStatus: string;
+      }
+      goodsIssue: {
         getByAdvanceSearch: string;
         getByCode: string;
         create: string;

@@ -54,26 +54,6 @@
         </mat-card>
       </ng-template>
     </mat-tab>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span class="tab-label" matBadge="{{total.cancelled > 99 ? '99+' : total.cancelled }}" *ngIf="total.cancelled > 0; else matLabelCancelled" matBadgeOverlap="false">Cancelled</span>
-        <ng-template #matLabelCancelled>Cancelled</ng-template>
-      </ng-template>
-      <ng-template matTabContent>
-        <mat-card [ngClass]="{ 'hidden': isLoading }">
-          <mat-card-content fxLayout="column" >
-            <app-data-table
-            [isLoading]="isLoading"
-            [dataSource]="dataSource['cancelled']"
-            [columnDefs]="appConfig.config.tableColumns.incomingInventoryRequest"
-            [total]="total['cancelled']"
-            (pageChange)="pageChange($event, 'cancelled')"
-            (sortChange)="sortChange($event, 'cancelled')"
-            (filterChange)="filterChange($event, 'cancelled')"></app-data-table>
-          </mat-card-content>
-        </mat-card>
-      </ng-template>
-    </mat-tab>
   </mat-tab-group>
   </div>
 </div>

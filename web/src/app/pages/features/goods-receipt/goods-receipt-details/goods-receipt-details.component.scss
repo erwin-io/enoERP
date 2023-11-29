@@ -11,14 +11,6 @@
       background-color: #FFE0B2!important;
       color: #000!important;
     }
-    &.processing {
-      background-color: #C8E6C9;
-      color: #000!important;
-    }
-    &.in-transit {
-      background-color: #C8E6C9;
-      color: #000!important;
-    }
     &.completed {
       background-color: #E0E0E0;
       color: #000!important;
@@ -28,10 +20,6 @@
       color: #000!important;
     }
     &.cancelled {
-      background-color: #E0E0E0;
-      color: #000!important;
-    }
-    &.partially-fulfilled {
       background-color: #E0E0E0;
       color: #000!important;
     }

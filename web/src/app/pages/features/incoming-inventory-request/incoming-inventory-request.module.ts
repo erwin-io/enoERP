@@ -54,12 +54,6 @@ export const routes: Routes = [
     data: { title: "Closed Request", tab: 1 }
   },
   {
-    path: 'closed-request/cancelled',
-    pathMatch: 'full',
-    component: IncomingInventoryRequestClosedComponent,
-    data: { title: "Closed Request", tab: 2 }
-  },
-  {
     path: ':inventoryRequestCode/details',
     component: IncomingInventoryRequestDetailsComponent,
     data: { title: "Incoming Inventory Request", details: true }

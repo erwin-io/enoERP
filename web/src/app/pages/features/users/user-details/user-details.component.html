@@ -8,28 +8,28 @@
       }}
     </mat-icon>
   </button>
-  <span id="title">{{ isNew ? 'New user' :'#' + userCode + ' ' + formData.fullName}}</span>
+  <span id="title">{{ isNew ? 'New user' : '#' + userCode + ' ' + ( !isLoading ? user?.fullName : '')}}</span>
   <span class="toolbar-item-spacer"></span>
   <div class="toolbar-action">
     <button
-      *ngIf="!isReadOnly"
       mat-raised-button
       color="primary"
-      matTooltip="Save"
-      [disabled]="!formIsReady && !formIsValid"
-      form="userForm"
-      type="submit">
-      {{isNew ? 'Save' : 'Update'}}
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      matTooltip="Save"
+      matTooltip="Edit"
       *ngIf="!isNew && isReadOnly && currentUserCode !== userCode"
       routerLink="/users/{{userCode}}/edit"
       replaceUrl="true"
     >
       Edit
+    </button>
+    <button
+      *ngIf="!isReadOnly"
+      mat-raised-button
+      color="primary"
+      matTooltip="{{isNew ? 'Save' : 'Update'}}"
+      [disabled]="!formIsReady && !formIsValid"
+      form="userForm"
+      type="submit">
+      {{isNew ? 'Save' : 'Update'}}
     </button>
   </div>
 </mat-toolbar>
@@ -270,7 +270,11 @@
                           : "") ||
                         (getError("userName") && getError("userName").pattern
                           ? "Invalid username, allowed characters: 1. small letters 2. numbers"
+                          : "") ||
+                        (getError("userName") && getError("userName").whitespace
+                          ? "Invalid username, whitespace not allowed"
                           : "")
+
                     }}</mat-error
                   >
                 </mat-form-field>

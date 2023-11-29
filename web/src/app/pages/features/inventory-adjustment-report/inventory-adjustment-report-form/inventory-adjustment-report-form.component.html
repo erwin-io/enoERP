@@ -1,0 +1,29 @@
+
+<div class="inner-content">
+  <form
+  [formGroup]="form"
+  fxLayout="row wrap"
+  id="form"
+  [ngClass]="{'readonly' : isReadOnly}">
+  <fieldset fxFlex="100" fxLayout="row wrap" style="row-gap: 16px">
+    <mat-form-field
+      fxFlex="100"
+      fxLayout="column"
+      appearance="outline">
+    <mat-label>Description</mat-label>
+    <textarea
+      matInput
+      placeholder="Description"
+      formControlName="description">
+    </textarea>
+      <mat-error
+        *ngIf="getError('description') !== (null || undefined)"
+        >{{
+          (getError("description") && getError("description").required
+            ? "Please enter description"
+            : "")}}</mat-error
+      >
+    </mat-form-field>
+  </fieldset>
+  </form>
+</div>

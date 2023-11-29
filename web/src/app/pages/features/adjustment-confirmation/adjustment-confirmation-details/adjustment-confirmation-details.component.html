@@ -26,6 +26,13 @@
       (click)="updateStatus({ status: 'REVIEWED'})">
       {{inventoryAdjustmentReport?.reportStatus === 'REVIEWED' ? 'Update return rate' : 'Submit return rate'}}
     </button>
+    <button
+      *ngIf="showAction('CLOSED')"
+      mat-flat-button
+      color="primary"
+      (click)="showUpdateStatusDialog('CLOSED')">
+      Close report
+    </button>
   </div>
 </mat-toolbar>
 <div class="content">

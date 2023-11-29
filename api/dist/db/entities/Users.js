@@ -15,6 +15,7 @@ const GoodsIssue_1 = require("./GoodsIssue");
 const GoodsReceipt_1 = require("./GoodsReceipt");
 const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 const InventoryRequest_1 = require("./InventoryRequest");
+const SalesInvoice_1 = require("./SalesInvoice");
 const Access_1 = require("./Access");
 const Branch_1 = require("./Branch");
 let Users = class Users {
@@ -84,6 +85,10 @@ __decorate([
     __metadata("design:type", Array)
 ], Users.prototype, "inventoryRequests", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => SalesInvoice_1.SalesInvoice, (salesInvoice) => salesInvoice.createdByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "salesInvoices", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Access_1.Access, (access) => access.users),
     (0, typeorm_1.JoinColumn)([{ name: "AccessId", referencedColumnName: "accessId" }]),
     __metadata("design:type", Access_1.Access)
@@ -94,8 +99,8 @@ __decorate([
     __metadata("design:type", Branch_1.Branch)
 ], Users.prototype, "branch", void 0);
 Users = __decorate([
-    (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user_email", ["active", "email"], { unique: true }),
+    (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user", ["active", "userName"], { unique: true }),
     (0, typeorm_1.Index)("pk_users_1557580587", ["userId"], { unique: true }),
     (0, typeorm_1.Entity)("Users", { schema: "dbo" })

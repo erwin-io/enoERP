@@ -11,11 +11,12 @@ import { GoodsIssue } from "./GoodsIssue";
 import { GoodsReceipt } from "./GoodsReceipt";
 import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { InventoryRequest } from "./InventoryRequest";
+import { SalesInvoice } from "./SalesInvoice";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 
-@Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user_email", ["active", "email"], { unique: true })
+@Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user", ["active", "userName"], { unique: true })
 @Index("pk_users_1557580587", ["userId"], { unique: true })
 @Entity("Users", { schema: "dbo" })
@@ -73,6 +74,9 @@ export class Users {
     (inventoryRequest) => inventoryRequest.requestedByUser
   )
   inventoryRequests: InventoryRequest[];
+
+  @OneToMany(() => SalesInvoice, (salesInvoice) => salesInvoice.createdByUser)
+  salesInvoices: SalesInvoice[];
 
   @ManyToOne(() => Access, (access) => access.users)
   @JoinColumn([{ name: "AccessId", referencedColumnName: "accessId" }])

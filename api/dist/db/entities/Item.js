@@ -19,6 +19,7 @@ const InventoryRequestRate_1 = require("./InventoryRequestRate");
 const ItemCategory_1 = require("./ItemCategory");
 const ItemBranch_1 = require("./ItemBranch");
 const ItemWarehouse_1 = require("./ItemWarehouse");
+const SalesInvoiceItem_1 = require("./SalesInvoiceItem");
 let Item = class Item {
 };
 __decorate([
@@ -88,6 +89,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => ItemWarehouse_1.ItemWarehouse, (itemWarehouse) => itemWarehouse.item),
     __metadata("design:type", Array)
 ], Item.prototype, "itemWarehouses", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => SalesInvoiceItem_1.SalesInvoiceItem, (salesInvoiceItem) => salesInvoiceItem.item),
+    __metadata("design:type", Array)
+], Item.prototype, "salesInvoiceItems", void 0);
 Item = __decorate([
     (0, typeorm_1.Index)("u_item_itemName", ["active", "itemName"], { unique: true }),
     (0, typeorm_1.Index)("u_item_itemCode", ["active", "itemCode"], { unique: true }),

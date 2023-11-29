@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeOrmConfigService = void 0;
+const SalesInvoiceItem_1 = require("./../entities/SalesInvoiceItem");
 const InventoryRequestItem_1 = require("./../entities/InventoryRequestItem");
 const InventoryRequest_1 = require("./../entities/InventoryRequest");
 const Users_1 = require("../entities/Users");
@@ -30,6 +31,7 @@ const GoodsReceiptItem_1 = require("../entities/GoodsReceiptItem");
 const Supplier_1 = require("../entities/Supplier");
 const InventoryAdjustmentReport_1 = require("../entities/InventoryAdjustmentReport");
 const InventoryAdjustmentReportItem_1 = require("../entities/InventoryAdjustmentReportItem");
+const SalesInvoice_1 = require("../entities/SalesInvoice");
 let TypeOrmConfigService = class TypeOrmConfigService {
     createTypeOrmOptions() {
         const ssl = this.config.get("SSL");
@@ -59,6 +61,8 @@ let TypeOrmConfigService = class TypeOrmConfigService {
                 Supplier_1.Supplier,
                 InventoryAdjustmentReport_1.InventoryAdjustmentReport,
                 InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem,
+                SalesInvoice_1.SalesInvoice,
+                SalesInvoiceItem_1.SalesInvoiceItem,
             ],
             synchronize: false,
             ssl: ssl.toLocaleLowerCase().includes("true"),

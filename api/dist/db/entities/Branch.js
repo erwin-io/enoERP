@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 const InventoryRequest_1 = require("./InventoryRequest");
 const ItemBranch_1 = require("./ItemBranch");
+const SalesInvoice_1 = require("./SalesInvoice");
 const Users_1 = require("./Users");
 let Branch = class Branch {
 };
@@ -50,12 +51,16 @@ __decorate([
     __metadata("design:type", Array)
 ], Branch.prototype, "itemBranches", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => SalesInvoice_1.SalesInvoice, (salesInvoice) => salesInvoice.branch),
+    __metadata("design:type", Array)
+], Branch.prototype, "salesInvoices", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => Users_1.Users, (users) => users.branch),
     __metadata("design:type", Array)
 ], Branch.prototype, "users", void 0);
 Branch = __decorate([
-    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("u_branch_name", ["active", "name"], { unique: true }),
+    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("Branch_pkey", ["branchId"], { unique: true }),
     (0, typeorm_1.Entity)("Branch", { schema: "dbo" })
 ], Branch);

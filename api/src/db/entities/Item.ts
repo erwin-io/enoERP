@@ -15,6 +15,7 @@ import { InventoryRequestRate } from "./InventoryRequestRate";
 import { ItemCategory } from "./ItemCategory";
 import { ItemBranch } from "./ItemBranch";
 import { ItemWarehouse } from "./ItemWarehouse";
+import { SalesInvoiceItem } from "./SalesInvoiceItem";
 
 @Index("u_item_itemName", ["active", "itemName"], { unique: true })
 @Index("u_item_itemCode", ["active", "itemCode"], { unique: true })
@@ -83,4 +84,10 @@ export class Item {
 
   @OneToMany(() => ItemWarehouse, (itemWarehouse) => itemWarehouse.item)
   itemWarehouses: ItemWarehouse[];
+
+  @OneToMany(
+    () => SalesInvoiceItem,
+    (salesInvoiceItem) => salesInvoiceItem.item
+  )
+  salesInvoiceItems: SalesInvoiceItem[];
 }

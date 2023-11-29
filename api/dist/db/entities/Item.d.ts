@@ -6,6 +6,7 @@ import { InventoryRequestRate } from "./InventoryRequestRate";
 import { ItemCategory } from "./ItemCategory";
 import { ItemBranch } from "./ItemBranch";
 import { ItemWarehouse } from "./ItemWarehouse";
+import { SalesInvoiceItem } from "./SalesInvoiceItem";
 export declare class Item {
     itemId: string;
     itemCode: string;
@@ -23,4 +24,5 @@ export declare class Item {
     itemCategory: ItemCategory;
     itemBranches: ItemBranch[];
     itemWarehouses: ItemWarehouse[];
+    salesInvoiceItems: SalesInvoiceItem[];
 }

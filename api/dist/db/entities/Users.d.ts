@@ -2,6 +2,7 @@ import { GoodsIssue } from "./GoodsIssue";
 import { GoodsReceipt } from "./GoodsReceipt";
 import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { InventoryRequest } from "./InventoryRequest";
+import { SalesInvoice } from "./SalesInvoice";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 export declare class Users {
@@ -21,6 +22,7 @@ export declare class Users {
     goodsReceipts: GoodsReceipt[];
     inventoryAdjustmentReports: InventoryAdjustmentReport[];
     inventoryRequests: InventoryRequest[];
+    salesInvoices: SalesInvoice[];
     access: Access;
     branch: Branch;
 }

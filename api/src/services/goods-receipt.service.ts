@@ -248,7 +248,7 @@ export class GoodsReceiptService {
         }
         if (goodsReceipt.status !== "PENDING") {
           throw Error(
-            "Not allowed to update request, goods receipt was already being - processed"
+            "Not allowed to update goods receipt, goods receipt was already being - processed"
           );
         }
 

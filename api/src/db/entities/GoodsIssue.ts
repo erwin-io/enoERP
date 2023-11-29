@@ -10,6 +10,7 @@ import {
 import { Users } from "./Users";
 import { Warehouse } from "./Warehouse";
 import { GoodsIssueItem } from "./GoodsIssueItem";
+import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 
 @Index("GoodsIssue_pkey", ["goodsIssueId"], { unique: true })
 @Entity("GoodsIssue", { schema: "dbo" })
@@ -17,8 +18,8 @@ export class GoodsIssue {
   @PrimaryGeneratedColumn({ type: "bigint", name: "GoodsIssueId" })
   goodsIssueId: string;
 
-  @Column("character varying", { name: "GoodsIssueCode" })
-  goodsIssueCode: string;
+  @Column("character varying", { name: "GoodsIssueCode", nullable: true })
+  goodsIssueCode: string | null;
 
   @Column("character varying", { name: "Description" })
   description: string;
@@ -44,6 +45,9 @@ export class GoodsIssue {
   @Column("boolean", { name: "Active", default: () => "true" })
   active: boolean;
 
+  @Column("character varying", { name: "Notes", nullable: true })
+  notes: string | null;
+
   @ManyToOne(() => Users, (users) => users.goodsIssues)
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])
   createdByUser: Users;
@@ -57,4 +61,10 @@ export class GoodsIssue {
     (goodsIssueItem) => goodsIssueItem.goodsIssue
   )
   goodsIssueItems: GoodsIssueItem[];
+
+  @OneToMany(
+    () => InventoryAdjustmentReport,
+    (inventoryAdjustmentReport) => inventoryAdjustmentReport.goodsIssue
+  )
+  inventoryAdjustmentReports: InventoryAdjustmentReport[];
 }

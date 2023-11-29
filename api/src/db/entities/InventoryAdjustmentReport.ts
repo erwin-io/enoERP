@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Branch } from "./Branch";
+import { GoodsIssue } from "./GoodsIssue";
 import { InventoryRequest } from "./InventoryRequest";
 import { Users } from "./Users";
 import { InventoryAdjustmentReportItem } from "./InventoryAdjustmentReportItem";
@@ -49,7 +50,7 @@ export class InventoryAdjustmentReport {
 
   @Column("character varying", {
     name: "ReportStatus",
-    default: () => "'OPEN'",
+    default: () => "'PENDING'",
   })
   reportStatus: string;
 
@@ -62,6 +63,13 @@ export class InventoryAdjustmentReport {
   @ManyToOne(() => Branch, (branch) => branch.inventoryAdjustmentReports)
   @JoinColumn([{ name: "BranchId", referencedColumnName: "branchId" }])
   branch: Branch;
+
+  @ManyToOne(
+    () => GoodsIssue,
+    (goodsIssue) => goodsIssue.inventoryAdjustmentReports
+  )
+  @JoinColumn([{ name: "GoodsIssueId", referencedColumnName: "goodsIssueId" }])
+  goodsIssue: GoodsIssue;
 
   @ManyToOne(
     () => InventoryRequest,

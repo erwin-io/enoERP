@@ -11,6 +11,6 @@ export declare class ProcessInventoryAdjustmentReportStatusDto {
     inventoryAdjustmentReportItems: ReviewInventoryAdjustmentReportItemDto[];
 }
 export declare class CloseInventoryAdjustmentReportStatusDto {
-    status: "REJECTED" | "COMPLETED" | "CANCELLED";
+    status: "REJECTED" | "COMPLETED" | "CANCELLED" | "CLOSED";
     notes: string;
 }

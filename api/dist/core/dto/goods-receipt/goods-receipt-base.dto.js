@@ -41,7 +41,6 @@ class DefaultGoodsReceiptDto {
     constructor() {
         this.goodsReceiptItems = [];
     }
-    ;
 }
 __decorate([
     (0, swagger_1.ApiProperty)(),

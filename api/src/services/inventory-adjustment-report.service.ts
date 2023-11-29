@@ -20,6 +20,8 @@ import {
   UpdateInventoryAdjustmentReportDto,
 } from "src/core/dto/inventory-adjustment-report/inventory-adjustment-report.update.dto";
 import { Branch } from "src/db/entities/Branch";
+import { GoodsIssue } from "src/db/entities/GoodsIssue";
+import { GoodsIssueItem } from "src/db/entities/GoodsIssueItem";
 import { InventoryAdjustmentReport } from "src/db/entities/InventoryAdjustmentReport";
 import { InventoryAdjustmentReportItem } from "src/db/entities/InventoryAdjustmentReportItem";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
@@ -29,7 +31,7 @@ import { ItemBranch } from "src/db/entities/ItemBranch";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
-import { In, Repository } from "typeorm";
+import { EntityManager, In, Repository } from "typeorm";
 
 const deafaultInventoryAdjustmentReportSelect = {
   inventoryAdjustmentReportId: true,
@@ -138,6 +140,15 @@ export class InventoryAdjustmentReportService {
           branch: true,
         },
         branch: true,
+        inventoryRequest: {
+          branch: true,
+          fromWarehouse: true,
+          inventoryRequestItems: {
+            item: {
+              itemCategory: true,
+            },
+          },
+        },
         inventoryAdjustmentReportItems: {
           item: {
             itemCategory: true,
@@ -148,6 +159,24 @@ export class InventoryAdjustmentReportService {
     if (!result) {
       throw Error(INVENTORYADJUSTMENTREPORT_ERROR_NOT_FOUND);
     }
+    result.inventoryAdjustmentReportItems =
+      await await this.inventoryAdjustmentReportRepo.manager.find(
+        InventoryAdjustmentReportItem,
+        {
+          where: {
+            inventoryAdjustmentReport: {
+              inventoryAdjustmentReportCode:
+                result.inventoryAdjustmentReportCode,
+            },
+          },
+          relations: {
+            item: {
+              itemCategory: true,
+            },
+            inventoryAdjustmentReport: true,
+          },
+        }
+      );
     return result;
   }
 
@@ -245,6 +274,17 @@ export class InventoryAdjustmentReportService {
             InventoryAdjustmentReportItem,
             newItem
           );
+          newItem = await entityManager.findOne(InventoryAdjustmentReportItem, {
+            where: {
+              item: {
+                itemId: item.itemId,
+              },
+              inventoryAdjustmentReport: {
+                inventoryAdjustmentReportCode:
+                  inventoryAdjustmentReport.inventoryAdjustmentReportCode,
+              },
+            },
+          });
           //get current row item inventory requested item and update total received quantity
           const inventoryRequestItem = await entityManager.findOne(
             InventoryRequestItem,
@@ -323,6 +363,15 @@ export class InventoryAdjustmentReportService {
             },
           }
         );
+        inventoryAdjustmentReport.inventoryAdjustmentReportItems =
+          await entityManager.find(InventoryAdjustmentReportItem, {
+            where: {
+              inventoryAdjustmentReport: {
+                inventoryAdjustmentReportCode:
+                  inventoryAdjustmentReport.inventoryAdjustmentReportCode,
+              },
+            },
+          });
         return inventoryAdjustmentReport;
       }
     );
@@ -362,10 +411,17 @@ export class InventoryAdjustmentReportService {
         if (!inventoryAdjustmentReport) {
           throw Error(INVENTORYADJUSTMENTREPORT_ERROR_NOT_FOUND);
         }
-        if (inventoryAdjustmentReport.reportStatus !== "PENDING") {
+        if (
+          !["PENDING", "REVIEWED"].some(
+            (x) => x === inventoryAdjustmentReport.reportStatus
+          )
+        ) {
           throw Error(
             "Not allowed to update request, the request was already being - processed"
           );
+        }
+        if (inventoryAdjustmentReport.reportStatus === "REVIEWED") {
+          inventoryAdjustmentReport.reportStatus = "PENDING";
         }
         inventoryAdjustmentReport.description = dto.description;
         const timestamp = await entityManager
@@ -474,8 +530,6 @@ export class InventoryAdjustmentReportService {
           }
           inventoryAdjustmentReportItem.inventoryAdjustmentReport =
             inventoryAdjustmentReport;
-          inventoryAdjustmentReportItem.inventoryAdjustmentReport =
-            inventoryAdjustmentReport;
           const origReturnedQuantity =
             inventoryAdjustmentReportItem.returnedQuantity;
           inventoryAdjustmentReportItem.returnedQuantity =
@@ -495,6 +549,9 @@ export class InventoryAdjustmentReportService {
             const newItemBranchQuantity =
               Number(itemBranch.quantity) -
               Number(inventoryAdjustmentReportItem.returnedQuantity);
+            if (newItemBranchQuantity < 0) {
+              throw Error("Quantity exceeds current branch inventory quantity");
+            }
             itemBranch.quantity =
               newItemBranchQuantity >= 9
                 ? newItemBranchQuantity.toString()
@@ -502,10 +559,15 @@ export class InventoryAdjustmentReportService {
           } else {
             const oldItemBrancQuantity =
               Number(itemBranch.quantity) + Number(origReturnedQuantity);
-            const newItemBrancQuantity =
+            const newItemBranchQuantity =
               oldItemBrancQuantity - Number(item.returnedQuantity);
+            if (newItemBranchQuantity < 0) {
+              throw Error("Quantity exceeds current branch inventory quantity");
+            }
             itemBranch.quantity =
-              newItemBrancQuantity >= 0 ? newItemBrancQuantity.toString() : "0";
+              newItemBranchQuantity >= 0
+                ? newItemBranchQuantity.toString()
+                : "0";
           }
           await entityManager.save(ItemBranch, itemBranch);
 
@@ -777,7 +839,6 @@ export class InventoryAdjustmentReportService {
             );
           }
         }
-        delete inventoryAdjustmentReport.inventoryAdjustmentReportItems;
         inventoryAdjustmentReport.reportStatus = status;
         const timestamp = await entityManager
           .query(CONST_QUERYCURRENT_TIMESTAMP)
@@ -785,10 +846,25 @@ export class InventoryAdjustmentReportService {
             return res[0]["timestamp"];
           });
         inventoryAdjustmentReport.dateLastUpdated = timestamp;
+        delete inventoryAdjustmentReport.inventoryAdjustmentReportItems;
         inventoryAdjustmentReport = await entityManager.save(
           InventoryAdjustmentReport,
           inventoryAdjustmentReport
         );
+        if (status === "CLOSED") {
+          const goodsIssue = await this.createGoodsIssue(
+            entityManager,
+            inventoryAdjustmentReport.inventoryAdjustmentReportCode
+          );
+          if (!goodsIssue) {
+            throw new Error("Error saving goods issue");
+          }
+          inventoryAdjustmentReport.goodsIssue = goodsIssue;
+          inventoryAdjustmentReport = await entityManager.save(
+            InventoryAdjustmentReport,
+            inventoryAdjustmentReport
+          );
+        }
         inventoryAdjustmentReport = await entityManager.findOne(
           InventoryAdjustmentReport,
           {
@@ -813,5 +889,93 @@ export class InventoryAdjustmentReportService {
         return inventoryAdjustmentReport;
       }
     );
+  }
+
+  async createGoodsIssue(
+    entityManager: EntityManager,
+    inventoryAdjustmentReportCode: string
+  ) {
+    const inventoryAdjustmentReport = await entityManager.findOne(
+      InventoryAdjustmentReport,
+      {
+        where: {
+          inventoryAdjustmentReportCode,
+        },
+        relations: {
+          inventoryRequest: {
+            fromWarehouse: true,
+            branch: true,
+          },
+          reportedByUser: true,
+          branch: true,
+          inventoryAdjustmentReportItems: {
+            item: {
+              itemCategory: true,
+            },
+          },
+        },
+      }
+    );
+    let goodsIssue = new GoodsIssue();
+    const createdByUser = await entityManager.findOne(Users, {
+      where: {
+        userId: inventoryAdjustmentReport.reportedByUser.userId,
+        active: true,
+      },
+    });
+    if (!createdByUser) {
+      throw Error(USER_ERROR_USER_NOT_FOUND);
+    }
+    goodsIssue.createdByUser = createdByUser;
+    const warehouse = await entityManager.findOne(Warehouse, {
+      where: {
+        warehouseCode:
+          inventoryAdjustmentReport.inventoryRequest.fromWarehouse
+            .warehouseCode,
+        active: true,
+      },
+    });
+    if (!warehouse) {
+      throw Error(WAREHOUSE_ERROR_NOT_FOUND);
+    }
+    goodsIssue.warehouse = warehouse;
+    goodsIssue.description = inventoryAdjustmentReport.description;
+    goodsIssue.issueType = inventoryAdjustmentReport.reportType;
+    const timestamp = await entityManager
+      .query(CONST_QUERYCURRENT_TIMESTAMP)
+      .then((res) => {
+        return res[0]["timestamp"];
+      });
+    goodsIssue.dateCreated = timestamp;
+    goodsIssue = await entityManager.save(GoodsIssue, goodsIssue);
+    goodsIssue.goodsIssueCode = generateIndentityCode(goodsIssue.goodsIssueId);
+    for (const item of inventoryAdjustmentReport.inventoryAdjustmentReportItems) {
+      let newItem = new GoodsIssueItem();
+      newItem.item = await entityManager.findOne(Item, {
+        where: { itemId: item.itemId },
+      });
+      newItem.quantity = item.returnedQuantity.toString();
+      newItem.goodsIssue = goodsIssue;
+      newItem = await entityManager.save(GoodsIssueItem, newItem);
+    }
+    goodsIssue = await entityManager.save(GoodsIssue, goodsIssue);
+    goodsIssue = await entityManager.findOne(GoodsIssue, {
+      where: {
+        goodsIssueCode: goodsIssue.goodsIssueCode,
+      },
+      relations: {
+        createdByUser: {
+          branch: true,
+        },
+        warehouse: true,
+        goodsIssueItems: {
+          item: {
+            itemCategory: true,
+          },
+        },
+      },
+    });
+    delete goodsIssue.createdByUser.password;
+    return goodsIssue;
   }
 }

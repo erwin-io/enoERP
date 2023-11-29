@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryAdjustmentReport = void 0;
 const typeorm_1 = require("typeorm");
 const Branch_1 = require("./Branch");
+const GoodsIssue_1 = require("./GoodsIssue");
 const InventoryRequest_1 = require("./InventoryRequest");
 const Users_1 = require("./Users");
 const InventoryAdjustmentReportItem_1 = require("./InventoryAdjustmentReportItem");
@@ -56,7 +57,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)("character varying", {
         name: "ReportStatus",
-        default: () => "'OPEN'",
+        default: () => "'PENDING'",
     }),
     __metadata("design:type", String)
 ], InventoryAdjustmentReport.prototype, "reportStatus", void 0);
@@ -73,6 +74,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)([{ name: "BranchId", referencedColumnName: "branchId" }]),
     __metadata("design:type", Branch_1.Branch)
 ], InventoryAdjustmentReport.prototype, "branch", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => GoodsIssue_1.GoodsIssue, (goodsIssue) => goodsIssue.inventoryAdjustmentReports),
+    (0, typeorm_1.JoinColumn)([{ name: "GoodsIssueId", referencedColumnName: "goodsIssueId" }]),
+    __metadata("design:type", GoodsIssue_1.GoodsIssue)
+], InventoryAdjustmentReport.prototype, "goodsIssue", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.inventoryAdjustmentReports),
     (0, typeorm_1.JoinColumn)([

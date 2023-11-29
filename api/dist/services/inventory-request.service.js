@@ -71,6 +71,7 @@ const deafaultInventoryRequestSelect = {
         inventoryRequest: true,
         totalAmount: true,
         inventoryRequestRate: true,
+        quantityReceived: true,
     },
     fromWarehouse: true,
 };

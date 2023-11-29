@@ -59,9 +59,9 @@ export class CloseInventoryAdjustmentReportStatusDto {
     default: "",
   })
   @IsNotEmpty()
-  @IsIn(["REJECTED", "COMPLETED", "CANCELLED"])
+  @IsIn(["REJECTED", "COMPLETED", "CANCELLED", "CLOSED"])
   @IsUppercase()
-  status: "REJECTED" | "COMPLETED" | "CANCELLED";
+  status: "REJECTED" | "COMPLETED" | "CANCELLED" | "CLOSED";
 
   @ApiProperty({
     type: String,

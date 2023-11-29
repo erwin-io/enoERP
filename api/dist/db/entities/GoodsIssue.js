@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const Users_1 = require("./Users");
 const Warehouse_1 = require("./Warehouse");
 const GoodsIssueItem_1 = require("./GoodsIssueItem");
+const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 let GoodsIssue = class GoodsIssue {
 };
 __decorate([
@@ -21,7 +22,7 @@ __decorate([
     __metadata("design:type", String)
 ], GoodsIssue.prototype, "goodsIssueId", void 0);
 __decorate([
-    (0, typeorm_1.Column)("character varying", { name: "GoodsIssueCode" }),
+    (0, typeorm_1.Column)("character varying", { name: "GoodsIssueCode", nullable: true }),
     __metadata("design:type", String)
 ], GoodsIssue.prototype, "goodsIssueCode", void 0);
 __decorate([
@@ -55,6 +56,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], GoodsIssue.prototype, "active", void 0);
 __decorate([
+    (0, typeorm_1.Column)("character varying", { name: "Notes", nullable: true }),
+    __metadata("design:type", String)
+], GoodsIssue.prototype, "notes", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.goodsIssues),
     (0, typeorm_1.JoinColumn)([{ name: "CreatedByUserId", referencedColumnName: "userId" }]),
     __metadata("design:type", Users_1.Users)
@@ -68,6 +73,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => GoodsIssueItem_1.GoodsIssueItem, (goodsIssueItem) => goodsIssueItem.goodsIssue),
     __metadata("design:type", Array)
 ], GoodsIssue.prototype, "goodsIssueItems", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryAdjustmentReport_1.InventoryAdjustmentReport, (inventoryAdjustmentReport) => inventoryAdjustmentReport.goodsIssue),
+    __metadata("design:type", Array)
+], GoodsIssue.prototype, "inventoryAdjustmentReports", void 0);
 GoodsIssue = __decorate([
     (0, typeorm_1.Index)("GoodsIssue_pkey", ["goodsIssueId"], { unique: true }),
     (0, typeorm_1.Entity)("GoodsIssue", { schema: "dbo" })

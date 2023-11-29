@@ -83,7 +83,7 @@ __decorate([
         default: "",
     }),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsIn)(["REJECTED", "COMPLETED", "CANCELLED"]),
+    (0, class_validator_1.IsIn)(["REJECTED", "COMPLETED", "CANCELLED", "CLOSED"]),
     (0, class_validator_1.IsUppercase)(),
     __metadata("design:type", String)
 ], CloseInventoryAdjustmentReportStatusDto.prototype, "status", void 0);

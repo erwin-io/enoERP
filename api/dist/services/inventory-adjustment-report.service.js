@@ -20,8 +20,11 @@ const inventory_adjustment_report_constant_1 = require("../common/constant/inven
 const inventory_request_constant_1 = require("../common/constant/inventory-request.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
+const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
 const Branch_1 = require("../db/entities/Branch");
+const GoodsIssue_1 = require("../db/entities/GoodsIssue");
+const GoodsIssueItem_1 = require("../db/entities/GoodsIssueItem");
 const InventoryAdjustmentReport_1 = require("../db/entities/InventoryAdjustmentReport");
 const InventoryAdjustmentReportItem_1 = require("../db/entities/InventoryAdjustmentReportItem");
 const InventoryRequest_1 = require("../db/entities/InventoryRequest");
@@ -29,6 +32,7 @@ const InventoryRequestItem_1 = require("../db/entities/InventoryRequestItem");
 const Item_1 = require("../db/entities/Item");
 const ItemBranch_1 = require("../db/entities/ItemBranch");
 const Users_1 = require("../db/entities/Users");
+const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
 const deafaultInventoryAdjustmentReportSelect = {
     inventoryAdjustmentReportId: true,
@@ -125,6 +129,15 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                     branch: true,
                 },
                 branch: true,
+                inventoryRequest: {
+                    branch: true,
+                    fromWarehouse: true,
+                    inventoryRequestItems: {
+                        item: {
+                            itemCategory: true,
+                        },
+                    },
+                },
                 inventoryAdjustmentReportItems: {
                     item: {
                         itemCategory: true,
@@ -135,6 +148,20 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
         if (!result) {
             throw Error(inventory_adjustment_report_constant_1.INVENTORYADJUSTMENTREPORT_ERROR_NOT_FOUND);
         }
+        result.inventoryAdjustmentReportItems =
+            await await this.inventoryAdjustmentReportRepo.manager.find(InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, {
+                where: {
+                    inventoryAdjustmentReport: {
+                        inventoryAdjustmentReportCode: result.inventoryAdjustmentReportCode,
+                    },
+                },
+                relations: {
+                    item: {
+                        itemCategory: true,
+                    },
+                    inventoryAdjustmentReport: true,
+                },
+            });
         return result;
     }
     async create(dto) {
@@ -215,6 +242,16 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                 newItem.inventoryAdjustmentReport = inventoryAdjustmentReport;
                 newItem.returnedQuantity = item.returnedQuantity.toString();
                 newItem = await entityManager.save(InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, newItem);
+                newItem = await entityManager.findOne(InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, {
+                    where: {
+                        item: {
+                            itemId: item.itemId,
+                        },
+                        inventoryAdjustmentReport: {
+                            inventoryAdjustmentReportCode: inventoryAdjustmentReport.inventoryAdjustmentReportCode,
+                        },
+                    },
+                });
                 const inventoryRequestItem = await entityManager.findOne(InventoryRequestItem_1.InventoryRequestItem, {
                     where: {
                         item: {
@@ -270,6 +307,14 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                     },
                 },
             });
+            inventoryAdjustmentReport.inventoryAdjustmentReportItems =
+                await entityManager.find(InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, {
+                    where: {
+                        inventoryAdjustmentReport: {
+                            inventoryAdjustmentReportCode: inventoryAdjustmentReport.inventoryAdjustmentReportCode,
+                        },
+                    },
+                });
             return inventoryAdjustmentReport;
         });
     }
@@ -300,8 +345,11 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
             if (!inventoryAdjustmentReport) {
                 throw Error(inventory_adjustment_report_constant_1.INVENTORYADJUSTMENTREPORT_ERROR_NOT_FOUND);
             }
-            if (inventoryAdjustmentReport.reportStatus !== "PENDING") {
+            if (!["PENDING", "REVIEWED"].some((x) => x === inventoryAdjustmentReport.reportStatus)) {
                 throw Error("Not allowed to update request, the request was already being - processed");
+            }
+            if (inventoryAdjustmentReport.reportStatus === "REVIEWED") {
+                inventoryAdjustmentReport.reportStatus = "PENDING";
             }
             inventoryAdjustmentReport.description = dto.description;
             const timestamp = await entityManager
@@ -382,8 +430,6 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                 }
                 inventoryAdjustmentReportItem.inventoryAdjustmentReport =
                     inventoryAdjustmentReport;
-                inventoryAdjustmentReportItem.inventoryAdjustmentReport =
-                    inventoryAdjustmentReport;
                 const origReturnedQuantity = inventoryAdjustmentReportItem.returnedQuantity;
                 inventoryAdjustmentReportItem.returnedQuantity =
                     item.returnedQuantity.toString();
@@ -397,6 +443,9 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                 if (isNew) {
                     const newItemBranchQuantity = Number(itemBranch.quantity) -
                         Number(inventoryAdjustmentReportItem.returnedQuantity);
+                    if (newItemBranchQuantity < 0) {
+                        throw Error("Quantity exceeds current branch inventory quantity");
+                    }
                     itemBranch.quantity =
                         newItemBranchQuantity >= 9
                             ? newItemBranchQuantity.toString()
@@ -404,9 +453,14 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                 }
                 else {
                     const oldItemBrancQuantity = Number(itemBranch.quantity) + Number(origReturnedQuantity);
-                    const newItemBrancQuantity = oldItemBrancQuantity - Number(item.returnedQuantity);
+                    const newItemBranchQuantity = oldItemBrancQuantity - Number(item.returnedQuantity);
+                    if (newItemBranchQuantity < 0) {
+                        throw Error("Quantity exceeds current branch inventory quantity");
+                    }
                     itemBranch.quantity =
-                        newItemBrancQuantity >= 0 ? newItemBrancQuantity.toString() : "0";
+                        newItemBranchQuantity >= 0
+                            ? newItemBranchQuantity.toString()
+                            : "0";
                 }
                 await entityManager.save(ItemBranch_1.ItemBranch, itemBranch);
                 const inventoryRequestItem = await entityManager.findOne(InventoryRequestItem_1.InventoryRequestItem, {
@@ -602,7 +656,6 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                     await entityManager.save(InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem, inventoryAdjustmentReportItem);
                 }
             }
-            delete inventoryAdjustmentReport.inventoryAdjustmentReportItems;
             inventoryAdjustmentReport.reportStatus = status;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
@@ -610,7 +663,16 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
                 return res[0]["timestamp"];
             });
             inventoryAdjustmentReport.dateLastUpdated = timestamp;
+            delete inventoryAdjustmentReport.inventoryAdjustmentReportItems;
             inventoryAdjustmentReport = await entityManager.save(InventoryAdjustmentReport_1.InventoryAdjustmentReport, inventoryAdjustmentReport);
+            if (status === "CLOSED") {
+                const goodsIssue = await this.createGoodsIssue(entityManager, inventoryAdjustmentReport.inventoryAdjustmentReportCode);
+                if (!goodsIssue) {
+                    throw new Error("Error saving goods issue");
+                }
+                inventoryAdjustmentReport.goodsIssue = goodsIssue;
+                inventoryAdjustmentReport = await entityManager.save(InventoryAdjustmentReport_1.InventoryAdjustmentReport, inventoryAdjustmentReport);
+            }
             inventoryAdjustmentReport = await entityManager.findOne(InventoryAdjustmentReport_1.InventoryAdjustmentReport, {
                 select: deafaultInventoryAdjustmentReportSelect,
                 where: {
@@ -630,6 +692,86 @@ let InventoryAdjustmentReportService = class InventoryAdjustmentReportService {
             });
             return inventoryAdjustmentReport;
         });
+    }
+    async createGoodsIssue(entityManager, inventoryAdjustmentReportCode) {
+        const inventoryAdjustmentReport = await entityManager.findOne(InventoryAdjustmentReport_1.InventoryAdjustmentReport, {
+            where: {
+                inventoryAdjustmentReportCode,
+            },
+            relations: {
+                inventoryRequest: {
+                    fromWarehouse: true,
+                    branch: true,
+                },
+                reportedByUser: true,
+                branch: true,
+                inventoryAdjustmentReportItems: {
+                    item: {
+                        itemCategory: true,
+                    },
+                },
+            },
+        });
+        let goodsIssue = new GoodsIssue_1.GoodsIssue();
+        const createdByUser = await entityManager.findOne(Users_1.Users, {
+            where: {
+                userId: inventoryAdjustmentReport.reportedByUser.userId,
+                active: true,
+            },
+        });
+        if (!createdByUser) {
+            throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+        }
+        goodsIssue.createdByUser = createdByUser;
+        const warehouse = await entityManager.findOne(Warehouse_1.Warehouse, {
+            where: {
+                warehouseCode: inventoryAdjustmentReport.inventoryRequest.fromWarehouse
+                    .warehouseCode,
+                active: true,
+            },
+        });
+        if (!warehouse) {
+            throw Error(warehouse_constant_1.WAREHOUSE_ERROR_NOT_FOUND);
+        }
+        goodsIssue.warehouse = warehouse;
+        goodsIssue.description = inventoryAdjustmentReport.description;
+        goodsIssue.issueType = inventoryAdjustmentReport.reportType;
+        const timestamp = await entityManager
+            .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
+            .then((res) => {
+            return res[0]["timestamp"];
+        });
+        goodsIssue.dateCreated = timestamp;
+        goodsIssue = await entityManager.save(GoodsIssue_1.GoodsIssue, goodsIssue);
+        goodsIssue.goodsIssueCode = (0, utils_1.generateIndentityCode)(goodsIssue.goodsIssueId);
+        for (const item of inventoryAdjustmentReport.inventoryAdjustmentReportItems) {
+            let newItem = new GoodsIssueItem_1.GoodsIssueItem();
+            newItem.item = await entityManager.findOne(Item_1.Item, {
+                where: { itemId: item.itemId },
+            });
+            newItem.quantity = item.returnedQuantity.toString();
+            newItem.goodsIssue = goodsIssue;
+            newItem = await entityManager.save(GoodsIssueItem_1.GoodsIssueItem, newItem);
+        }
+        goodsIssue = await entityManager.save(GoodsIssue_1.GoodsIssue, goodsIssue);
+        goodsIssue = await entityManager.findOne(GoodsIssue_1.GoodsIssue, {
+            where: {
+                goodsIssueCode: goodsIssue.goodsIssueCode,
+            },
+            relations: {
+                createdByUser: {
+                    branch: true,
+                },
+                warehouse: true,
+                goodsIssueItems: {
+                    item: {
+                        itemCategory: true,
+                    },
+                },
+            },
+        });
+        delete goodsIssue.createdByUser.password;
+        return goodsIssue;
     }
 };
 InventoryAdjustmentReportService = __decorate([

@@ -232,7 +232,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                 throw Error(goods_receipt_constant_1.GOODSRECEIPT_ERROR_NOT_FOUND);
             }
             if (goodsReceipt.status !== "PENDING") {
-                throw Error("Not allowed to update request, goods receipt was already being - processed");
+                throw Error("Not allowed to update goods receipt, goods receipt was already being - processed");
             }
             const supplier = await entityManager.findOne(Supplier_1.Supplier, {
                 where: {

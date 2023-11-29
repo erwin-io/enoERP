@@ -1,4 +1,5 @@
 import { Branch } from "./Branch";
+import { GoodsIssue } from "./GoodsIssue";
 import { InventoryRequest } from "./InventoryRequest";
 import { Users } from "./Users";
 import { InventoryAdjustmentReportItem } from "./InventoryAdjustmentReportItem";
@@ -13,6 +14,7 @@ export declare class InventoryAdjustmentReport {
     notes: string | null;
     active: boolean;
     branch: Branch;
+    goodsIssue: GoodsIssue;
     inventoryRequest: InventoryRequest;
     reportedByUser: Users;
     inventoryAdjustmentReportItems: InventoryAdjustmentReportItem[];

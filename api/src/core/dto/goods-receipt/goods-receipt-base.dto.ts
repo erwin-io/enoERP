@@ -46,5 +46,5 @@ export class DefaultGoodsReceiptDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  supplierCode: string;;
+  supplierCode: string;
 }

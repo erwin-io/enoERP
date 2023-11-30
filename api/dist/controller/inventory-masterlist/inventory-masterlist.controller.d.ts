@@ -9,4 +9,5 @@ export declare class InventoryMasterlistController {
         results: ItemBranch[];
         total: number;
     }>>;
+    getByItemCode(branchCode: string, itemCode: string): Promise<ApiResponseModel<ItemBranch>>;
 }

@@ -80,6 +80,21 @@
                 </mat-list-item>
               </mat-nav-list>
             </mat-expansion-panel>
+            <mat-expansion-panel
+              *ngIf="showGroupMenu(['Sales Invoice'])"
+              [@.disabled]="disableGroupAnimation"
+              (afterExpand)="disableGroupAnimation = false"
+              [expanded]="expand('Sales')"
+              [ngClass]="{'mat-expansion-active':expand('Sales') }" [class.mat-elevation-z0]="true" >
+              <mat-expansion-panel-header>
+                  <mat-icon>monetization_on</mat-icon><span>Sales</span>
+              </mat-expansion-panel-header>
+              <mat-nav-list>
+                <mat-list-item *ngIf="showMenu('Sales Invoice')" routerLink="sales-invoice" (mouseup)="!drawerDefaultOpened ? sidenav.close() : false" routerLinkActive="active-link">
+                    <mat-icon>receipt</mat-icon><span>Sales Invoice</span>
+                </mat-list-item>
+              </mat-nav-list>
+            </mat-expansion-panel>
             <mat-expansion-panel *ngIf="showGroupMenu(['Item', 'Item Category','Warehouse', 'Branch', 'Supplier'])" [@.disabled]="disableGroupAnimation" (afterExpand)="disableGroupAnimation = false" [expanded]="expand('Configuration')" [ngClass]="{'mat-expansion-active':expand('Configuration') }" [class.mat-elevation-z0]="true" >
               <mat-expansion-panel-header>
                   <mat-icon>settings</mat-icon><span>Configuration</span>

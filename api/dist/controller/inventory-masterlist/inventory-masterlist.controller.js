@@ -34,6 +34,19 @@ let InventoryMasterlistController = class InventoryMasterlistController {
             return res;
         }
     }
+    async getByItemCode(branchCode, itemCode) {
+        const res = {};
+        try {
+            res.data = await this.inventoryMasterlistService.getByItemCode(branchCode, itemCode);
+            res.success = true;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)("/page"),
@@ -42,6 +55,14 @@ __decorate([
     __metadata("design:paramtypes", [pagination_params_dto_1.PaginationParamsDto]),
     __metadata("design:returntype", Promise)
 ], InventoryMasterlistController.prototype, "getPaginated", null);
+__decorate([
+    (0, common_1.Get)("/:branchCode/getByItemCode/:itemCode"),
+    __param(0, (0, common_1.Param)("branchCode")),
+    __param(1, (0, common_1.Param)("itemCode")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], InventoryMasterlistController.prototype, "getByItemCode", null);
 InventoryMasterlistController = __decorate([
     (0, swagger_1.ApiTags)("inventoryMasterlist"),
     (0, common_1.Controller)("inventoryMasterlist"),

@@ -55,7 +55,7 @@ let GoodsIssueController = class GoodsIssueController {
         try {
             res.data = await this.goodsIssueService.create(goodsIssueDto);
             res.success = true;
-            res.message = `Goods Receipt ${api_response_constant_1.SAVING_SUCCESS}`;
+            res.message = `Goods Issue ${api_response_constant_1.SAVING_SUCCESS}`;
             return res;
         }
         catch (e) {
@@ -69,7 +69,7 @@ let GoodsIssueController = class GoodsIssueController {
         try {
             res.data = await this.goodsIssueService.update(goodsIssueCode, dto);
             res.success = true;
-            res.message = `Goods Receipt ${api_response_constant_1.UPDATE_SUCCESS}`;
+            res.message = `Goods Issue ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
         }
         catch (e) {
@@ -83,7 +83,7 @@ let GoodsIssueController = class GoodsIssueController {
         try {
             res.data = await this.goodsIssueService.updateStatus(goodsIssueCode, dto);
             res.success = true;
-            res.message = `Goods Receipt ${api_response_constant_1.UPDATE_SUCCESS}`;
+            res.message = `Goods Issue ${api_response_constant_1.UPDATE_SUCCESS}`;
             return res;
         }
         catch (e) {

@@ -68,7 +68,7 @@ export class GoodsIssueController {
     try {
       res.data = await this.goodsIssueService.create(goodsIssueDto);
       res.success = true;
-      res.message = `Goods Receipt ${SAVING_SUCCESS}`;
+      res.message = `Goods Issue ${SAVING_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;
@@ -87,7 +87,7 @@ export class GoodsIssueController {
     try {
       res.data = await this.goodsIssueService.update(goodsIssueCode, dto);
       res.success = true;
-      res.message = `Goods Receipt ${UPDATE_SUCCESS}`;
+      res.message = `Goods Issue ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;
@@ -109,7 +109,7 @@ export class GoodsIssueController {
         dto
       );
       res.success = true;
-      res.message = `Goods Receipt ${UPDATE_SUCCESS}`;
+      res.message = `Goods Issue ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

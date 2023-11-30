@@ -12,4 +12,5 @@ export declare class InventoryMasterlistService {
         results: ItemBranch[];
         total: number;
     }>;
+    getByItemCode(branchCode: string, itemCode: string): Promise<ItemBranch>;
 }

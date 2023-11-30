@@ -142,6 +142,15 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'sales-invoice',
+        canActivate: [AuthGuard],
+        data: { title: 'Sales Invoice', group: 'Sales' },
+        loadChildren: () =>
+          import('./pages/features/sales-invoice/sales-invoice.module').then(
+            (m) => m.SalesInvoiceModule
+          ),
+      },
+      {
         path: 'goods-receipt',
         canActivate: [AuthGuard],
         data: { title: 'Goods Receipt', group: 'Purchasing' },

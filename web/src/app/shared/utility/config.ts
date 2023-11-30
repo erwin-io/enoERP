@@ -29,6 +29,7 @@ export interface AppConfig {
       warehouseInventory: ColumnDefinition[];
       goodsReceipt: ColumnDefinition[];
       goodsIssue: ColumnDefinition[];
+      salesInvoice: ColumnDefinition[];
       supplier: ColumnDefinition[];
     };
     sessionConfig: {
@@ -95,6 +96,7 @@ export interface AppConfig {
       };
       inventoryMasterlist: {
         getByAdvanceSearch: string;
+        getByItemCode: string;
       };
       warehouseInventory: {
         getByAdvanceSearch: string;
@@ -136,6 +138,12 @@ export interface AppConfig {
         create: string;
         update: string;
         updateStatus: string;
+      };
+      salesInvoice: {
+        getByAdvanceSearch: string;
+        getByCode: string;
+        create: string;
+        void: string;
       };
       dashboard: {};
       message: { create: string };

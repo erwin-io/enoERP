@@ -870,6 +870,71 @@
         }
       }
     ],
+    "salesInvoice": [
+      {
+        "sticky": true,
+        "name": "salesInvoiceCode",
+        "label": "Sales Invoice #",
+        "apiNotation": "salesInvoiceCode",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Sales Invoice #"
+        },
+        "urlPropertyName": "url"
+      },
+      {
+        "name": "salesDate",
+        "label": "Date",
+        "apiNotation": "salesDate",
+        "type": "date",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "format": {
+          "type": "date-time",
+          "custom": "MMM dd, yyyy h:mm a"
+        },
+        "filterOptions": {
+          "enable": true,
+          "label": "Date",
+          "type": "date-range"
+        }
+      },
+      {
+        "name": "totalAmount",
+        "label": "Total Amount",
+        "apiNotation": "totalAmount",
+        "type": "number",
+        "format": {
+          "type": "currency"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Total Amount",
+          "type": "number-range"
+        }
+      },
+      {
+        "name": "createdByUser",
+        "label": "Created by",
+        "apiNotation": "createdByUser.fullName",
+        "type": "string",
+        "style": {
+          "width": "100px",
+          "left": "0px"
+        },
+        "filterOptions": {
+          "enable": true,
+          "placeholder": "Created by"
+        }
+      }
+    ],
     "users": [
       {
         "name": "fullName",
@@ -982,6 +1047,12 @@
       },
       {
         "page": "Incoming Inventory Request",
+        "view": false,
+        "modify": false,
+        "rights": []
+      },
+      {
+        "page": "Sales Invoice",
         "view": false,
         "modify": false,
         "rights": []
@@ -1105,7 +1176,8 @@
       "delete": "/branch/"
     },
     "inventoryMasterlist": {
-      "getByAdvanceSearch": "/inventoryMasterlist/page/"
+      "getByAdvanceSearch": "/inventoryMasterlist/page/",
+      "getByItemCode": "/inventoryMasterlist/"
     },
     "warehouseInventory": {
       "getByAdvanceSearch": "/warehouseInventory/page/",
@@ -1147,6 +1219,12 @@
       "create": "/goodsIssue/",
       "update": "/goodsIssue/",
       "updateStatus": "/goodsIssue/updateStatus/"
+    },
+    "salesInvoice": {
+      "getByAdvanceSearch": "/salesInvoice/page/",
+      "getByCode": "/salesInvoice/",
+      "create": "/salesInvoice/",
+      "void": "/salesInvoice/void/"
     },
     "dashboard": {},
     "message": {

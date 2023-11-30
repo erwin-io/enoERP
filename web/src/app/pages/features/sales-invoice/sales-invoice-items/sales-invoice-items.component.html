@@ -1,0 +1,258 @@
+<mat-card>
+  <mat-card-header>
+    <div style="display: flex;flex-direction: row;width: 100%;justify-content: flex-end;" *ngIf="!isReadOnly" >
+      <button style="margin: 10px 0;" mat-mini-fab aria-label="New item" matTooltip="New item" (click)="onShowNewItem()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+  <mat-card-content fxFlex="100" fxLayout="column" >
+    <div
+      fxFlex="33.33%"
+      fxLayout="column"
+      fxLayout.gt-xs="row">
+      <mat-form-field
+        appearance="outline">
+        <mat-label>Total amount&nbsp;&nbsp;</mat-label>
+        <input
+          type="text"
+          placeholder="Total amount"
+          aria-label="Total amount"
+          matInput
+          readonly
+          [ngModel]="accTotalAmount | currency: 'PHP'"/>
+      </mat-form-field>
+    </div>
+    <div fxFlex="100" fxLayout="column" class="request-salesInvoiceItems-card-inner">
+      <table class="table-salesInvoiceItems" mat-table [dataSource]="dataSource">
+        <!-- Page Column -->
+        <ng-container matColumnDef="itemName" [sticky]="true">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '50%', 'min-width': '100px'}">Item name</th>
+          <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="itemCategory">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '30%'}">Item category</th>
+          <td mat-cell *matCellDef="let element">{{ element.itemCategory }}</td>
+        </ng-container>
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Unit Price</th>
+          <td mat-cell *matCellDef="let element">{{ element.unitPrice | currency: 'PHP' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Quantity</th>
+          <td mat-cell *matCellDef="let element">{{element.quantity}}{{ toNumber(element.quantity) > 1 ? 'pcs' : 'pc' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Amount</th>
+          <td mat-cell *matCellDef="let element">{{ toNumber(element?.quantity) * toNumber(element?.unitPrice) | currency: 'PHP' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="controls">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element"></td>
+        </ng-container>
+
+        <ng-container matColumnDef="controls">
+          <th mat-header-cell *matHeaderCellDef>  </th>
+          <td mat-cell *matCellDef="let element">
+            <button matTooltip="More" mat-icon-button [matMenuTriggerFor]="menu" [disabled]="isReadOnly" *ngIf="!isReadOnly">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item (click)="editSalesInvoiceItem(element)">Edit</button>
+              <button mat-menu-item (click)="deleteSalesInvoiceItem(element)">Delete</button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <div class="table-no-data" *ngIf="dataSource.data.length === 0">
+      <span>No item added</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+
+
+<ng-template #salesInvoiceItemFormDialog>
+  <h4 mat-dialog-title>{{isNewItem ? 'Add Item': 'Update Item'}}</h4>
+
+<div mat-dialog-content>
+  <div class="inner-content sales-invoice-content-holder" fxFlex="100" fxLayout="column" >
+    <div fxFlex="100" fxLayout="column" fxLayout="column" class="sales-invoice-content">
+      <div fxLayout="row wrap">
+        <div
+          fxFlex="100"
+          fxLayout="row wrap"
+          style="row-gap: 16px">
+          <h4>Item details</h4>
+          <mat-form-field
+            fxFlex="100"
+            fxLayout="column"
+            appearance="outline"
+            (dblclick)="isNewItem ? showSelectItemDialog() : false">
+            <mat-label>Item&nbsp;&nbsp;</mat-label>
+            <input
+              type="text"
+              placeholder="Search Item"
+              aria-label="Search Item"
+              matInput
+              readonly
+              [(ngModel)]="currentSelected.itemName"/>
+              <mat-icon
+                *ngIf="isNewItem"
+                class="icon-right"
+                (click)="showSelectItemDialog()"
+                style="cursor: pointer;"
+                matSuffix>
+                search
+              </mat-icon>
+              <mat-error *ngIf="getError('itemId') !== (null || undefined)">
+                {{
+                  (getError("itemId") &&
+                  getError("itemId").stockError
+                    ? "No stock available"
+                    : "")
+                }}
+              </mat-error>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="100"
+            *ngIf="currentSelected.itemCategory && currentSelected.itemCategory !== ''"
+            fxLayout="column"
+            appearance="outline" >
+            <mat-label>Category&nbsp;&nbsp;</mat-label>
+            <input
+              type="text"
+              placeholder="Search Item category"
+              aria-label="Search Item category"
+              matInput
+              readonly
+              [(ngModel)]="currentSelected.itemCategory"/>
+          </mat-form-field>
+          <mat-form-field
+            fxFlex="33.33%"
+            fxLayout="column"
+            appearance="outline"
+            *ngIf="currentSelected?.itemCode && currentSelected?.itemCode !== ''">
+            <mat-label>Available stock&nbsp;&nbsp;</mat-label>
+            <input
+              type="text"
+              placeholder="Available stock"
+              aria-label="Available stock"
+              matInput
+              readonly
+              [(ngModel)]="currentBranchInventory.currentStock"/>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sales-invoice-content-footer"
+      fxLayout="column"
+      *ngIf="currentSelected?.itemCode && currentSelected?.itemCode !== ''">
+      <div
+        fxFlex="100"
+        fxLayout="column"
+        fxLayout.gt-xs="row"
+        ngStyle.gt-xs="gap: 16px"
+        style="gap: 20px">
+        <mat-form-field
+          appearance="outline"
+          fxFlex="33.33%"
+          class="cell"
+          [ngClass.gt-sm]="{ isLargeScreen: true }">
+          <mat-label>Unit price&nbsp;&nbsp;</mat-label>
+          <input
+            (keydown.enter)="onSubmit()"
+            matInput
+            placeholder="Unit price"
+            #unitPrice
+            (input)="currentSelected.unitPrice = unitPrice.value;computeAmount()"
+            [ngModel]="currentSelected.unitPrice | currency: 'PHP'"/>
+          <mat-error *ngIf="getError('unitPrice') !== (null || undefined)">
+            {{
+              (getError("unitPrice") &&
+              getError("unitPrice").required
+                ? "Please enter unit price"
+                : "") ||
+              (getError("unitPrice") &&
+              getError("unitPrice").min
+                ? "Unit price must not be less than or equal to zero!"
+                : "")
+            }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          fxFlex="33.33%"
+          class="cell"
+          [ngClass.gt-sm]="{ isLargeScreen: true }">
+          <mat-label>Quantity&nbsp;&nbsp;</mat-label>
+          <input
+            (keydown.enter)="onSubmit()"
+            matInput
+            placeholder="Quantity"
+            [formControl]="quantity"/>
+          <mat-error *ngIf="getError('quantity') !== (null || undefined)">
+            {{
+              (getError("quantity") &&
+              getError("quantity").required
+                ? "Please enter quantity"
+                : "") ||
+              (getError("quantity") &&
+              getError("quantity").exceeds
+                ? "Quantity exceeds available stocks!"
+                : "")
+            }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div
+        fxFlex="100"
+        fxLayout="column"
+        fxLayout.gt-xs="row"
+        ngStyle.gt-xs="gap: 16px"
+        style="gap: 20px">
+        <mat-form-field
+          appearance="outline"
+          fxFlex="33.33%"
+          class="cell"
+          [ngClass.gt-sm]="{ isLargeScreen: true }">
+          <mat-label>Amount&nbsp;&nbsp;</mat-label>
+          <input
+            (keydown.enter)="onSubmit()"
+            matInput
+            readonly
+            placeholder="Amount"
+            [ngModel]="currentSelected.amount | currency: 'PHP'"/>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div mat-dialog-actions>
+  <div>
+    <button
+      mat-flat-button
+      cdkFocusInitial
+      matDialogClose
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      [disabled]="!form.valid && !form.dirty"
+      color="primary"
+      type="submit"
+      (click)="onSubmit()">
+      Save
+    </button>
+  </div>
+</div>
+
+</ng-template>

@@ -227,6 +227,25 @@ export class GoodsIssueItemTableColumn {
   itemCategory: string;
 }
 
+export class SalesInvoiceTableColumn {
+  salesInvoiceId?: string;
+  salesInvoiceCode?: string;
+  salesDate?: string;
+  createdByUser?: string;
+  url?: string;
+}
+
+export class SalesInvoiceItemTableColumn {
+  quantity: string;
+  unitPrice: string;
+  amount: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemDescription: string;
+  itemCategory: string;
+}
+
 export class SupplierTableColumn {
   supplierId?: string;
   supplierCode?: string;

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ITEM_ERROR_NOT_FOUND } from "src/common/constant/item.constant";
 import { columnDefToTypeORMCondition } from "src/common/utils/utils";
 import { ItemBranch } from "src/db/entities/ItemBranch";
 import { Repository } from "typeorm";
@@ -49,5 +50,29 @@ export class InventoryMasterlistService {
       results,
       total,
     };
+  }
+
+  async getByItemCode(branchCode: string, itemCode: string) {
+    const result = await this.itemBranchRepo.findOne({
+      where: {
+        item: {
+          itemCode: itemCode?.toString()?.toLowerCase(),
+          active: true,
+        },
+        branch: {
+          branchCode,
+        },
+      },
+      relations: {
+        item: {
+          itemCategory: true,
+        },
+        branch: true,
+      },
+    });
+    if (!result) {
+      throw Error(ITEM_ERROR_NOT_FOUND);
+    }
+    return result;
   }
 }

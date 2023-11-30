@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryMasterlistService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const item_constant_1 = require("../common/constant/item.constant");
 const utils_1 = require("../common/utils/utils");
 const ItemBranch_1 = require("../db/entities/ItemBranch");
 const typeorm_2 = require("typeorm");
@@ -55,6 +56,30 @@ let InventoryMasterlistService = class InventoryMasterlistService {
             results,
             total,
         };
+    }
+    async getByItemCode(branchCode, itemCode) {
+        var _a;
+        const result = await this.itemBranchRepo.findOne({
+            where: {
+                item: {
+                    itemCode: (_a = itemCode === null || itemCode === void 0 ? void 0 : itemCode.toString()) === null || _a === void 0 ? void 0 : _a.toLowerCase(),
+                    active: true,
+                },
+                branch: {
+                    branchCode,
+                },
+            },
+            relations: {
+                item: {
+                    itemCategory: true,
+                },
+                branch: true,
+            },
+        });
+        if (!result) {
+            throw Error(item_constant_1.ITEM_ERROR_NOT_FOUND);
+        }
+        return result;
     }
 };
 InventoryMasterlistService = __decorate([

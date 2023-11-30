@@ -1,0 +1,16 @@
+::ng-deep {
+  .request-salesInvoiceItems-card-inner {
+    overflow: auto;
+  }
+  .mat-mdc-dialog-content {
+    .sales-invoice-content-holder {
+      max-height: inherit;
+      .sales-invoice-content {
+        overflow: auto;
+      }
+      .sales-invoice-content-footer {
+        padding-top: 16px!important;
+      }
+    }
+  }
+}

@@ -10,6 +10,7 @@ import { DataTableModule } from 'src/app/shared/data-table/data-table.module';
 import { SalesInvoiceFormComponent } from './sales-invoice-form/sales-invoice-form.component';
 import { SalesInvoiceDetailsComponent } from './sales-invoice-details/sales-invoice-details.component';
 import { SalesInvoiceItemComponent } from './sales-invoice-items/sales-invoice-items.component';
+import { SalesInvoicePaymentsComponent } from './sales-invoice-payments/sales-invoice-payments.component';
 
 export const routes: Routes = [
   {
@@ -27,12 +28,12 @@ export const routes: Routes = [
   {
     path: 'new',
     component: SalesInvoiceDetailsComponent,
-    data: { title: "Sales Invoice", details: true, isNew: true}
+    data: { title: "Sales Invoice", isNew: true}
   },
   {
     path: ':salesInvoiceCode/details',
     component: SalesInvoiceDetailsComponent,
-    data: { title: "Sales Invoice", details: true }
+    data: { title: "Sales Invoice" }
   }
 ];
 
@@ -43,6 +44,7 @@ export const routes: Routes = [
     SalesInvoiceDetailsComponent,
     SalesInvoiceFormComponent,
     SalesInvoiceItemComponent,
+    SalesInvoicePaymentsComponent,
   ],
   imports: [
     CommonModule,

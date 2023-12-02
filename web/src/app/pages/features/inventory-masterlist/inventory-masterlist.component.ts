@@ -77,10 +77,10 @@ export class InventoryMasterlistComponent {
     .subscribe(async value => {
         await this.initBranchOptions(this.branchSearchInput?.nativeElement?.value);
     });
-    this.branchCode.valueChanges
-    .subscribe(async value => {
-      await this.getInventoryMasterlistPaginated();
-    });
+    // this.branchCode.valueChanges
+    // .subscribe(async value => {
+    //   await this.getInventoryMasterlistPaginated();
+    // });
   }
 
   async initBranchOptions(keyword) {

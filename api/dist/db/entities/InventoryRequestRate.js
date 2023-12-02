@@ -64,10 +64,10 @@ __decorate([
     __metadata("design:type", Item_1.Item)
 ], InventoryRequestRate.prototype, "item", void 0);
 InventoryRequestRate = __decorate([
-    (0, typeorm_1.Index)("u_inventoryrequestrate", ["active", "itemId", "rateName"], {
+    (0, typeorm_1.Index)("u_inventoryrequestrate_rate", ["active", "itemId", "rate"], {
         unique: true,
     }),
-    (0, typeorm_1.Index)("u_inventoryrequestrate_rate", ["active", "itemId", "rate"], {
+    (0, typeorm_1.Index)("u_inventoryrequestrate", ["active", "itemId", "rateName"], {
         unique: true,
     }),
     (0, typeorm_1.Index)("InventoryRequestRate_pkey", ["inventoryRequestRateId"], {

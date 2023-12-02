@@ -21,7 +21,7 @@
     <button
       *ngIf="!canAddEdit ? false : !isReadOnly"
       mat-flat-button
-      [disabled]="(!salesInvoiceForm.valid || !salesInvoiceForm.ready)"
+      [disabled]="(!salesInvoiceForm.valid || !salesInvoiceForm.ready) || salesInvoicePayments.accTotalPayments !== salesInvoiceItems.accTotalAmount"
       color="primary"
       matTooltip="{{isNew ? 'Save' : 'Update'}}"
       (click)="onSubmit(salesInvoiceForm.getFormData)">
@@ -31,27 +31,44 @@
 </mat-toolbar>
 <div class="content">
   <div class="inner-content">
-    <div *ngIf="!isNew && salesInvoice?.isVoid" style=" display: flex; width: 100%; justify-content: flex-end;">
-      <button class="sales-invoice-void" style="background-color: #E0E0E0!important" aria-label="Sales invoice status is void" matTooltip="Sales invoice status is void " mat-fab extended disableRipple>
-        <mat-icon>close</mat-icon>
-        Sales invoice is void
-      </button>
-    </div>
-    <h4 class="inner-content-title">Sales invoice details</h4>
-    <mat-card>
-      <mat-card-content>
-        <div fxFlex="100" fxLayout="column" fxLayoutGap="16px">
-          <app-sales-invoice-form [branchCode]="currentUserProfile && currentUserProfile?.branch?.branchCode" [createdByUser]="currentUserProfile?.fullName" [isReadOnly]="isReadOnly" [isNew]="isNew" #salesInvoiceForm></app-sales-invoice-form>
+    <div fxLayout="column">
+      <div *ngIf="!isNew && salesInvoice?.isVoid" style=" display: flex; width: 100%; justify-content: flex-end;">
+        <button class="sales-invoice-void" style="background-color: #E0E0E0!important" aria-label="Sales invoice status is void" matTooltip="Sales invoice status is void " mat-fab extended disableRipple>
+          <mat-icon>close</mat-icon>
+          Sales invoice is void
+        </button>
+      </div>
+      <div fxFlex="100" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="16px">
+        <div fxFlex.gt-md="50%">
+          <h4 class="inner-content-title">Sales invoice details</h4>
+          <mat-card>
+            <mat-card-content>
+              <div fxFlex="100" fxLayout="column" fxLayoutGap="16px">
+                <app-sales-invoice-form [branchCode]="currentUserProfile && currentUserProfile?.branch?.branchCode" [createdByUser]="currentUserProfile?.fullName" [isReadOnly]="isReadOnly" [isNew]="isNew" #salesInvoiceForm></app-sales-invoice-form>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <h4 class="inner-content-title">Items</h4>
+          <app-sales-invoice-items
+            [branchCode]="currentUserProfile && currentUserProfile?.branch?.branchCode"
+            (itemsChanged)="itemsChanged($event)"
+            [salesInvoice]="{ salesInvoiceCode: salesInvoiceCode }"
+            [isReadOnly]="isReadOnly"
+            [isNew]="isNew"
+            #salesInvoiceItems></app-sales-invoice-items>
         </div>
-      </mat-card-content>
-    </mat-card>
-    <h4 class="inner-content-title">Items</h4>
-    <app-sales-invoice-items
-      [branchCode]="currentUserProfile && currentUserProfile?.branch?.branchCode"
-      (itemsChanged)="itemsChanged($event)"
-      [salesInvoice]="{ salesInvoiceCode: salesInvoiceCode }"
-      [isReadOnly]="isReadOnly"
-      [isNew]="isNew"
-      #salesInvoiceItems></app-sales-invoice-items>
+        <div fxFlex.gt-md="50%" fxFlex.gt-xs="50%">
+          <h4 class="inner-content-title">Payments</h4>
+          <app-sales-invoice-payments
+            [totalAmount]="salesInvoiceItems.accTotalAmount"
+            [branchCode]="currentUserProfile && currentUserProfile?.branch?.branchCode"
+            (itemsChanged)="paymentChanged($event)"
+            [salesInvoice]="{ salesInvoiceCode: salesInvoiceCode }"
+            [isReadOnly]="isReadOnly"
+            [isNew]="isNew"
+            #salesInvoicePayments></app-sales-invoice-payments>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

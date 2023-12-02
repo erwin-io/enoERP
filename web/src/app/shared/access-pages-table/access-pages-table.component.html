@@ -71,7 +71,7 @@
           </mat-option>
         </mat-select>
         <ng-template #rightsReadOnly>
-          {{element.rights.toString()}}
+          {{element.rights ? element.rights.toString() : ''}}
         </ng-template>
       </td>
     </ng-container>

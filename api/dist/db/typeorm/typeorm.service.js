@@ -32,6 +32,7 @@ const Supplier_1 = require("../entities/Supplier");
 const InventoryAdjustmentReport_1 = require("../entities/InventoryAdjustmentReport");
 const InventoryAdjustmentReportItem_1 = require("../entities/InventoryAdjustmentReportItem");
 const SalesInvoice_1 = require("../entities/SalesInvoice");
+const SalesInvoicePayments_1 = require("../entities/SalesInvoicePayments");
 let TypeOrmConfigService = class TypeOrmConfigService {
     createTypeOrmOptions() {
         const ssl = this.config.get("SSL");
@@ -63,6 +64,7 @@ let TypeOrmConfigService = class TypeOrmConfigService {
                 InventoryAdjustmentReportItem_1.InventoryAdjustmentReportItem,
                 SalesInvoice_1.SalesInvoice,
                 SalesInvoiceItem_1.SalesInvoiceItem,
+                SalesInvoicePayments_1.SalesInvoicePayments,
             ],
             synchronize: false,
             ssl: ssl.toLocaleLowerCase().includes("true"),

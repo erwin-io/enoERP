@@ -74,10 +74,10 @@ export class WarehouseInventoryComponent {
     .subscribe(async value => {
         await this.initWarehouseOptions();
     });
-    this.warehouseCode.valueChanges
-    .subscribe(async value => {
-      await this.getWarehouseInventoryPaginated();
-    });
+    // this.warehouseCode.valueChanges
+    // .subscribe(async value => {
+    //   await this.getWarehouseInventoryPaginated();
+    // });
   }
 
   async initWarehouseOptions() {

@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const Branch_1 = require("./Branch");
 const Users_1 = require("./Users");
 const SalesInvoiceItem_1 = require("./SalesInvoiceItem");
+const SalesInvoicePayments_1 = require("./SalesInvoicePayments");
 let SalesInvoice = class SalesInvoice {
 };
 __decorate([
@@ -60,6 +61,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => SalesInvoiceItem_1.SalesInvoiceItem, (salesInvoiceItem) => salesInvoiceItem.salesInvoice),
     __metadata("design:type", Array)
 ], SalesInvoice.prototype, "salesInvoiceItems", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => SalesInvoicePayments_1.SalesInvoicePayments, (salesInvoicePayments) => salesInvoicePayments.salesInvoice),
+    __metadata("design:type", Array)
+], SalesInvoice.prototype, "salesInvoicePayments", void 0);
 SalesInvoice = __decorate([
     (0, typeorm_1.Index)("SalesInvoice_pkey", ["salesInvoiceId"], { unique: true }),
     (0, typeorm_1.Entity)("SalesInvoice", { schema: "dbo" })

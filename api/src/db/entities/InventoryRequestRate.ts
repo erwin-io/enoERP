@@ -10,10 +10,10 @@ import {
 import { InventoryRequestItem } from "./InventoryRequestItem";
 import { Item } from "./Item";
 
-@Index("u_inventoryrequestrate", ["active", "itemId", "rateName"], {
+@Index("u_inventoryrequestrate_rate", ["active", "itemId", "rate"], {
   unique: true,
 })
-@Index("u_inventoryrequestrate_rate", ["active", "itemId", "rate"], {
+@Index("u_inventoryrequestrate", ["active", "itemId", "rateName"], {
   unique: true,
 })
 @Index("InventoryRequestRate_pkey", ["inventoryRequestRateId"], {

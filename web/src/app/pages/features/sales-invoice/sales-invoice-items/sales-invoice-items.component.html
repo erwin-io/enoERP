@@ -46,10 +46,6 @@
           <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'width': '10%'}">Amount</th>
           <td mat-cell *matCellDef="let element">{{ toNumber(element?.quantity) * toNumber(element?.unitPrice) | currency: 'PHP' }}</td>
         </ng-container>
-        <ng-container matColumnDef="controls">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let element"></td>
-        </ng-container>
 
         <ng-container matColumnDef="controls">
           <th mat-header-cell *matHeaderCellDef>  </th>

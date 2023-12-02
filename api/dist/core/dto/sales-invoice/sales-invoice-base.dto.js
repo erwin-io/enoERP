@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultSalesInvoiceDto = exports.SalesInvoiceItemDto = void 0;
+exports.DefaultSalesInvoiceDto = exports.SalesInvoicePaymentDto = exports.SalesInvoiceItemDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
@@ -26,7 +26,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         default: 0,
-        type: Number
+        type: Number,
     }),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsNotIn)([0]),
@@ -40,7 +40,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         default: 0,
-        type: Number
+        type: Number,
     }),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsNotIn)([0]),
@@ -52,9 +52,40 @@ __decorate([
     __metadata("design:type", Number)
 ], SalesInvoiceItemDto.prototype, "unitPrice", void 0);
 exports.SalesInvoiceItemDto = SalesInvoiceItemDto;
+class SalesInvoicePaymentDto {
+    constructor() {
+        this.amount = 0;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        default: "CASH",
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsIn)(["CASH", "CREDIT CARD", "DEBIT CARD", "MOBILE PAYMENT", "CHECK"]),
+    (0, class_validator_1.IsUppercase)(),
+    __metadata("design:type", String)
+], SalesInvoicePaymentDto.prototype, "paymentType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        default: 0,
+        type: Number,
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNotIn)([0]),
+    (0, class_validator_1.IsNumberString)(),
+    (0, class_transformer_1.Transform)(({ obj, key }) => {
+        var _a;
+        return (_a = obj[key]) === null || _a === void 0 ? void 0 : _a.toString();
+    }),
+    __metadata("design:type", Object)
+], SalesInvoicePaymentDto.prototype, "amount", void 0);
+exports.SalesInvoicePaymentDto = SalesInvoicePaymentDto;
 class DefaultSalesInvoiceDto {
     constructor() {
         this.salesInvoiceItems = [];
+        this.salesInvoicePayments = [];
     }
 }
 __decorate([
@@ -78,5 +109,16 @@ __decorate([
     (0, class_validator_1.ValidateNested)(),
     __metadata("design:type", Array)
 ], DefaultSalesInvoiceDto.prototype, "salesInvoiceItems", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        isArray: true,
+        type: SalesInvoicePaymentDto,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Type)(() => SalesInvoicePaymentDto),
+    (0, class_validator_1.ValidateNested)(),
+    __metadata("design:type", Array)
+], DefaultSalesInvoiceDto.prototype, "salesInvoicePayments", void 0);
 exports.DefaultSalesInvoiceDto = DefaultSalesInvoiceDto;
 //# sourceMappingURL=sales-invoice-base.dto.js.map

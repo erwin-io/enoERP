@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { GOODSISSUE_ERROR_NOT_FOUND } from "src/common/constant/goods-issue.constant";
+import { SALESINVOICE_ERROR_NOT_FOUND } from "src/common/constant/sales-invoice.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import {
@@ -16,6 +16,7 @@ import { Users } from "src/db/entities/Users";
 import { Branch } from "src/db/entities/Branch";
 import { Repository } from "typeorm";
 import { BRANCH_ERROR_NOT_FOUND } from "src/common/constant/branch.constant";
+import { SalesInvoicePayments } from "src/db/entities/SalesInvoicePayments";
 
 const deafaultSalesInvoiceSelect = {
   salesInvoiceId: true,
@@ -39,6 +40,10 @@ const deafaultSalesInvoiceSelect = {
     branchId: true,
     branchCode: true,
     name: true,
+  },
+  salesInvoicePayments: {
+    paymentType: true,
+    amount: true,
   },
   salesInvoiceItems: {
     salesInvoiceId: true,
@@ -81,6 +86,7 @@ export class SalesInvoiceService {
         take,
         order,
         relations: {
+          salesInvoicePayments: true,
           branch: true,
           createdByUser: {
             branch: true,
@@ -108,6 +114,7 @@ export class SalesInvoiceService {
         salesInvoiceCode,
       },
       relations: {
+        salesInvoicePayments: true,
         createdByUser: true,
         branch: true,
         salesInvoiceItems: {
@@ -119,7 +126,7 @@ export class SalesInvoiceService {
       },
     });
     if (!result) {
-      throw Error(GOODSISSUE_ERROR_NOT_FOUND);
+      throw Error(SALESINVOICE_ERROR_NOT_FOUND);
     }
     return result;
   }
@@ -157,6 +164,58 @@ export class SalesInvoiceService {
         salesInvoice = await entityManager.save(SalesInvoice, salesInvoice);
         salesInvoice.salesInvoiceCode = generateIndentityCode(
           salesInvoice.salesInvoiceId
+        );
+
+        dto.salesInvoicePayments = dto.salesInvoicePayments.reduce(
+          (acc, cur) => {
+            const paymentRow =
+              acc.length > 0 &&
+              acc.find(({ paymentType }) => paymentType === cur.paymentType);
+            if (paymentRow) {
+              paymentRow.amount =
+                Number(paymentRow.amount) + Number(cur.amount);
+            } else
+              acc.push({
+                paymentType: cur.paymentType,
+                amount: cur.amount ? Number(cur.amount) : 0,
+              });
+            return acc;
+          },
+          []
+        );
+
+        for (const item of dto.salesInvoicePayments) {
+          let payment = new SalesInvoicePayments();
+          if (
+            !item.paymentType ||
+            item.paymentType.toString() === "" ||
+            ![
+              "CASH",
+              "CREDIT CARD",
+              "DEBIT CARD",
+              "MOBILE PAYMENT",
+              "CHECK",
+            ].some((x) => x === item.paymentType)
+          ) {
+            throw Error("Invalid payment type!");
+          }
+          if (item.amount <= 0) {
+            throw Error("Payment amount must not be less than or zero!");
+          }
+          payment.amount = item.amount.toString();
+          payment.paymentType = item.paymentType;
+          payment.salesInvoice = salesInvoice;
+          payment = await entityManager.save(SalesInvoicePayments, payment);
+        }
+        salesInvoice.salesInvoicePayments = await entityManager.find(
+          SalesInvoicePayments,
+          {
+            where: {
+              salesInvoice: {
+                salesInvoiceId: salesInvoice.salesInvoiceId,
+              },
+            },
+          }
         );
         dto.salesInvoiceItems = dto.salesInvoiceItems.reduce((acc, cur) => {
           const item =
@@ -232,6 +291,7 @@ export class SalesInvoiceService {
             salesInvoiceId: salesInvoice.salesInvoiceId,
           },
           relations: {
+            salesInvoicePayments: true,
             createdByUser: {
               branch: true,
             },
@@ -260,6 +320,7 @@ export class SalesInvoiceService {
           },
           relations: {
             branch: true,
+            salesInvoicePayments: true,
             createdByUser: true,
             salesInvoiceItems: {
               salesInvoice: true,
@@ -270,7 +331,7 @@ export class SalesInvoiceService {
           },
         });
         if (!salesInvoice) {
-          throw Error(GOODSISSUE_ERROR_NOT_FOUND);
+          throw Error(SALESINVOICE_ERROR_NOT_FOUND);
         }
         for (const item of salesInvoice.salesInvoiceItems) {
           let itemBranch = await entityManager.findOne(ItemBranch, {
@@ -287,6 +348,7 @@ export class SalesInvoiceService {
           itemBranch = await entityManager.save(ItemBranch, itemBranch);
         }
         delete salesInvoice.salesInvoiceItems;
+        delete salesInvoice.salesInvoicePayments;
         salesInvoice.isVoid = true;
         const timestamp = await entityManager
           .query(CONST_QUERYCURRENT_TIMESTAMP)
@@ -300,6 +362,7 @@ export class SalesInvoiceService {
             salesInvoiceId: salesInvoice.salesInvoiceId,
           },
           relations: {
+            salesInvoicePayments: true,
             createdByUser: {
               branch: true,
             },

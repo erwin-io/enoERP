@@ -14,10 +14,11 @@ import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.
 import { SalesInvoiceFormComponent } from '../sales-invoice-form/sales-invoice-form.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { SalesInvoiceItemComponent } from '../sales-invoice-items/sales-invoice-items.component';
-import { SalesInvoiceItemTableColumn } from 'src/app/shared/utility/table';
+import { SalesInvoiceItemTableColumn, SalesInvoicePaymentsTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { Access, AccessPages } from 'src/app/model/access';
+import { SalesInvoicePaymentsComponent } from '../sales-invoice-payments/sales-invoice-payments.component';
 export class UpdateStatusModel {
   status: "REJECTED"
   | "COMPLETED"
@@ -47,6 +48,7 @@ export class SalesInvoiceDetailsComponent {
 
   @ViewChild('salesInvoiceForm', { static: true}) salesInvoiceForm: SalesInvoiceFormComponent;
   @ViewChild('salesInvoiceItems', { static: true}) salesInvoiceItemComponent: SalesInvoiceItemComponent;
+  @ViewChild('salesInvoicePayments', { static: true}) salesInvoicePaymentComponent: SalesInvoicePaymentsComponent;
 
   canAddEdit = false;
   salesInvoice: SalesInvoice;
@@ -93,20 +95,22 @@ export class SalesInvoiceDetailsComponent {
   }
 
   async ngAfterViewInit() {
+    this.isLoading = true;
     await Promise.all([
     ])
     if(!this.isNew) {
       this.initDetails();
     } else {
+      this.isLoading = false;
       this.canAddEdit = true;
     }
   }
 
   initDetails() {
-    this.isLoading = true;
     try {
       this.salesInvoiceService.getByCode(this.salesInvoiceCode).subscribe(res=> {
         if (res.success) {
+          this.isLoading = false;
           this.salesInvoice = res.data;
           this.canAddEdit = !((!this.isReadOnly || !this.isNew) && !this.salesInvoice.isVoid);
           const items = this.salesInvoice.salesInvoiceItems.map(x=> {
@@ -121,15 +125,23 @@ export class SalesInvoiceDetailsComponent {
               unitPrice: x.unitPrice,
             } as SalesInvoiceItemTableColumn
           })
-          this.salesInvoiceForm.setFormValue(this.salesInvoice, items);
+          const payments = this.salesInvoice.salesInvoicePayments.map(x=> {
+            return {
+              paymentType: x.paymentType,
+              amount: Number(x.amount),
+              isInvalidAmount: false,
+              isAmountChanged: false,
+              isEditMode: false,
+            } as SalesInvoicePaymentsTableColumn
+          })
+          this.salesInvoiceForm.setFormValue(this.salesInvoice, items, payments);
           this.salesInvoiceItemComponent.init(items);
+          this.salesInvoicePaymentComponent.init(payments);
 
           if (this.isReadOnly) {
             this.salesInvoiceForm.form.disable();
           }
-          this.isLoading = false;
         } else {
-          this.isLoading = false;
           this.error = Array.isArray(res.message) ? res.message[0] : res.message;
           this.snackBar.open(this.error, 'close', {
             panelClass: ['style-error'],
@@ -151,6 +163,12 @@ export class SalesInvoiceDetailsComponent {
     console.log(event);
     this.salesInvoiceForm.form.controls["salesInvoiceItems"].setValue(event);
     this.salesInvoiceForm.form.controls["salesInvoiceItems"].markAsDirty();
+  }
+
+  async paymentChanged(event) {
+    console.log(event);
+    this.salesInvoiceForm.form.controls["salesInvoicePayments"].setValue(event);
+    this.salesInvoiceForm.form.controls["salesInvoicePayments"].markAsDirty();
   }
 
   voidSalesInvoice() {
@@ -178,6 +196,7 @@ export class SalesInvoiceDetailsComponent {
       try {
         let res = await this.salesInvoiceService.void(this.salesInvoiceCode).toPromise();
         if (res.success) {
+          this.isLoading = false;
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
@@ -199,6 +218,7 @@ export class SalesInvoiceDetailsComponent {
           dialogRef.close();
         }
       } catch (e) {
+        this.isLoading = false;
         this.isProcessing = false;
         dialogRef.componentInstance.isProcessing = this.isProcessing;
         this.error = Array.isArray(e.message) ? e.message[0] : e.message;
@@ -240,6 +260,7 @@ export class SalesInvoiceDetailsComponent {
         }
         let res = await this.salesInvoiceService.create(formData).toPromise();
         if (res.success) {
+          this.isLoading = false;
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
           });
@@ -254,6 +275,7 @@ export class SalesInvoiceDetailsComponent {
           await this.ngAfterViewInit();
           dialogRef.close();
         } else {
+          this.isLoading = false;
           this.isProcessing = false;
           dialogRef.componentInstance.isProcessing = this.isProcessing;
           this.error = Array.isArray(res.message)
@@ -265,6 +287,7 @@ export class SalesInvoiceDetailsComponent {
           dialogRef.close();
         }
       } catch (e) {
+        this.isLoading = false;
         this.isProcessing = false;
         dialogRef.componentInstance.isProcessing = this.isProcessing;
         this.error = Array.isArray(e.message) ? e.message[0] : e.message;

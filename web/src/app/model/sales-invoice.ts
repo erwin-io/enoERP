@@ -13,6 +13,7 @@ export class SalesInvoice {
   createdByUser: Users;
   branch: Branch;
   salesInvoiceItems: SalesInvoiceItem[];
+  salesInvoicePayments: SalesInvoicePayments[];
 }
 export class SalesInvoiceItem {
   quantity: string;
@@ -20,4 +21,13 @@ export class SalesInvoiceItem {
   unitPrice: string;
   salesInvoice: SalesInvoice;
   item: Item;
+}
+export class SalesInvoicePayments {
+  amount: string;
+  paymentType: "CASH"
+    | "CREDIT CARD"
+    | "DEBIT CARD"
+    | "MOBILE PAYMENT"
+    | "CHECK";
+  salesInvoice: SalesInvoice;
 }

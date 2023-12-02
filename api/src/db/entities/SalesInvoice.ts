@@ -10,6 +10,7 @@ import {
 import { Branch } from "./Branch";
 import { Users } from "./Users";
 import { SalesInvoiceItem } from "./SalesInvoiceItem";
+import { SalesInvoicePayments } from "./SalesInvoicePayments";
 
 @Index("SalesInvoice_pkey", ["salesInvoiceId"], { unique: true })
 @Entity("SalesInvoice", { schema: "dbo" })
@@ -51,4 +52,10 @@ export class SalesInvoice {
     (salesInvoiceItem) => salesInvoiceItem.salesInvoice
   )
   salesInvoiceItems: SalesInvoiceItem[];
+
+  @OneToMany(
+    () => SalesInvoicePayments,
+    (salesInvoicePayments) => salesInvoicePayments.salesInvoice
+  )
+  salesInvoicePayments: SalesInvoicePayments[];
 }

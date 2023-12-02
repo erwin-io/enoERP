@@ -13,7 +13,6 @@ import {
   ValidateNested,
 } from "class-validator";
 
-
 export class SalesInvoiceItemDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -21,7 +20,7 @@ export class SalesInvoiceItemDto {
 
   @ApiProperty({
     default: 0,
-    type: Number
+    type: Number,
   })
   @IsNotEmpty()
   @IsNotIn([0])
@@ -33,7 +32,7 @@ export class SalesInvoiceItemDto {
 
   @ApiProperty({
     default: 0,
-    type: Number
+    type: Number,
   })
   @IsNotEmpty()
   @IsNotIn([0])
@@ -44,6 +43,33 @@ export class SalesInvoiceItemDto {
   unitPrice: 0;
 }
 
+export class SalesInvoicePaymentDto {
+  @ApiProperty({
+    type: String,
+    default: "CASH",
+  })
+  @IsNotEmpty()
+  @IsIn(["CASH", "CREDIT CARD", "DEBIT CARD", "MOBILE PAYMENT", "CHECK"])
+  @IsUppercase()
+  paymentType:
+    | "CASH"
+    | "CREDIT CARD"
+    | "DEBIT CARD"
+    | "MOBILE PAYMENT"
+    | "CHECK";
+
+  @ApiProperty({
+    default: 0,
+    type: Number,
+  })
+  @IsNotEmpty()
+  @IsNotIn([0])
+  @IsNumberString()
+  @Transform(({ obj, key }) => {
+    return obj[key]?.toString();
+  })
+  amount = 0;
+}
 
 export class DefaultSalesInvoiceDto {
   @ApiProperty()
@@ -63,4 +89,14 @@ export class DefaultSalesInvoiceDto {
   @Type(() => SalesInvoiceItemDto)
   @ValidateNested()
   salesInvoiceItems: SalesInvoiceItemDto[] = [];
+
+  @ApiProperty({
+    isArray: true,
+    type: SalesInvoicePaymentDto,
+  })
+  @IsArray()
+  @IsNotEmpty()
+  @Type(() => SalesInvoicePaymentDto)
+  @ValidateNested()
+  salesInvoicePayments: SalesInvoicePaymentDto[] = [];
 }

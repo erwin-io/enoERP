@@ -246,6 +246,16 @@ export class SalesInvoiceItemTableColumn {
   itemCategory: string;
 }
 
+export class SalesInvoicePaymentsTableColumn {
+  paymentType?: string;
+  isInvalidPaymentType?: boolean;
+  isPaymentTypeChanged?: boolean;
+  amount?: number;
+  isInvalidAmount?: boolean;
+  isAmountChanged?: boolean;
+  isEditMode?: boolean;
+}
+
 export class SupplierTableColumn {
   supplierId?: string;
   supplierCode?: string;

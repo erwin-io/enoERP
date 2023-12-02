@@ -18,7 +18,7 @@
                     [matAutocomplete]="auto"
                     (input)="isOptionsBranchLoading = true"
                     #branchSearchInput>
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayBranchName.bind(this)" (optionSelected)="branchCode.setValue($event.option.value)">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayBranchName.bind(this)" (optionSelected)="branchCode.setValue($event.option.value);getInventoryMasterlistPaginated()">
               <mat-option *ngFor="let option of optionBranch" [value]="option.code">
                 {{option.name}}
               </mat-option>

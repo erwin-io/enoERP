@@ -1,6 +1,7 @@
 import { Branch } from "./Branch";
 import { Users } from "./Users";
 import { SalesInvoiceItem } from "./SalesInvoiceItem";
+import { SalesInvoicePayments } from "./SalesInvoicePayments";
 export declare class SalesInvoice {
     salesInvoiceId: string;
     salesInvoiceCode: string | null;
@@ -11,4 +12,5 @@ export declare class SalesInvoice {
     branch: Branch;
     createdByUser: Users;
     salesInvoiceItems: SalesInvoiceItem[];
+    salesInvoicePayments: SalesInvoicePayments[];
 }

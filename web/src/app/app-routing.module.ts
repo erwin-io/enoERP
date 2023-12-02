@@ -162,7 +162,7 @@ const routes: Routes = [
       {
         path: 'goods-issue',
         canActivate: [AuthGuard],
-        data: { title: 'Goods Receipt', group: 'Purchasing' },
+        data: { title: 'Goods Issue', group: 'Purchasing' },
         loadChildren: () =>
           import('./pages/features/goods-issue/goods-issue.module').then(
             (m) => m.GoodsIssueModule

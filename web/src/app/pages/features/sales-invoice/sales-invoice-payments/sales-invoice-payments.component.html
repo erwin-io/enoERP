@@ -1,0 +1,141 @@
+<mat-card>
+  <mat-card-header>
+    <div style="display: flex;flex-direction: row;width: 100%;justify-content: flex-end;" *ngIf="!isReadOnly" >
+      <button style="margin: 10px 0;" mat-mini-fab aria-label="New payment" matTooltip="New payment" (click)="addRow()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+  <mat-card-content fxFlex="100" fxLayout="column" >
+    <div
+      fxFlex="33.33%"
+      fxLayout="column"
+      fxLayout.gt-xs="row">
+      <div fxLayout="column">
+        <mat-form-field
+          fxLayout="column"
+          appearance="outline">
+          <mat-label>Total payments&nbsp;&nbsp;</mat-label>
+          <input
+            type="text"
+            placeholder="Total amount"
+            aria-label="Total amount"
+            matInput
+            readonly
+            [ngModel]="accTotalPayments | currency: 'PHP'"/>
+        </mat-form-field>
+        <span style="color: red;" *ngIf="accTotalPayments > totalAmount">*Total payment exceeds total amount to pay</span>
+        <span style="color: red;" *ngIf="accTotalPayments < totalAmount && hasChanges">*Please enter the exact payment</span>
+      </div>
+    </div>
+    <div fxFlex="100" fxLayout="column" class="sales-payments-card-inner" [ngClass]="{ 'hidden': dataSource.data.length <=0  }">
+      <table class="table-sales-payments" mat-table [dataSource]="dataSource">
+        <!-- Page Column -->
+        <ng-container matColumnDef="payment">
+          <th mat-header-cell *matHeaderCellDef [ngStyle]="{ 'min-width': '200px', 'width': '100%' }"></th>
+          <td mat-cell *matCellDef="let element;let i = index;" [ngStyle]="{ 'min-width': '200px', 'width': '100%'}" style="height: inherit!important;">
+            <div style="display: flex;flex-direction: column;gap:5px;row-gap:20px;align-items: center;" ngStyle.gt-xs="flex-direction: row">
+              <ng-container *ngIf="!element?.isEditMode; else editPaymentType">
+               <span style="line-height: 1;width: 100%;text-align: left;"> {{ element.paymentType }} </span>
+              </ng-container>
+              <ng-template #editPaymentType>
+                <div style="width:100%;margin: 10px 0!important;display: flex;flex-direction: column;" ngStyle.gt-xs="width: 50%">
+                  <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-label>Payment type</mat-label>
+                    <mat-select
+                      matNativeControl
+                      (selectionChange)="paymentTypeChange(i, element)"
+                      appearance="outline"
+                      [(ngModel)]="element.paymentType"
+                      [ngClass]="{ 'mdc-text-field--invalid': element?.isPaymentTypeChanged && element?.isInvalidPaymentType }">
+                      <mat-option value="CASH">CASH</mat-option>
+                      <mat-option value="CREDIT CARD">CREDIT CARD</mat-option>
+                      <mat-option value="DEBIT CARD">DEBIT CARD</mat-option>
+                      <mat-option value="MOBILE PAYMENT">MOBILE PAYMENT</mat-option>
+                      <mat-option value="CHECK">CHECK</mat-option>
+                  </mat-select>
+                  </mat-form-field>
+                </div>
+              </ng-template>
+
+              <ng-container *ngIf="!element.isEditMode; else editAmount">
+                <span style="font-weight: 600;line-height: 1;display: flex;flex-grow: 1;justify-content: flex-start;width: 100%;" ngStyle.gt-xs="justify-content: center"> {{ element.amount | currency: 'PHP' }} </span>
+              </ng-container>
+              <ng-template #editAmount>
+                <div style="width:100%;display: flex;flex-direction: column;" ngStyle.gt-xs="width: 50%">
+                  <mat-form-field
+                    fxFlex="100"
+                    fxLayout="column"
+                    appearance="outline"
+                    [ngClass]="{ 'mdc-text-field--invalid': element?.isAmountChanged && (!element?.amount || element?.amount === '' || toNumber(element?.amount) <= 0 )}">
+                    <mat-label>Amount</mat-label>
+                    <input
+                      type="number"
+                      placeholder="Amount"
+                      aria-label="Amount"
+                      matInput
+                      (input)="element.isAmountChanged = true"
+                      [(ngModel)]="element.amount"/>
+                  </mat-form-field>
+                </div>
+              </ng-template>
+            </div>
+            <div style="display: flex;flex-direction: column;">
+              <span style="color: red;width: 100%;" *ngIf="element?.isPaymentTypeChanged && element?.isInvalidPaymentType">*Invalid payment type</span>
+              <span style="color: red;width: 100%;" *ngIf="element?.isAmountChanged && (!element?.amount || element?.amount === '' || toNumber(element?.amount) <= 0)">*Invalid amount</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="controls" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef [ngClass]="{ 'hidden': isReadOnly }" style="padding: 0!important;"> </th>
+          <td mat-cell
+            style="padding: 0!important;"
+            *matCellDef="let element;let i = index;"
+            [ngClass]="{ 'hidden': isReadOnly }"
+            [ngStyle]="{ 'width': element.isEditMode ||
+            (!element?.paymentType || element?.paymentType === '' || !element?.isPaymentTypeChanged) ||
+            (!element?.amount || element?.amount === '' || toNumber(element?.amount) <= 0 || !element?.isAmountChanged)
+            ? '80px' : '132px'}">
+            <div style="display: flex;flex-direction: column;" ngStyle.gt-xs="flex-direction: row">
+              <button
+                matTooltip="Edit"
+                (click)="element.isEditMode = true"
+                mat-icon-button
+                *ngIf="!isReadOnly && !element.isEditMode">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                matTooltip="Edit"
+                [disabled]="element?.isInvalidPaymentType || !element?.amount || toNumber(element?.amount) <= 0 || !element?.paymentType || element?.paymentType === ''"
+                (click)="updateRow(i, element)"
+                mat-icon-button
+                *ngIf="!isReadOnly && element.isEditMode">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button
+                matTooltip="Reset"
+                mat-icon-button
+                (click)="element.paymentType='';element.amount = 0;element.isInvalidPaymentType = true;element.isInvalidAmount = true;element.isEditMode=true;computeAccTotalPayments()"
+                *ngIf="!isReadOnly && !element.isEditMode && toNumber(element?.amount) > 0 && element?.isAmountChanged">
+                <mat-icon>repeat</mat-icon>
+              </button>
+              <button
+                matTooltip="Remove"
+                mat-icon-button
+                (click)="remove(i)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <div class="table-no-data" *ngIf="dataSource.data.length === 0">
+      <span>No payments added</span>
+    </div>
+  </mat-card-content>
+</mat-card>

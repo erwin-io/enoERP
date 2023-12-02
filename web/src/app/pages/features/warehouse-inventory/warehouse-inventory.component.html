@@ -18,7 +18,7 @@
                     [matAutocomplete]="auto"
                     (input)="isOptionsWarehouseLoading = true"
                     #warehouseSearchInput>
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWarehouseName.bind(this)" (optionSelected)="warehouseCode.setValue($event.option.value)">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWarehouseName.bind(this)" (optionSelected)="warehouseCode.setValue($event.option.value);getWarehouseInventoryPaginated()">
               <mat-option *ngFor="let option of optionWarehouse" [value]="option.code">
                 {{option.name}}
               </mat-option>

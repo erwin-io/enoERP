@@ -31,15 +31,7 @@ const common_1 = require("@nestjs/common");
 const bodyParser = __importStar(require("body-parser"));
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors({
-        origin: [
-            "http://localhost:4200",
-            "https://eno-erp-web-stage.vercel.app",
-            "https://eno-erp-web.vercel.app",
-        ],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        credentials: false,
-    });
+    app.enableCors();
     app.setGlobalPrefix("api/v1");
     app.use(bodyParser.json({ limit: "50mb" }));
     app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
@@ -56,15 +48,15 @@ async function bootstrap() {
     const document = swagger_1.SwaggerModule.createDocument(app, options);
     swagger_1.SwaggerModule.setup("swagger", app, document, {
         swaggerOptions: { defaultModelsExpandDepth: -1 },
-        customfavIcon: "https://avatars0.githubusercontent.com/u/7658037?v=3&s=200",
+        customfavIcon: 'https://avatars0.githubusercontent.com/u/7658037?v=3&s=200',
         customJs: [
-            "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js",
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
         ],
         customCssUrl: [
-            "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css",
-            "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css",
-            "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css",
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css',
         ],
     });
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, transform: true }));

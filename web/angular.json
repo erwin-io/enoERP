@@ -95,6 +95,9 @@
             "production": {
               "browserTarget": "enoerp-web:build:production"
             },
+            "stage": {
+              "browserTarget": "enoerp-web:build:stage"
+            },
             "development": {
               "browserTarget": "enoerp-web:build:development"
             }

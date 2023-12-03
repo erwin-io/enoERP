@@ -56,28 +56,6 @@
               "outputHashing": "all",
               "optimization": true
             },
-            "stage": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "4mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stage.ts"
-                }
-              ],
-              "outputHashing": "all",
-              "optimization": true
-            },
             "development": {
               "buildOptimizer": false,
               "optimization": true,
@@ -94,9 +72,6 @@
           "configurations": {
             "production": {
               "browserTarget": "enoerp-web:build:production"
-            },
-            "stage": {
-              "browserTarget": "enoerp-web:build:stage"
             },
             "development": {
               "browserTarget": "enoerp-web:build:development"

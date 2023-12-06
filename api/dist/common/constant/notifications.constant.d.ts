@@ -1,0 +1,22 @@
+export declare const NOTIF_TYPE: {
+    ANNOUNCEMENT: string;
+    GOODS_RECEIPT: string;
+    GOODS_ISSUE: string;
+    INVENTORY_REQUEST: string;
+};
+export declare const NOTIF_TITLE: {
+    GOODS_RECEIPT_CREATED: string;
+    GOODS_RECEIPT_COMPLETED: string;
+    GOODS_RECEIPT_CANCELLED: string;
+    GOODS_RECEIPT_REJECTED: string;
+    GOODS_ISSUE_CREATED: string;
+    GOODS_ISSUE_COMPLETED: string;
+    GOODS_ISSUE_CANCELLED: string;
+    GOODS_ISSUE_REJECTED: string;
+    INVENTORY_REQUEST_CREATED: string;
+    INVENTORY_REQUEST_COMPLETED: string;
+    INVENTORY_REQUEST_IN_TRANSIT: string;
+    INVENTORY_REQUEST_PROCESSING: string;
+    INVENTORY_REQUEST_CANCELLED: string;
+    INVENTORY_REQUEST_REJECTED: string;
+};

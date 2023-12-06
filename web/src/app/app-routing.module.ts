@@ -11,13 +11,7 @@ import { NoAccessComponent } from './pages/no-access/no-access.component';
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: 'auth', pathMatch: 'full', redirectTo: 'auth/login' },
-
-  {
-    path: 'profile',
-    pathMatch: 'full',
-    redirectTo: 'profile/edit-profile',
-    title: 'Profile',
-  },
+  { path: 'profile', pathMatch: 'full', redirectTo: 'profile/edit' },
 
   {
     path: '',
@@ -191,18 +185,20 @@ const routes: Routes = [
     component: ProfileComponent,
     children: [
       {
-        path: 'edit-profile',
+        path: 'edit',
+        data: { title: 'Edit profile', profile: true },
         loadChildren: () =>
           import('./pages/profile/edit-profile/edit-profile.module').then(
             (m) => m.EditProfileModule
           ),
       },
       {
-        path: 'password-and-security',
+        path: 'change-password',
+        data: { title: 'Change Password', profile: true },
         loadChildren: () =>
           import(
-            './pages/profile/password-and-security/password-and-security.module'
-          ).then((m) => m.PasswordAndSecurityModule),
+            './pages/profile/change-password/change-password.module'
+          ).then((m) => m.ChangePasswordModule),
       },
     ],
   },

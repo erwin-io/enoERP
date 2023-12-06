@@ -11,7 +11,10 @@ import { BRANCH_ERROR_NOT_FOUND } from "src/common/constant/branch.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
 import { CreateUserDto } from "src/core/dto/user/users.create.dto";
-import { UpdateUserDto } from "src/core/dto/user/users.update.dto";
+import {
+  UpdateUserDto,
+  UpdateUserProfileDto,
+} from "src/core/dto/user/users.update.dto";
 import { FirebaseProvider } from "src/core/provider/firebase/firebase-provider";
 import { Access } from "src/db/entities/Access";
 import { Branch } from "src/db/entities/Branch";
@@ -233,6 +236,47 @@ export class UsersService {
     });
   }
 
+  async updateProfile(userCode, dto: UpdateUserProfileDto) {
+    return await this.userRepo.manager.transaction(async (entityManager) => {
+      let user = await entityManager.findOne(Users, {
+        select: defaultUserSelect as any,
+        where: {
+          userCode,
+          active: true,
+        },
+        relations: {
+          access: true,
+          branch: true,
+        },
+      });
+
+      if (!user) {
+        throw Error(USER_ERROR_USER_NOT_FOUND);
+      }
+
+      user.fullName = dto.fullName;
+      user.mobileNumber = dto.mobileNumber;
+      user.email = dto.email;
+      user.birthDate = moment(dto.birthDate.toString()).format("YYYY-MM-DD");
+      user.gender = dto.gender;
+      user.address = dto.address;
+      user = await entityManager.save(Users, user);
+      user = await entityManager.findOne(Users, {
+        select: defaultUserSelect as any,
+        where: {
+          userCode,
+          active: true,
+        },
+        relations: {
+          access: true,
+          branch: true,
+        },
+      });
+      delete user.password;
+      return user;
+    });
+  }
+
   async update(userCode, dto: UpdateUserDto) {
     return await this.userRepo.manager.transaction(async (entityManager) => {
       let user = await entityManager.findOne(Users, {
@@ -256,6 +300,7 @@ export class UsersService {
       user.email = dto.email;
       user.birthDate = moment(dto.birthDate.toString()).format("YYYY-MM-DD");
       user.gender = dto.gender;
+      user.address = dto.address;
       if (dto.accessCode) {
         const access = await entityManager.findOne(Access, {
           where: {

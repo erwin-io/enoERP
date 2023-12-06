@@ -16,14 +16,18 @@ exports.GoodsIssueService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const goods_issue_constant_1 = require("../common/constant/goods-issue.constant");
+const notifications_constant_1 = require("../common/constant/notifications.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
+const chat_gateway_1 = require("../core/gateway/chat.gateway");
+const GatewayConnectedUsers_1 = require("../db/entities/GatewayConnectedUsers");
 const GoodsIssue_1 = require("../db/entities/GoodsIssue");
 const GoodsIssueItem_1 = require("../db/entities/GoodsIssueItem");
 const Item_1 = require("../db/entities/Item");
 const ItemWarehouse_1 = require("../db/entities/ItemWarehouse");
+const Notifications_1 = require("../db/entities/Notifications");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
@@ -69,8 +73,9 @@ const deafaultGoodsIssueSelect = {
     issueType: true,
 };
 let GoodsIssueService = class GoodsIssueService {
-    constructor(goodsIssueRepo) {
+    constructor(goodsIssueRepo, chatGateway) {
         this.goodsIssueRepo = goodsIssueRepo;
+        this.chatGateway = chatGateway;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -214,6 +219,36 @@ let GoodsIssueService = class GoodsIssueService {
                 },
             });
             delete goodsIssue.createdByUser.password;
+            let getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                where: {
+                    userId: (0, typeorm_2.Not)(goodsIssue.createdByUser.userId),
+                    branch: {
+                        isMainBranch: true,
+                        active: true,
+                    },
+                    access: {
+                        active: true,
+                    },
+                    active: true,
+                },
+                relations: {
+                    branch: true,
+                    access: true,
+                },
+            });
+            getUsersToBeNotified = getUsersToBeNotified
+                .map((x) => {
+                return {
+                    user: x,
+                    access: x.access.accessPages,
+                };
+            })
+                .filter((x) => x.access.length > 0 &&
+                x.access.some((x) => x.page === "Goods Issue") &&
+                x.access.some((x) => x.rights && x.rights.some((r) => r === "Approval")))
+                .map((x) => x.user);
+            await this.logNotification(getUsersToBeNotified, goodsIssue, entityManager, notifications_constant_1.NOTIF_TITLE.GOODS_ISSUE_CREATED, goodsIssue.description);
+            await this.chatGateway.reSync("GOODS_ISSUE", null);
             return goodsIssue;
         });
     }
@@ -242,6 +277,16 @@ let GoodsIssueService = class GoodsIssueService {
             if (goodsIssue.status !== "PENDING") {
                 throw Error("Not allowed to update goods issue, goods issue was already being - processed");
             }
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            goodsIssue.lastUpdatedByUser = lastUpdatedByUser;
             goodsIssue.description = dto.description;
             goodsIssue.issueType = dto.issueType;
             const timestamp = await entityManager
@@ -366,6 +411,8 @@ let GoodsIssueService = class GoodsIssueService {
                 },
             });
             delete goodsIssue.createdByUser.password;
+            delete goodsIssue.lastUpdatedByUser.password;
+            await this.syncRealTime(goodsIssue);
             return goodsIssue;
         });
     }
@@ -422,6 +469,16 @@ let GoodsIssueService = class GoodsIssueService {
                 return res[0]["timestamp"];
             });
             goodsIssue.dateLastUpdated = timestamp;
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            goodsIssue.lastUpdatedByUser = lastUpdatedByUser;
             goodsIssue = await entityManager.save(GoodsIssue_1.GoodsIssue, goodsIssue);
             goodsIssue = await entityManager.findOne(GoodsIssue_1.GoodsIssue, {
                 where: {
@@ -430,6 +487,9 @@ let GoodsIssueService = class GoodsIssueService {
                 relations: {
                     inventoryAdjustmentReports: true,
                     createdByUser: {
+                        branch: true,
+                    },
+                    lastUpdatedByUser: {
                         branch: true,
                     },
                     warehouse: true,
@@ -441,6 +501,7 @@ let GoodsIssueService = class GoodsIssueService {
                 },
             });
             delete goodsIssue.createdByUser.password;
+            delete goodsIssue.lastUpdatedByUser.password;
             if (status === "CANCELLED" || status === "REJECTED") {
                 for (const item of goodsIssue.goodsIssueItems) {
                     let itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
@@ -456,14 +517,84 @@ let GoodsIssueService = class GoodsIssueService {
                     itemWarehouse = await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
             }
+            let getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                where: {
+                    userId: goodsIssue.createdByUser.userId,
+                    access: {
+                        active: true,
+                    },
+                    active: true,
+                },
+                relations: {
+                    branch: true,
+                    access: true,
+                },
+            });
+            getUsersToBeNotified = getUsersToBeNotified
+                .map((x) => {
+                return {
+                    user: x,
+                    access: x.access.accessPages,
+                };
+            })
+                .filter((x) => x.access.length > 0 &&
+                x.access.some((x) => x.page === "Goods Issue") &&
+                x.access.some((x) => x.rights && x.rights.some((r) => r === "Approval")))
+                .map((x) => x.user);
+            let title = "Goods issue";
+            let description = "Goods issue description";
+            if (status === "COMPLETED") {
+                title = notifications_constant_1.NOTIF_TITLE.GOODS_ISSUE_COMPLETED;
+                description = `Goods issue #${goodsIssue.goodsIssueCode} is now completed`;
+            }
+            else if (status === "REJECTED") {
+                title = notifications_constant_1.NOTIF_TITLE.GOODS_ISSUE_REJECTED;
+                description = `Goods issue #${goodsIssue.goodsIssueCode} was rejected`;
+            }
+            await this.logNotification(getUsersToBeNotified, goodsIssue, entityManager, title, description);
+            await this.syncRealTime(goodsIssue);
             return goodsIssue;
         });
+    }
+    async logNotification(users, goodsIssue, entityManager, title, description) {
+        const notifications = [];
+        for (const user of users) {
+            notifications.push({
+                title,
+                description,
+                type: notifications_constant_1.NOTIF_TYPE.GOODS_ISSUE.toString(),
+                referenceId: goodsIssue.goodsIssueCode.toString(),
+                isRead: false,
+                user: user,
+            });
+        }
+        await entityManager.save(Notifications_1.Notifications, notifications);
+        await this.chatGateway.sendNotif(users.map((x) => x.userId), title, description);
+    }
+    async syncRealTime(goodsIssue) {
+        const users = await this.goodsIssueRepo.manager.find(GatewayConnectedUsers_1.GatewayConnectedUsers, {
+            where: {
+                user: {
+                    userId: (0, typeorm_2.Not)(goodsIssue.lastUpdatedByUser.userId),
+                    active: true,
+                    branch: {
+                        isMainBranch: true,
+                        active: true,
+                    },
+                },
+            },
+            relations: {
+                user: true,
+            },
+        });
+        await this.chatGateway.goodsIssueChanges(users.map((x) => x.user.userId), goodsIssue);
     }
 };
 GoodsIssueService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(GoodsIssue_1.GoodsIssue)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        chat_gateway_1.ChatGateway])
 ], GoodsIssueService);
 exports.GoodsIssueService = GoodsIssueService;
 //# sourceMappingURL=goods-issue.service.js.map

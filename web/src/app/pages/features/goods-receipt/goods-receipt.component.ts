@@ -15,6 +15,8 @@ import { GoodsReceiptTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
+import { GoodsReceipt } from 'src/app/model/goods-receipt';
 
 @Component({
   selector: 'app-goods-receipt',
@@ -104,7 +106,8 @@ export class GoodsReceiptComponent {
     private route: ActivatedRoute,
     private titleService: Title,
     private _location: Location,
-    public router: Router) {
+    public router: Router,
+    private socket: CustomSocket) {
       this.currentUserProfile = this.storageService.getLoginProfile();
       this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
@@ -117,6 +120,16 @@ export class GoodsReceiptComponent {
     }
 
   ngOnInit(): void {
+    this.socket.removeListener('goodsReceiptChanges');
+    this.socket.fromEvent('reSync').subscribe(async (res: any) => {
+      const { type, data } = res;
+      if(type && type === "GOODS_RECEIPT") {
+        this.getGoodsReceiptPaginated("pending", false);
+        this.getGoodsReceiptPaginated("completed", false);
+        this.getGoodsReceiptPaginated("rejected", false);
+        this.getGoodsReceiptPaginated("cancelled", false);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -149,7 +162,7 @@ export class GoodsReceiptComponent {
     this.getGoodsReceiptPaginated(table as any)
   }
 
-  async getGoodsReceiptPaginated(table: "pending" | "completed" | "rejected" | "cancelled"){
+  async getGoodsReceiptPaginated(table: "pending" | "completed" | "rejected" | "cancelled", showProgress = true){
     try{
       const findIndex = this.filter[table].findIndex(x=>x.apiNotation === "status");
       if(findIndex >= 0) {
@@ -169,7 +182,9 @@ export class GoodsReceiptComponent {
       }
 
       this.isLoading = true;
-      this.spinner.show();
+      if(showProgress === true) {
+        this.spinner.show();
+      }
       await this.goodsReceiptService.getByAdvanceSearch({
         order: this.order[table],
         columnDef: this.filter[table],

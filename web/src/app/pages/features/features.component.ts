@@ -7,10 +7,12 @@ import { filter } from 'rxjs';
 import { Users } from 'src/app/model/users';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { NotificationsService } from 'src/app/services/notifications.service';
 import { RouteService } from 'src/app/services/route.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { AlertDialogModel } from 'src/app/shared/alert-dialog/alert-dialog-model';
 import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.component';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 @Component({
   selector: 'app-features',
@@ -29,14 +31,17 @@ export class FeaturesComponent {
   profile: Users;
   currentGroup;
   disableGroupAnimation = true;
+  _unReadNotificationCount: number = 0;
   constructor(
     private titleService:Title,
     private authService: AuthService,
+    private notificationsService: NotificationsService,
     private storageService: StorageService,
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private routeService: RouteService
+    private routeService: RouteService,
+    private socket: CustomSocket
     ) {
       this.profile = this.storageService.getLoginProfile();
       this.onResize();
@@ -45,7 +50,31 @@ export class FeaturesComponent {
         this.details = res.details;
       });
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.socket.fromEvent('notifAdded').subscribe((res: any)=> {
+      const { unRead } = res;
+      this.notificationsService.getUnreadByUser(this.profile.userId).subscribe(async res=> {
+        await this.getNotifCount();
+      })
+    });
+    await this.getNotifCount();
+  }
+
+  get unReadNotificationCount() {
+    return this._unReadNotificationCount;
+  }
+
+  async getNotifCount() {
+    const res = await this.notificationsService.getUnreadByUser(this.profile.userId).toPromise();
+    this.storageService.saveUnreadNotificationCount(res.data);
+    let count = this.storageService.getUnreadNotificationCount();
+    if(!isNaN(Number(count))) {
+      this._unReadNotificationCount = Number(count);
+    } else if(count && isNaN(Number(count))) {
+      this._unReadNotificationCount = 0;
+    } else {
+      this._unReadNotificationCount = 0
+    }
   }
 
   onActivate(event) {

@@ -209,6 +209,44 @@ let UsersService = class UsersService {
             return user;
         });
     }
+    async updateProfile(userCode, dto) {
+        return await this.userRepo.manager.transaction(async (entityManager) => {
+            let user = await entityManager.findOne(Users_1.Users, {
+                select: defaultUserSelect,
+                where: {
+                    userCode,
+                    active: true,
+                },
+                relations: {
+                    access: true,
+                    branch: true,
+                },
+            });
+            if (!user) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            user.fullName = dto.fullName;
+            user.mobileNumber = dto.mobileNumber;
+            user.email = dto.email;
+            user.birthDate = (0, moment_1.default)(dto.birthDate.toString()).format("YYYY-MM-DD");
+            user.gender = dto.gender;
+            user.address = dto.address;
+            user = await entityManager.save(Users_1.Users, user);
+            user = await entityManager.findOne(Users_1.Users, {
+                select: defaultUserSelect,
+                where: {
+                    userCode,
+                    active: true,
+                },
+                relations: {
+                    access: true,
+                    branch: true,
+                },
+            });
+            delete user.password;
+            return user;
+        });
+    }
     async update(userCode, dto) {
         return await this.userRepo.manager.transaction(async (entityManager) => {
             let user = await entityManager.findOne(Users_1.Users, {
@@ -230,6 +268,7 @@ let UsersService = class UsersService {
             user.email = dto.email;
             user.birthDate = (0, moment_1.default)(dto.birthDate.toString()).format("YYYY-MM-DD");
             user.gender = dto.gender;
+            user.address = dto.address;
             if (dto.accessCode) {
                 const access = await entityManager.findOne(Access_1.Access, {
                     where: {

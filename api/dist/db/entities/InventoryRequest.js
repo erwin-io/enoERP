@@ -81,6 +81,11 @@ __decorate([
 ], InventoryRequest.prototype, "fromWarehouse", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.inventoryRequests),
+    (0, typeorm_1.JoinColumn)([{ name: "LastUpdatedByUserId", referencedColumnName: "userId" }]),
+    __metadata("design:type", Users_1.Users)
+], InventoryRequest.prototype, "lastUpdatedByUser", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.inventoryRequests2),
     (0, typeorm_1.JoinColumn)([{ name: "RequestedByUserId", referencedColumnName: "userId" }]),
     __metadata("design:type", Users_1.Users)
 ], InventoryRequest.prototype, "requestedByUser", void 0);

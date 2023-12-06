@@ -70,6 +70,10 @@ export class InventoryRequest {
   fromWarehouse: Warehouse;
 
   @ManyToOne(() => Users, (users) => users.inventoryRequests)
+  @JoinColumn([{ name: "LastUpdatedByUserId", referencedColumnName: "userId" }])
+  lastUpdatedByUser: Users;
+
+  @ManyToOne(() => Users, (users) => users.inventoryRequests2)
   @JoinColumn([{ name: "RequestedByUserId", referencedColumnName: "userId" }])
   requestedByUser: Users;
 

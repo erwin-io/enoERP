@@ -1,8 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { stat } from "fs";
 import { BRANCH_ERROR_NOT_FOUND } from "src/common/constant/branch.constant";
 import { INVENTORYREQUESTRATE_ERROR_NOT_FOUND } from "src/common/constant/inventory-request-rate.constant";
 import { INVENTORYREQUEST_ERROR_NOT_FOUND } from "src/common/constant/inventory-request.constant";
+import {
+  NOTIF_TITLE,
+  NOTIF_TYPE,
+} from "src/common/constant/notifications.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { WAREHOUSE_ERROR_NOT_FOUND } from "src/common/constant/warehouse.constant";
@@ -16,16 +21,20 @@ import {
   ProcessInventoryRequestStatusDto,
   UpdateInventoryRequestDto,
 } from "src/core/dto/inventory-request/inventory-request.update.dto";
+import { ChatGateway } from "src/core/gateway/chat.gateway";
+import { PageAccess } from "src/core/models/api-response.model";
 import { Branch } from "src/db/entities/Branch";
+import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
 import { InventoryRequestItem } from "src/db/entities/InventoryRequestItem";
 import { InventoryRequestRate } from "src/db/entities/InventoryRequestRate";
 import { Item } from "src/db/entities/Item";
 import { ItemBranch } from "src/db/entities/ItemBranch";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
+import { Notifications } from "src/db/entities/Notifications";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
-import { In, Not, Repository } from "typeorm";
+import { EntityManager, In, Not, Repository } from "typeorm";
 
 const deafaultInventoryRequestSelect = {
   inventoryRequestId: true,
@@ -74,7 +83,8 @@ const deafaultInventoryRequestSelect = {
 export class InventoryRequestService {
   constructor(
     @InjectRepository(InventoryRequest)
-    private readonly inventoryRequestRepo: Repository<InventoryRequest>
+    private readonly inventoryRequestRepo: Repository<InventoryRequest>,
+    private chatGateway: ChatGateway
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -277,6 +287,45 @@ export class InventoryRequestService {
           },
         });
         delete inventoryRequest.requestedByUser.password;
+
+        let getUsersToBeNotified = await entityManager.find(Users, {
+          where: {
+            userId: Not(inventoryRequest.requestedByUser.userId),
+            branch: {
+              isMainBranch: true,
+              active: true,
+            },
+            access: {
+              active: true,
+            },
+            active: true,
+          },
+          relations: {
+            branch: true,
+            access: true,
+          },
+        });
+        getUsersToBeNotified = getUsersToBeNotified
+          .map((x) => {
+            return {
+              user: x,
+              access: x.access.accessPages as PageAccess[],
+            };
+          })
+          .filter(
+            (x) =>
+              x.access.length > 0 &&
+              x.access.some((x) => x.page === "Inventory Request")
+          )
+          .map((x) => x.user);
+        await this.logNotification(
+          getUsersToBeNotified,
+          inventoryRequest,
+          entityManager,
+          NOTIF_TITLE.INVENTORY_REQUEST_CREATED,
+          inventoryRequest.description
+        );
+        await this.chatGateway.reSync("INVENTORY_REQUEST", null);
         return inventoryRequest;
       }
     );
@@ -307,6 +356,18 @@ export class InventoryRequestService {
           );
         }
         inventoryRequest.description = dto.description;
+
+        const lastUpdatedByUser = await entityManager.findOne(Users, {
+          where: {
+            userId: dto.updatedByUserId,
+            active: true,
+          },
+        });
+        if (!lastUpdatedByUser) {
+          throw Error(USER_ERROR_USER_NOT_FOUND);
+        }
+        inventoryRequest.lastUpdatedByUser = lastUpdatedByUser;
+
         const timestamp = await entityManager
           .query(CONST_QUERYCURRENT_TIMESTAMP)
           .then((res) => {
@@ -482,9 +543,14 @@ export class InventoryRequestService {
               },
             },
             fromWarehouse: true,
+            lastUpdatedByUser: {
+              branch: true,
+            },
           },
         });
         delete inventoryRequest.requestedByUser.password;
+        delete inventoryRequest.lastUpdatedByUser.password;
+        await this.syncRealTime(inventoryRequest);
         return inventoryRequest;
       }
     );
@@ -641,6 +707,18 @@ export class InventoryRequestService {
             return res[0]["timestamp"];
           });
         inventoryRequest.dateLastUpdated = timestamp;
+
+        const lastUpdatedByUser = await entityManager.findOne(Users, {
+          where: {
+            userId: dto.updatedByUserId,
+            active: true,
+          },
+        });
+        if (!lastUpdatedByUser) {
+          throw Error(USER_ERROR_USER_NOT_FOUND);
+        }
+        inventoryRequest.lastUpdatedByUser = lastUpdatedByUser;
+
         inventoryRequest = await entityManager.save(
           InventoryRequest,
           inventoryRequest
@@ -653,6 +731,9 @@ export class InventoryRequestService {
             requestedByUser: {
               branch: true,
             },
+            lastUpdatedByUser: {
+              branch: true,
+            },
             branch: true,
             inventoryRequestItems: {
               item: {
@@ -663,6 +744,7 @@ export class InventoryRequestService {
           },
         });
         delete inventoryRequest.requestedByUser.password;
+        delete inventoryRequest.lastUpdatedByUser.password;
         //complete request update stocks
         if (status === "COMPLETED") {
           inventoryRequest.inventoryRequestItems = await entityManager.find(
@@ -729,8 +811,104 @@ export class InventoryRequestService {
             await entityManager.save(ItemWarehouse, itemWarehouse);
           }
         }
+        if (status !== "CANCELLED") {
+          const getUsersToBeNotified = await entityManager.find(Users, {
+            where: {
+              userId:
+                status === "COMPLETED"
+                  ? Not(inventoryRequest.requestedByUser.userId)
+                  : inventoryRequest.requestedByUser.userId,
+              access: {
+                active: true,
+              },
+              branch: {
+                isMainBranch: status === "COMPLETED" ? true : false,
+              },
+              active: true,
+            },
+            relations: {
+              branch: true,
+              access: true,
+            },
+          });
+          let title = "Inventory Request";
+          let description = "Inventory request description";
+          if (status === "COMPLETED") {
+            title = NOTIF_TITLE.INVENTORY_REQUEST_COMPLETED;
+            description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now completed`;
+          } else if (status === "REJECTED") {
+            title = NOTIF_TITLE.INVENTORY_REQUEST_REJECTED;
+            description = `Inventory Request #${inventoryRequest.inventoryRequestCode} was rejected`;
+          } else if (status === "PROCESSING") {
+            title = NOTIF_TITLE.INVENTORY_REQUEST_PROCESSING;
+            description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now being process`;
+          } else if (status === "IN-TRANSIT") {
+            title = NOTIF_TITLE.INVENTORY_REQUEST_IN_TRANSIT;
+            description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now in-transit`;
+          }
+          await this.logNotification(
+            getUsersToBeNotified,
+            inventoryRequest,
+            entityManager,
+            title,
+            description
+          );
+          await this.syncRealTime(inventoryRequest);
+        }
         return inventoryRequest;
       }
+    );
+  }
+
+  async logNotification(
+    users: Users[],
+    inventoryRequest: InventoryRequest,
+    entityManager: EntityManager,
+    title: string,
+    description: string
+  ) {
+    const notifications: Notifications[] = [];
+
+    for (const user of users) {
+      notifications.push({
+        title,
+        description,
+        type: NOTIF_TYPE.INVENTORY_REQUEST.toString(),
+        referenceId: inventoryRequest.inventoryRequestCode.toString(),
+        isRead: false,
+        user: user,
+      } as Notifications);
+    }
+    await entityManager.save(Notifications, notifications);
+    await this.chatGateway.sendNotif(
+      users.map((x) => x.userId),
+      title,
+      description
+    );
+  }
+
+  async syncRealTime(inventoryRequest: InventoryRequest) {
+    const users = await this.inventoryRequestRepo.manager.find(
+      GatewayConnectedUsers,
+      {
+        where: {
+          user: {
+            userId: Not(inventoryRequest.lastUpdatedByUser.userId),
+            active: true,
+            branch: {
+              isMainBranch: true,
+              active: true,
+            },
+          },
+        },
+        relations: {
+          user: true,
+        },
+      }
+    );
+    await this.chatGateway.inventoryRequestChanges(
+      users.map((x) => x.user.userId),
+      inventoryRequest
     );
   }
 }

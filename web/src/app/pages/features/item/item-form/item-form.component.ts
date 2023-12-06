@@ -16,6 +16,7 @@ export class ItemFormComponent {
   isOptionsItemCategoryLoading = false;
   optionsItemCategory: { name: string; id: string}[] = [];
   @ViewChild('itemCategorySearchInput', { static: true}) itemCategorySearchInput: ElementRef<HTMLInputElement>;
+  item!: Item;
   constructor(
     private formBuilder: FormBuilder,
     private itemCategoryService: ItemCategoryService
@@ -49,6 +50,7 @@ export class ItemFormComponent {
   }
 
   async init(detais: Item) {
+    this.item = detais;
     if(this.form) {
       this.form.controls["itemCode"].setValue(detais.itemCode);
       this.form.controls["itemName"].setValue(detais.itemName);

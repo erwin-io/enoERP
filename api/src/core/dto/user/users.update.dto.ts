@@ -26,3 +26,7 @@ export class UpdateUserDto extends DefaultUserDto {
   })
   accessCode: string;
 }
+
+
+export class UpdateUserProfileDto extends DefaultUserDto {
+}

@@ -1,7 +1,20 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, NgFor } from '@angular/common';
 import { EditProfileComponent } from './edit-profile.component';
+import { RouterModule, Routes } from '@angular/router';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { MaterialModule } from 'src/app/shared/material/material.module';
 
+export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: EditProfileComponent,
+    data: { title: "Edit profile", details: true }
+  },
+];
 
 
 @NgModule({
@@ -9,7 +22,15 @@ import { EditProfileComponent } from './edit-profile.component';
     EditProfileComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FlexLayoutModule,
+    MaterialModule,
+    NgxSkeletonLoaderModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    NgFor,
+    AsyncPipe
   ]
 })
 export class EditProfileModule { }

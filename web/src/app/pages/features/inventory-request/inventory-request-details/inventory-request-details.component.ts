@@ -17,6 +17,7 @@ import { InventoryRequestItemComponent } from '../inventory-request-items/invent
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 export class UpdateStatusModel {
   status: "CANCELLED";
   notes: string;
@@ -66,7 +67,8 @@ export class InventoryRequestDetailsComponent {
     private storageService: StorageService,
     private route: ActivatedRoute,
     public router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private socket: CustomSocket
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     const { isNew, edit } = this.route.snapshot.data;
@@ -90,6 +92,15 @@ export class InventoryRequestDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.socket.fromEvent('inventoryRequestChanges').subscribe(async res => {
+      this.snackBar.open("Someone has updated this document.", "",{
+        announcementMessage: "Someone has updated this document.",
+        verticalPosition: "top"
+      });
+      if(this.isReadOnly) {
+        this.initDetails();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -227,6 +238,10 @@ export class InventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
+        params = {
+          ...params,
+          updatedByUserId: this.currentUserProfile.userId,
+        } as any;
         let res = await this.inventoryRequestService.closeRequest(this.inventoryRequestCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
@@ -294,6 +309,10 @@ export class InventoryRequestDetailsComponent {
           }
           res = await this.inventoryRequestService.create(formData).toPromise();
         } else {
+          formData = {
+            ...formData,
+            updatedByUserId: this.currentUserProfile.userId,
+          }
           res = await this.inventoryRequestService.update(this.inventoryRequestCode, formData).toPromise();
         }
         if (res.success) {

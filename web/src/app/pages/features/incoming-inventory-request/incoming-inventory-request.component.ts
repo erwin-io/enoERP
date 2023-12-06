@@ -14,6 +14,7 @@ import { convertNotationToObject } from 'src/app/shared/utility/utility';
 import { IncomingInventoryRequestTableColumn } from 'src/app/shared/utility/table';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 @Component({
   selector: 'app-incoming-inventory-request',
@@ -92,7 +93,8 @@ export class IncomingInventoryRequestComponent {
     private route: ActivatedRoute,
     private titleService: Title,
     private _location: Location,
-    public router: Router) {
+    public router: Router,
+    private socket: CustomSocket) {
       this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
         // this.pageIncomingInventoryRequest = {
@@ -106,6 +108,15 @@ export class IncomingInventoryRequestComponent {
   ngOnInit(): void {
     const profile = this.storageService.getLoginProfile();
     // this.currentUserId = profile && profile.userId;
+    this.socket.removeListener('inventoryRequestChanges');
+    this.socket.fromEvent('reSync').subscribe(async (res: any) => {
+      const { type, data } = res;
+      if(type && type === "INVENTORY_REQUEST") {
+        this.getIncomingInventoryRequestPaginated("pending", false);
+        this.getIncomingInventoryRequestPaginated("processing", false);
+        this.getIncomingInventoryRequestPaginated("in-transit", false);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -137,7 +148,7 @@ export class IncomingInventoryRequestComponent {
     this.getIncomingInventoryRequestPaginated(table as any)
   }
 
-  getIncomingInventoryRequestPaginated(table: "pending" | "processing" | "in-transit"){
+  getIncomingInventoryRequestPaginated(table: "pending" | "processing" | "in-transit", showProgress = true){
     try{
       const findIndex = this.filter[table].findIndex(x=>x.apiNotation === "requestStatus");
       if(findIndex >= 0) {
@@ -156,7 +167,9 @@ export class IncomingInventoryRequestComponent {
         });
       }
       this.isLoading = true;
-      this.spinner.show();
+      if(showProgress === true) {
+        this.spinner.show();
+      }
       this.inventoryRequestService.getByAdvanceSearch({
         order: this.order[table],
         columnDef: this.filter[table],

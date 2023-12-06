@@ -12,14 +12,17 @@ const goods_receipt_controller_1 = require("./goods-receipt.controller");
 const GoodsReceipt_1 = require("../../db/entities/GoodsReceipt");
 const goods_receipt_service_1 = require("../../services/goods-receipt.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const chat_gateway_1 = require("../../core/gateway/chat.gateway");
+const GatewayConnectedUsers_1 = require("../../db/entities/GatewayConnectedUsers");
+const gateway_connected_users_service_1 = require("../../services/gateway-connected-users.service");
 let GoodsReceiptModule = class GoodsReceiptModule {
 };
 GoodsReceiptModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([GoodsReceipt_1.GoodsReceipt])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([GoodsReceipt_1.GoodsReceipt, GatewayConnectedUsers_1.GatewayConnectedUsers])],
         controllers: [goods_receipt_controller_1.GoodsReceiptController],
-        providers: [goods_receipt_service_1.GoodsReceiptService],
-        exports: [goods_receipt_service_1.GoodsReceiptService],
+        providers: [goods_receipt_service_1.GoodsReceiptService, chat_gateway_1.ChatGateway, gateway_connected_users_service_1.GatewayConnectedUsersService],
+        exports: [goods_receipt_service_1.GoodsReceiptService, chat_gateway_1.ChatGateway, gateway_connected_users_service_1.GatewayConnectedUsersService],
     })
 ], GoodsReceiptModule);
 exports.GoodsReceiptModule = GoodsReceiptModule;

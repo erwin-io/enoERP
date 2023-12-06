@@ -53,6 +53,10 @@ export class GoodsReceipt {
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])
   createdByUser: Users;
 
+  @ManyToOne(() => Users, (users) => users.goodsReceipts2)
+  @JoinColumn([{ name: "LastUpdatedByUserId", referencedColumnName: "userId" }])
+  lastUpdatedByUser: Users;
+
   @ManyToOne(() => Supplier, (supplier) => supplier.goodsReceipts)
   @JoinColumn([{ name: "SupplierId", referencedColumnName: "supplierId" }])
   supplier: Supplier;

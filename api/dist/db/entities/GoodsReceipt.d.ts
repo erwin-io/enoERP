@@ -12,6 +12,7 @@ export declare class GoodsReceipt {
     active: boolean;
     notes: string | null;
     createdByUser: Users;
+    lastUpdatedByUser: Users;
     supplier: Supplier;
     warehouse: Warehouse;
     goodsReceiptItems: GoodsReceiptItem[];

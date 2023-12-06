@@ -11,10 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
 const typeorm_1 = require("typeorm");
+const GatewayConnectedUsers_1 = require("./GatewayConnectedUsers");
 const GoodsIssue_1 = require("./GoodsIssue");
 const GoodsReceipt_1 = require("./GoodsReceipt");
 const InventoryAdjustmentReport_1 = require("./InventoryAdjustmentReport");
 const InventoryRequest_1 = require("./InventoryRequest");
+const Notifications_1 = require("./Notifications");
 const SalesInvoice_1 = require("./SalesInvoice");
 const Access_1 = require("./Access");
 const Branch_1 = require("./Branch");
@@ -69,21 +71,41 @@ __decorate([
     __metadata("design:type", String)
 ], Users.prototype, "address", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => GatewayConnectedUsers_1.GatewayConnectedUsers, (gatewayConnectedUsers) => gatewayConnectedUsers.user),
+    __metadata("design:type", Array)
+], Users.prototype, "gatewayConnectedUsers", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => GoodsIssue_1.GoodsIssue, (goodsIssue) => goodsIssue.createdByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "goodsIssues", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsIssue_1.GoodsIssue, (goodsIssue) => goodsIssue.lastUpdatedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "goodsIssues2", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => GoodsReceipt_1.GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "goodsReceipts", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => GoodsReceipt_1.GoodsReceipt, (goodsReceipt) => goodsReceipt.lastUpdatedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "goodsReceipts2", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => InventoryAdjustmentReport_1.InventoryAdjustmentReport, (inventoryAdjustmentReport) => inventoryAdjustmentReport.reportedByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "inventoryAdjustmentReports", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.requestedByUser),
+    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.lastUpdatedByUser),
     __metadata("design:type", Array)
 ], Users.prototype, "inventoryRequests", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InventoryRequest_1.InventoryRequest, (inventoryRequest) => inventoryRequest.requestedByUser),
+    __metadata("design:type", Array)
+], Users.prototype, "inventoryRequests2", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Notifications_1.Notifications, (notifications) => notifications.user),
+    __metadata("design:type", Array)
+], Users.prototype, "notifications", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => SalesInvoice_1.SalesInvoice, (salesInvoice) => salesInvoice.createdByUser),
     __metadata("design:type", Array)
@@ -99,9 +121,9 @@ __decorate([
     __metadata("design:type", Branch_1.Branch)
 ], Users.prototype, "branch", void 0);
 Users = __decorate([
-    (0, typeorm_1.Index)("u_user", ["active", "userName"], { unique: true }),
     (0, typeorm_1.Index)("u_user_number", ["active", "mobileNumber"], { unique: true }),
     (0, typeorm_1.Index)("u_user_email", ["active", "email"], { unique: true }),
+    (0, typeorm_1.Index)("u_user", ["active", "userName"], { unique: true }),
     (0, typeorm_1.Index)("pk_users_1557580587", ["userId"], { unique: true }),
     (0, typeorm_1.Entity)("Users", { schema: "dbo" })
 ], Users);

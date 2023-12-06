@@ -170,7 +170,7 @@ export class WarehouseInventoryComponent {
             return {
               itemId: d.itemId,
               itemCode: d.item.itemCode,
-              itemName: d.item.itemDescription,
+              itemName: d.item.itemName,
               itemDescription: d.item.itemDescription,
               itemCategory: d.item.itemCategory.name,
               warehouse: d.warehouse.name,

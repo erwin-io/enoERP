@@ -15,6 +15,11 @@ const class_validator_1 = require("class-validator");
 const inventory_request_base_dto_1 = require("./inventory-request-base.dto");
 class UpdateInventoryRequestDto extends inventory_request_base_dto_1.DefaultInventoryRequestDto {
 }
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateInventoryRequestDto.prototype, "updatedByUserId", void 0);
 exports.UpdateInventoryRequestDto = UpdateInventoryRequestDto;
 class ProcessInventoryRequestStatusDto {
 }
@@ -36,6 +41,11 @@ __decorate([
     (0, class_validator_1.IsUppercase)(),
     __metadata("design:type", String)
 ], ProcessInventoryRequestStatusDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ProcessInventoryRequestStatusDto.prototype, "updatedByUserId", void 0);
 exports.ProcessInventoryRequestStatusDto = ProcessInventoryRequestStatusDto;
 class CloseInventoryRequestStatusDto {
 }
@@ -65,5 +75,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CloseInventoryRequestStatusDto.prototype, "notes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CloseInventoryRequestStatusDto.prototype, "updatedByUserId", void 0);
 exports.CloseInventoryRequestStatusDto = CloseInventoryRequestStatusDto;
 //# sourceMappingURL=inventory-request.update.dto.js.map

@@ -21,8 +21,8 @@ import { GoodsReceiptModule } from "./controller/goods-receipt/goods-receipt.mod
 import { SupplierModule } from "./controller/supplier/supplier.module";
 import { InventoryAdjustmentReportModule } from "./controller/inventory-adjustment-report/inventory-adjustment-report.module";
 import { GoodsIssueModule } from "./controller/goods-issue/goods-issue.module";
-import { SalesInvoiceService } from './services/sales-invoice.service';
 import { SalesInvoiceModule } from "./controller/sales-invoice/sales-invoice.module";
+import { NotificationsModule } from "./controller/notifications/notifications.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 @Module({
   imports: [
@@ -50,6 +50,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     SupplierModule,
     InventoryAdjustmentReportModule,
     SalesInvoiceModule,
+    NotificationsModule,
     FirebaseProviderModule,
   ],
   providers: [AppService],

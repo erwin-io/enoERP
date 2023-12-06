@@ -15,6 +15,7 @@ import { InventoryRequestTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 @Component({
   selector: 'app-inventory-request',
@@ -93,7 +94,8 @@ export class InventoryRequestComponent {
     private route: ActivatedRoute,
     private titleService: Title,
     private _location: Location,
-    public router: Router) {
+    public router: Router,
+    private socket: CustomSocket) {
       this.currentUserProfile = this.storageService.getLoginProfile();
       this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
@@ -106,6 +108,15 @@ export class InventoryRequestComponent {
     }
 
   ngOnInit(): void {
+    this.socket.removeListener('inventoryRequestChanges');
+    this.socket.fromEvent('reSync').subscribe(async (res: any) => {
+      const { type, data } = res;
+      if(type && type === "INVENTORY_REQUEST") {
+        this.getInventoryRequestPaginated("pending", false);
+        this.getInventoryRequestPaginated("processing", false);
+        this.getInventoryRequestPaginated("in-transit", false);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -137,7 +148,7 @@ export class InventoryRequestComponent {
     this.getInventoryRequestPaginated(table as any)
   }
 
-  async getInventoryRequestPaginated(table: "pending" | "processing" | "in-transit"){
+  async getInventoryRequestPaginated(table: "pending" | "processing" | "in-transit",  showProgress = true){
     try{
       let findIndex = this.filter[table].findIndex(x=>x.apiNotation === "branch.branchCode");
       if(findIndex >= 0) {
@@ -173,7 +184,9 @@ export class InventoryRequestComponent {
       }
 
       this.isLoading = true;
-      this.spinner.show();
+      if(showProgress === true) {
+        this.spinner.show();
+      }
       await this.inventoryRequestService.getByAdvanceSearch({
         order: this.order[table],
         columnDef: this.filter[table],

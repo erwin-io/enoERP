@@ -10,6 +10,7 @@ import { DataTableModule } from 'src/app/shared/data-table/data-table.module';
 import { GoodsIssueFormComponent } from './goods-issue-form/goods-issue-form.component';
 import { GoodsIssueDetailsComponent } from './goods-issue-details/goods-issue-details.component';
 import { GoodsIssueItemComponent } from './goods-issue-items/goods-issue-items.component';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 export const routes: Routes = [
   {
@@ -21,7 +22,9 @@ export const routes: Routes = [
     path: 'pending',
     pathMatch: 'full',
     component: GoodsIssueComponent,
-    data: { title: "Goods Issue", tab: 0 }
+    data: { title: "Goods Issue", tab: 0 },
+    resolve: ()=>  {
+    }
   },
   {
     path: 'completed',

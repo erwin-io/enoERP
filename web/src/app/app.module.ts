@@ -31,6 +31,15 @@ import { NoAccessComponent } from './pages/no-access/no-access.component';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { AppDateAdapter } from './shared/utility/app-date-adapter';
 import { SelectItemDialogComponent } from './shared/select-item-dialog/select-item-dialog.component';
+import { NotificationWindowComponent } from './shared/notification-window/notification-window.component';
+import { TimeagoClock, TimeagoFormatter, TimeagoIntl, TimeagoModule } from 'ngx-timeago';
+import { Observable, interval } from 'rxjs';
+export class MyClock extends TimeagoClock {
+  tick(then: number): Observable<number> {
+    return interval(1000);
+  }
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +50,8 @@ import { SelectItemDialogComponent } from './shared/select-item-dialog/select-it
     PageNotFoundComponent,
     OptionSheetComponent,
     NoAccessComponent,
-    SelectItemDialogComponent
+    SelectItemDialogComponent,
+    NotificationWindowComponent
   ],
   imports: [
     BrowserModule,
@@ -54,6 +64,9 @@ import { SelectItemDialogComponent } from './shared/select-item-dialog/select-it
     MaterialModule,
     ReactiveFormsModule,
     NgHttpLoaderModule.forRoot(),
+    TimeagoModule.forRoot({
+      formatter: {provide: TimeagoClock, useClass: MyClock },
+    })
   ],
   providers: [
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500} },

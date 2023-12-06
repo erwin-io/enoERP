@@ -174,7 +174,7 @@ export class InventoryMasterlistComponent {
             return {
               itemId: d.itemId,
               itemCode: d.item.itemCode,
-              itemName: d.item.itemDescription,
+              itemName: d.item.itemName,
               itemDescription: d.item.itemDescription,
               price: d.item.price,
               itemCategory: d.item.itemCategory.name,

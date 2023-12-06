@@ -29,6 +29,7 @@ import { MyErrorStateMatcher } from 'src/app/shared/form-validation/error-state.
 import { AccessPagesTableComponent } from '../../../../shared/access-pages-table/access-pages-table.component';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import { BranchService } from 'src/app/services/branch.service';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 @Component({
   selector: 'app-user-details',
@@ -469,5 +470,14 @@ export class UserDetailsComponent implements OnInit {
         dialogRef.close();
       }
     });
+  }
+
+  openChangePasswordDialog() {
+    const dialogRef = this.dialog.open(ChangePasswordComponent, {
+      maxWidth: '720px',
+      width: '720px',
+      disableClose: true,
+    });
+    dialogRef.componentInstance.userCode = this.userCode;
   }
 }

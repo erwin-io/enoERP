@@ -49,6 +49,12 @@ export class StorageService {
   saveSessionExpiredDate(value: any){
     return this.set('sessionExpiredDate', value);
   }
+  getUnreadNotificationCount(){
+    return this.get('unReadNotificationCount');
+  }
+  saveUnreadNotificationCount(value: any){
+    return this.set('unReadNotificationCount', value);
+  }
   private set(key: string, value: any){
     localStorage.setItem(key, value);
   }

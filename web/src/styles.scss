@@ -84,6 +84,12 @@ p, label, input, textarea, span, div, button {
         margin-left: 320px!important;
         width: calc(100% - 320px)!important;
     }
+    mat-icon {
+      .mat-badge-content {
+        font-size: 12px!important;
+        font-family: 'arial'!important;
+      }
+    }
 }
 
 .toolbar-item-spacer {

@@ -12,14 +12,23 @@ const inventory_request_controller_1 = require("./inventory-request.controller")
 const InventoryRequest_1 = require("../../db/entities/InventoryRequest");
 const inventory_request_service_1 = require("../../services/inventory-request.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const chat_gateway_1 = require("../../core/gateway/chat.gateway");
+const GatewayConnectedUsers_1 = require("../../db/entities/GatewayConnectedUsers");
+const gateway_connected_users_service_1 = require("../../services/gateway-connected-users.service");
 let InventoryRequestModule = class InventoryRequestModule {
 };
 InventoryRequestModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([InventoryRequest_1.InventoryRequest])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([InventoryRequest_1.InventoryRequest, GatewayConnectedUsers_1.GatewayConnectedUsers]),
+        ],
         controllers: [inventory_request_controller_1.InventoryRequestController],
-        providers: [inventory_request_service_1.InventoryRequestService],
-        exports: [inventory_request_service_1.InventoryRequestService],
+        providers: [
+            inventory_request_service_1.InventoryRequestService,
+            chat_gateway_1.ChatGateway,
+            gateway_connected_users_service_1.GatewayConnectedUsersService,
+        ],
+        exports: [inventory_request_service_1.InventoryRequestService, chat_gateway_1.ChatGateway, gateway_connected_users_service_1.GatewayConnectedUsersService],
     })
 ], InventoryRequestModule);
 exports.InventoryRequestModule = InventoryRequestModule;

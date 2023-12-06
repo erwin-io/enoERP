@@ -18,17 +18,21 @@ const typeorm_1 = require("@nestjs/typeorm");
 const branch_constant_1 = require("../common/constant/branch.constant");
 const inventory_request_rate_constant_1 = require("../common/constant/inventory-request-rate.constant");
 const inventory_request_constant_1 = require("../common/constant/inventory-request.constant");
+const notifications_constant_1 = require("../common/constant/notifications.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
+const chat_gateway_1 = require("../core/gateway/chat.gateway");
 const Branch_1 = require("../db/entities/Branch");
+const GatewayConnectedUsers_1 = require("../db/entities/GatewayConnectedUsers");
 const InventoryRequest_1 = require("../db/entities/InventoryRequest");
 const InventoryRequestItem_1 = require("../db/entities/InventoryRequestItem");
 const InventoryRequestRate_1 = require("../db/entities/InventoryRequestRate");
 const Item_1 = require("../db/entities/Item");
 const ItemBranch_1 = require("../db/entities/ItemBranch");
 const ItemWarehouse_1 = require("../db/entities/ItemWarehouse");
+const Notifications_1 = require("../db/entities/Notifications");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
@@ -76,8 +80,9 @@ const deafaultInventoryRequestSelect = {
     fromWarehouse: true,
 };
 let InventoryRequestService = class InventoryRequestService {
-    constructor(inventoryRequestRepo) {
+    constructor(inventoryRequestRepo, chatGateway) {
         this.inventoryRequestRepo = inventoryRequestRepo;
+        this.chatGateway = chatGateway;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -249,6 +254,35 @@ let InventoryRequestService = class InventoryRequestService {
                 },
             });
             delete inventoryRequest.requestedByUser.password;
+            let getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                where: {
+                    userId: (0, typeorm_2.Not)(inventoryRequest.requestedByUser.userId),
+                    branch: {
+                        isMainBranch: true,
+                        active: true,
+                    },
+                    access: {
+                        active: true,
+                    },
+                    active: true,
+                },
+                relations: {
+                    branch: true,
+                    access: true,
+                },
+            });
+            getUsersToBeNotified = getUsersToBeNotified
+                .map((x) => {
+                return {
+                    user: x,
+                    access: x.access.accessPages,
+                };
+            })
+                .filter((x) => x.access.length > 0 &&
+                x.access.some((x) => x.page === "Inventory Request"))
+                .map((x) => x.user);
+            await this.logNotification(getUsersToBeNotified, inventoryRequest, entityManager, notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_CREATED, inventoryRequest.description);
+            await this.chatGateway.reSync("INVENTORY_REQUEST", null);
             return inventoryRequest;
         });
     }
@@ -274,6 +308,16 @@ let InventoryRequestService = class InventoryRequestService {
                 throw Error("Not allowed to update request, the request was already being - processed");
             }
             inventoryRequest.description = dto.description;
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            inventoryRequest.lastUpdatedByUser = lastUpdatedByUser;
             const timestamp = await entityManager
                 .query(timestamp_constant_1.CONST_QUERYCURRENT_TIMESTAMP)
                 .then((res) => {
@@ -408,9 +452,14 @@ let InventoryRequestService = class InventoryRequestService {
                         },
                     },
                     fromWarehouse: true,
+                    lastUpdatedByUser: {
+                        branch: true,
+                    },
                 },
             });
             delete inventoryRequest.requestedByUser.password;
+            delete inventoryRequest.lastUpdatedByUser.password;
+            await this.syncRealTime(inventoryRequest);
             return inventoryRequest;
         });
     }
@@ -527,6 +576,16 @@ let InventoryRequestService = class InventoryRequestService {
                 return res[0]["timestamp"];
             });
             inventoryRequest.dateLastUpdated = timestamp;
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            inventoryRequest.lastUpdatedByUser = lastUpdatedByUser;
             inventoryRequest = await entityManager.save(InventoryRequest_1.InventoryRequest, inventoryRequest);
             inventoryRequest = await entityManager.findOne(InventoryRequest_1.InventoryRequest, {
                 where: {
@@ -534,6 +593,9 @@ let InventoryRequestService = class InventoryRequestService {
                 },
                 relations: {
                     requestedByUser: {
+                        branch: true,
+                    },
+                    lastUpdatedByUser: {
                         branch: true,
                     },
                     branch: true,
@@ -546,6 +608,7 @@ let InventoryRequestService = class InventoryRequestService {
                 },
             });
             delete inventoryRequest.requestedByUser.password;
+            delete inventoryRequest.lastUpdatedByUser.password;
             if (status === "COMPLETED") {
                 inventoryRequest.inventoryRequestItems = await entityManager.find(InventoryRequestItem_1.InventoryRequestItem, {
                     where: {
@@ -597,14 +660,88 @@ let InventoryRequestService = class InventoryRequestService {
                     await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
             }
+            if (status !== "CANCELLED") {
+                const getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                    where: {
+                        userId: status === "COMPLETED"
+                            ? (0, typeorm_2.Not)(inventoryRequest.requestedByUser.userId)
+                            : inventoryRequest.requestedByUser.userId,
+                        access: {
+                            active: true,
+                        },
+                        branch: {
+                            isMainBranch: status === "COMPLETED" ? true : false,
+                        },
+                        active: true,
+                    },
+                    relations: {
+                        branch: true,
+                        access: true,
+                    },
+                });
+                let title = "Inventory Request";
+                let description = "Inventory request description";
+                if (status === "COMPLETED") {
+                    title = notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_COMPLETED;
+                    description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now completed`;
+                }
+                else if (status === "REJECTED") {
+                    title = notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_REJECTED;
+                    description = `Inventory Request #${inventoryRequest.inventoryRequestCode} was rejected`;
+                }
+                else if (status === "PROCESSING") {
+                    title = notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_PROCESSING;
+                    description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now being process`;
+                }
+                else if (status === "IN-TRANSIT") {
+                    title = notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_IN_TRANSIT;
+                    description = `Inventory Request #${inventoryRequest.inventoryRequestCode} is now in-transit`;
+                }
+                await this.logNotification(getUsersToBeNotified, inventoryRequest, entityManager, title, description);
+                await this.syncRealTime(inventoryRequest);
+            }
             return inventoryRequest;
         });
+    }
+    async logNotification(users, inventoryRequest, entityManager, title, description) {
+        const notifications = [];
+        for (const user of users) {
+            notifications.push({
+                title,
+                description,
+                type: notifications_constant_1.NOTIF_TYPE.INVENTORY_REQUEST.toString(),
+                referenceId: inventoryRequest.inventoryRequestCode.toString(),
+                isRead: false,
+                user: user,
+            });
+        }
+        await entityManager.save(Notifications_1.Notifications, notifications);
+        await this.chatGateway.sendNotif(users.map((x) => x.userId), title, description);
+    }
+    async syncRealTime(inventoryRequest) {
+        const users = await this.inventoryRequestRepo.manager.find(GatewayConnectedUsers_1.GatewayConnectedUsers, {
+            where: {
+                user: {
+                    userId: (0, typeorm_2.Not)(inventoryRequest.lastUpdatedByUser.userId),
+                    active: true,
+                    branch: {
+                        isMainBranch: true,
+                        active: true,
+                    },
+                },
+            },
+            relations: {
+                user: true,
+            },
+        });
+        await this.chatGateway.inventoryRequestChanges(users.map((x) => x.user.userId), inventoryRequest);
     }
 };
 InventoryRequestService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(InventoryRequest_1.InventoryRequest)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        chat_gateway_1.ChatGateway])
 ], InventoryRequestService);
 exports.InventoryRequestService = InventoryRequestService;
 //# sourceMappingURL=inventory-request.service.js.map

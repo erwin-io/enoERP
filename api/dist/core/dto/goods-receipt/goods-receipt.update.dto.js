@@ -15,6 +15,11 @@ const class_validator_1 = require("class-validator");
 const goods_receipt_base_dto_1 = require("./goods-receipt-base.dto");
 class UpdateGoodsReceiptDto extends goods_receipt_base_dto_1.DefaultGoodsReceiptDto {
 }
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateGoodsReceiptDto.prototype, "updatedByUserId", void 0);
 exports.UpdateGoodsReceiptDto = UpdateGoodsReceiptDto;
 class UpdateGoodsReceiptStatusDto {
 }
@@ -36,5 +41,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], UpdateGoodsReceiptStatusDto.prototype, "notes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateGoodsReceiptStatusDto.prototype, "updatedByUserId", void 0);
 exports.UpdateGoodsReceiptStatusDto = UpdateGoodsReceiptStatusDto;
 //# sourceMappingURL=goods-receipt.update.dto.js.map

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GOODSISSUE_ERROR_NOT_FOUND } from "src/common/constant/goods-issue.constant";
+import { NOTIF_TITLE, NOTIF_TYPE } from "src/common/constant/notifications.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { WAREHOUSE_ERROR_NOT_FOUND } from "src/common/constant/warehouse.constant";
@@ -13,13 +14,17 @@ import {
   UpdateGoodsIssueDto,
   UpdateGoodsIssueStatusDto,
 } from "src/core/dto/goods-issue/goods-issue.update.dto";
+import { ChatGateway } from "src/core/gateway/chat.gateway";
+import { PageAccess } from "src/core/models/api-response.model";
+import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
 import { GoodsIssue } from "src/db/entities/GoodsIssue";
 import { GoodsIssueItem } from "src/db/entities/GoodsIssueItem";
 import { Item } from "src/db/entities/Item";
 import { ItemWarehouse } from "src/db/entities/ItemWarehouse";
+import { Notifications } from "src/db/entities/Notifications";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
-import { Repository } from "typeorm";
+import { EntityManager, Not, Repository } from "typeorm";
 
 const deafaultGoodsIssueSelect = {
   goodsIssueId: true,
@@ -66,7 +71,8 @@ const deafaultGoodsIssueSelect = {
 export class GoodsIssueService {
   constructor(
     @InjectRepository(GoodsIssue)
-    private readonly goodsIssueRepo: Repository<GoodsIssue>
+    private readonly goodsIssueRepo: Repository<GoodsIssue>,
+    private chatGateway: ChatGateway
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -232,6 +238,48 @@ export class GoodsIssueService {
           },
         });
         delete goodsIssue.createdByUser.password;
+
+        let getUsersToBeNotified = await entityManager.find(Users, {
+          where: {
+            userId: Not(goodsIssue.createdByUser.userId),
+            branch: {
+              isMainBranch: true,
+              active: true,
+            },
+            access: {
+              active: true,
+            },
+            active: true,
+          },
+          relations: {
+            branch: true,
+            access: true,
+          },
+        });
+        getUsersToBeNotified = getUsersToBeNotified
+          .map((x) => {
+            return {
+              user: x,
+              access: x.access.accessPages as PageAccess[],
+            };
+          })
+          .filter(
+            (x) =>
+              x.access.length > 0 &&
+              x.access.some((x) => x.page === "Goods Issue") &&
+              x.access.some(
+                (x) => x.rights && x.rights.some((r) => r === "Approval")
+              )
+          )
+          .map((x) => x.user);
+        await this.logNotification(
+          getUsersToBeNotified,
+          goodsIssue,
+          entityManager,
+          NOTIF_TITLE.GOODS_ISSUE_CREATED,
+          goodsIssue.description
+        );
+        await this.chatGateway.reSync("GOODS_ISSUE", null);
         return goodsIssue;
       }
     );
@@ -269,6 +317,17 @@ export class GoodsIssueService {
             "Not allowed to update goods issue, goods issue was already being - processed"
           );
         }
+
+        const lastUpdatedByUser = await entityManager.findOne(Users, {
+          where: {
+            userId: dto.updatedByUserId,
+            active: true,
+          },
+        });
+        if (!lastUpdatedByUser) {
+          throw Error(USER_ERROR_USER_NOT_FOUND);
+        }
+        goodsIssue.lastUpdatedByUser = lastUpdatedByUser;
 
         goodsIssue.description = dto.description;
         goodsIssue.issueType = dto.issueType;
@@ -412,6 +471,8 @@ export class GoodsIssueService {
           },
         });
         delete goodsIssue.createdByUser.password;
+        delete goodsIssue.lastUpdatedByUser.password;
+        await this.syncRealTime(goodsIssue);
         return goodsIssue;
       }
     );
@@ -481,6 +542,18 @@ export class GoodsIssueService {
             return res[0]["timestamp"];
           });
         goodsIssue.dateLastUpdated = timestamp;
+
+        const lastUpdatedByUser = await entityManager.findOne(Users, {
+          where: {
+            userId: dto.updatedByUserId,
+            active: true,
+          },
+        });
+        if (!lastUpdatedByUser) {
+          throw Error(USER_ERROR_USER_NOT_FOUND);
+        }
+        goodsIssue.lastUpdatedByUser = lastUpdatedByUser;
+
         goodsIssue = await entityManager.save(GoodsIssue, goodsIssue);
         goodsIssue = await entityManager.findOne(GoodsIssue, {
           where: {
@@ -489,6 +562,9 @@ export class GoodsIssueService {
           relations: {
             inventoryAdjustmentReports: true,
             createdByUser: {
+              branch: true,
+            },
+            lastUpdatedByUser: {
               branch: true,
             },
             warehouse: true,
@@ -500,6 +576,7 @@ export class GoodsIssueService {
           },
         });
         delete goodsIssue.createdByUser.password;
+        delete goodsIssue.lastUpdatedByUser.password;
         if (status === "CANCELLED" || status === "REJECTED") {
           for (const item of goodsIssue.goodsIssueItems) {
             let itemWarehouse = await entityManager.findOne(ItemWarehouse, {
@@ -519,8 +596,106 @@ export class GoodsIssueService {
             );
           }
         }
+        let getUsersToBeNotified = await entityManager.find(Users, {
+          where: {
+            userId: goodsIssue.createdByUser.userId,
+            access: {
+              active: true,
+            },
+            active: true,
+          },
+          relations: {
+            branch: true,
+            access: true,
+          },
+        });
+        getUsersToBeNotified = getUsersToBeNotified
+          .map((x) => {
+            return {
+              user: x,
+              access: x.access.accessPages as PageAccess[],
+            };
+          })
+          .filter(
+            (x) =>
+              x.access.length > 0 &&
+              x.access.some((x) => x.page === "Goods Issue") &&
+              x.access.some(
+                (x) => x.rights && x.rights.some((r) => r === "Approval")
+              )
+          )
+          .map((x) => x.user);
+        let title = "Goods issue";
+        let description = "Goods issue description";
+        if (status === "COMPLETED") {
+          title = NOTIF_TITLE.GOODS_ISSUE_COMPLETED;
+          description = `Goods issue #${goodsIssue.goodsIssueCode} is now completed`;
+        } else if (status === "REJECTED") {
+          title = NOTIF_TITLE.GOODS_ISSUE_REJECTED;
+          description = `Goods issue #${goodsIssue.goodsIssueCode} was rejected`;
+        }
+        await this.logNotification(
+          getUsersToBeNotified,
+          goodsIssue,
+          entityManager,
+          title,
+          description
+        );
+        await this.syncRealTime(goodsIssue);
         return goodsIssue;
       }
+    );
+  }
+
+  async logNotification(
+    users: Users[],
+    goodsIssue: GoodsIssue,
+    entityManager: EntityManager,
+    title: string,
+    description: string
+  ) {
+    const notifications: Notifications[] = [];
+
+    for (const user of users) {
+      notifications.push({
+        title,
+        description,
+        type: NOTIF_TYPE.GOODS_ISSUE.toString(),
+        referenceId: goodsIssue.goodsIssueCode.toString(),
+        isRead: false,
+        user: user,
+      } as Notifications);
+    }
+    await entityManager.save(Notifications, notifications);
+    await this.chatGateway.sendNotif(
+      users.map((x) => x.userId),
+      title,
+      description
+    );
+  }
+
+  async syncRealTime(goodsIssue: GoodsIssue) {
+    const users = await this.goodsIssueRepo.manager.find(
+      GatewayConnectedUsers,
+      {
+        where: {
+          user: {
+            userId: Not(goodsIssue.lastUpdatedByUser.userId),
+            active: true,
+            branch: {
+              isMainBranch: true,
+              active: true,
+            },
+          },
+        },
+        relations: {
+          user: true,
+        },
+      }
+    );
+    await this.chatGateway.goodsIssueChanges(
+      users.map((x) => x.user.userId),
+      goodsIssue
     );
   }
 }

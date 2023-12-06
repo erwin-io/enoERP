@@ -6,16 +6,21 @@
     <img id="banner" src="../assets/img/banner.png">
     <span id="title">{{title}}</span>
     <span class="toolbar-item-spacer"></span>
-    <!-- <button mat-icon-button matTooltip="Notifications">
-        <mat-icon>notifications</mat-icon>
-    </button> -->
-    <button mat-icon-button matTooltip="My Account" [matMenuTriggerFor]="userAccountMenu">
+    <button mat-icon-button matTooltip="Notifications" (click)="notification.toggle();getNotifCount()">
+        <mat-icon *ngIf="unReadNotificationCount > 0; else noBadgeNotifIcon" matBadge="{{
+          (unReadNotificationCount > 99 ? '99+' : unReadNotificationCount)
+        }}" matBadgeColor="warn">notifications</mat-icon>
+        <ng-template #noBadgeNotifIcon>
+          <mat-icon matBadgeColor="warn">notifications</mat-icon>
+        </ng-template>
+    </button>
+    <button mat-icon-button matTooltip="My profile" [matMenuTriggerFor]="userAccountMenu">
         <mat-icon>account_circle</mat-icon>
     </button>
     <mat-menu #userAccountMenu [overlapTrigger]="false" yPosition="below">
-        <!-- <button mat-menu-item routerLink="/">
-            <mat-icon>person</mat-icon><span>My Account</span>
-        </button> -->
+        <button mat-menu-item routerLink="/profile/">
+            <mat-icon>person</mat-icon><span>My profile</span>
+        </button>
         <mat-divider></mat-divider>
         <button mat-menu-item (click)="signOut()">
             <mat-icon>exit_to_app</mat-icon>Logout
@@ -144,3 +149,5 @@
           </div>
     </mat-sidenav-content>
 </mat-sidenav-container>
+
+<app-notification-window #notification (readNotif)="getNotifCount()"></app-notification-window>

@@ -5,6 +5,11 @@ import { Spinkit, SpinnerVisibilityService } from 'ng-http-loader';
 import { filter } from 'rxjs';
 import { RouteService } from './services/route.service';
 import { AppConfigService } from './services/app-config.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import io from 'socket.io-client';
+import { environment } from 'src/environments/environment';
+import { CustomSocket } from './sockets/custom-socket.sockets';
+import { StorageService } from './services/storage.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,12 +18,54 @@ import { AppConfigService } from './services/app-config.service';
 export class AppComponent {
   public spinkit = Spinkit;
   title;
+  grantNotif = false;
   constructor(
     private titleService:Title,
     private spinner: SpinnerVisibilityService,
     private router: Router,
+    private snackBar:MatSnackBar,
     private appconfig: AppConfigService,
-    private routeService: RouteService) {
+    private storageService: StorageService,
+    private routeService: RouteService,
+    private socket: CustomSocket) {
+      if(this.storageService.getLoginProfile()?.userId) {
+        this.socket.init();
+      }
+      this.socket.fromEvent('notifAdded').subscribe(res => {
+        const { userId, title, description, unRead } = res as any;
+        if(this.grantNotif) {
+          const notify = new Notification(title, {
+            body: description,
+            icon: '../assets/img/banner.png'
+          });
+        }
+        else {
+          this.snackBar.open(title);
+        }
+        this.storageService.saveUnreadNotificationCount(unRead);
+      });
+      if (!window.Notification) {
+        console.log('Browser does not support notifications.')
+      } else {
+        // check if permission is already granted
+        if (Notification.permission === 'granted') {
+          // show notification here
+          this.grantNotif = true;
+        } else {
+          // request permission from the user
+          Notification.requestPermission()
+            .then(function (p) {
+              if (p === 'granted') {
+                // show notification here
+              } else {
+                console.log('User blocked notifications.')
+              }
+            })
+            .catch(function (err) {
+              console.error(err)
+            })
+        }
+      }
     this.setupTitleListener();
   }
   private setupTitleListener() {
@@ -32,7 +79,7 @@ export class AppComponent {
       this.navigationInterceptor(e);
     });
   }
-  
+
   getDeepestChildSnapshot(snapshot: ActivatedRouteSnapshot) {
     let deepestChild = snapshot.firstChild;
     while (deepestChild?.firstChild) {

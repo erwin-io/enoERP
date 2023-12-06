@@ -19,6 +19,7 @@ import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { Access, AccessPages } from 'src/app/model/access';
 import { SupplierService } from 'src/app/services/supplier.service';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 export class UpdateStatusModel {
   status: "REJECTED"
   | "COMPLETED"
@@ -82,7 +83,8 @@ export class GoodsReceiptDetailsComponent {
     private storageService: StorageService,
     private route: ActivatedRoute,
     public router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private socket: CustomSocket
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     const { isNew, edit } = this.route.snapshot.data;
@@ -106,6 +108,16 @@ export class GoodsReceiptDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.socket.fromEvent('goodsReceiptChanges').subscribe(async res => {
+      const newChanges = res as GoodsReceipt;
+      this.snackBar.open("Someone has updated this document.", "",{
+        announcementMessage: "Someone has updated this document.",
+        verticalPosition: "top"
+      });
+      if(this.isReadOnly) {
+        this.initDetails();
+      }
+    });
   }
 
   async ngAfterViewInit() {
@@ -116,6 +128,7 @@ export class GoodsReceiptDetailsComponent {
     if(!this.isNew) {
       this.initDetails();
     } else {
+      this.isLoading = false;
       this.canAddEdit = true;
     }
 
@@ -282,6 +295,10 @@ export class GoodsReceiptDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
+        params = {
+          ...params,
+          updatedByUserId: this.currentUserProfile.userId,
+        } as any;
         let res = await this.goodsReceiptService.updateStatus(this.goodsReceiptCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
@@ -352,6 +369,10 @@ export class GoodsReceiptDetailsComponent {
           }
           res = await this.goodsReceiptService.create(formData).toPromise();
         } else {
+          formData = {
+            ...formData,
+            updatedByUserId: this.currentUserProfile.userId,
+          }
           res = await this.goodsReceiptService.update(this.goodsReceiptCode, formData).toPromise();
         }
         if (res.success) {

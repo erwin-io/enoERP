@@ -122,7 +122,11 @@
       fxLayout="column"
       fxLayout.gt-sm="row"
       style="gap: 16px">
-      <mat-form-field class="example-full-width" appearance="outline" style="position: relative!important;">
+      <mat-form-field
+        class="example-full-width"
+        appearance="outline"
+        style="position: relative!important;"
+        (click)="!isReadOnly && isOptionsItemCategoryLoading = true;initItemCategoryOptions()">
         <mat-label>Item category</mat-label>
         <input type="text"
                placeholder="Select item category"
@@ -131,6 +135,7 @@
                [formControl]="itemCategorySearchCtrl"
                [matAutocomplete]="auto"
                (focusout)="mapSearchItemCategory();"
+               [value]="item?.itemCategory?.name"
                #itemCategorySearchInput
                (input)="isOptionsItemCategoryLoading = true;mapSearchItemCategory()">
         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)" (optionSelected)="form.controls['itemCategoryId'].setValue($event.option.value)">

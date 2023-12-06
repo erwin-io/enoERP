@@ -11,6 +11,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DataTableModule } from "../../../shared/data-table/data-table.module";
 import { UsersComponent } from './users.component';
 import { AccessPagesTableModule } from 'src/app/shared/access-pages-table/access-pages-table.module';
+import { ChangePasswordComponent } from './user-details/change-password/change-password.component';
 
 export const routes: Routes = [
   {
@@ -37,7 +38,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-    declarations: [UsersComponent, UserDetailsComponent],
+    declarations: [UsersComponent, UserDetailsComponent, ChangePasswordComponent],
     imports: [
         CommonModule,
         FlexLayoutModule,

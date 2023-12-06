@@ -15,6 +15,11 @@ const class_validator_1 = require("class-validator");
 const goods_issue_base_dto_1 = require("./goods-issue-base.dto");
 class UpdateGoodsIssueDto extends goods_issue_base_dto_1.DefaultGoodsIssueDto {
 }
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateGoodsIssueDto.prototype, "updatedByUserId", void 0);
 exports.UpdateGoodsIssueDto = UpdateGoodsIssueDto;
 class UpdateGoodsIssueStatusDto {
 }
@@ -36,5 +41,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], UpdateGoodsIssueStatusDto.prototype, "notes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateGoodsIssueStatusDto.prototype, "updatedByUserId", void 0);
 exports.UpdateGoodsIssueStatusDto = UpdateGoodsIssueStatusDto;
 //# sourceMappingURL=goods-issue.update.dto.js.map

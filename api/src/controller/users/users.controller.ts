@@ -16,7 +16,10 @@ import {
 import { UpdateUserResetPasswordDto } from "src/core/dto/auth/reset-password.dto";
 import { PaginationParamsDto } from "src/core/dto/pagination-params.dto";
 import { CreateUserDto } from "src/core/dto/user/users.create.dto";
-import { UpdateUserDto } from "src/core/dto/user/users.update.dto";
+import {
+  UpdateUserDto,
+  UpdateUserProfileDto,
+} from "src/core/dto/user/users.update.dto";
 import { ApiResponseModel } from "src/core/models/api-response.model";
 import { Users } from "src/db/entities/Users";
 import { UsersService } from "src/services/users.service";
@@ -66,6 +69,28 @@ export class UsersController {
       res.data = await this.userService.create(createUserDto);
       res.success = true;
       res.message = `User  ${SAVING_SUCCESS}`;
+      return res;
+    } catch (e) {
+      res.success = false;
+      res.message = e.message !== undefined ? e.message : e;
+      return res;
+    }
+  }
+
+  @Put("/updateProfile/:userCode")
+  //   @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @Param("userCode") userCode: string,
+    @Body() updateUserProfileDto: UpdateUserProfileDto
+  ) {
+    const res: ApiResponseModel<Users> = {} as any;
+    try {
+      res.data = await this.userService.updateProfile(
+        userCode,
+        updateUserProfileDto
+      );
+      res.success = true;
+      res.message = `User ${UPDATE_SUCCESS}`;
       return res;
     } catch (e) {
       res.success = false;

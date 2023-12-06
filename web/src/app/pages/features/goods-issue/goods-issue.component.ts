@@ -15,6 +15,7 @@ import { GoodsIssueTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
+import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 @Component({
   selector: 'app-goods-issue',
@@ -104,7 +105,8 @@ export class GoodsIssueComponent {
     private route: ActivatedRoute,
     private titleService: Title,
     private _location: Location,
-    public router: Router) {
+    public router: Router,
+    private socket: CustomSocket) {
       this.currentUserProfile = this.storageService.getLoginProfile();
       this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
@@ -117,6 +119,16 @@ export class GoodsIssueComponent {
     }
 
   ngOnInit(): void {
+    this.socket.removeListener('goodsIssueChanges');
+    this.socket.fromEvent('reSync').subscribe(async (res: any) => {
+      const { type, data } = res;
+      if(type && type === "GOODS_ISSUE") {
+        this.getGoodsIssuePaginated("pending", false);
+        this.getGoodsIssuePaginated("completed", false);
+        this.getGoodsIssuePaginated("rejected", false);
+        this.getGoodsIssuePaginated("cancelled", false);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -149,7 +161,7 @@ export class GoodsIssueComponent {
     this.getGoodsIssuePaginated(table as any)
   }
 
-  async getGoodsIssuePaginated(table: "pending" | "completed" | "rejected" | "cancelled"){
+  async getGoodsIssuePaginated(table: "pending" | "completed" | "rejected" | "cancelled", showProgress = true){
     try{
       const findIndex = this.filter[table].findIndex(x=>x.apiNotation === "status");
       if(findIndex >= 0) {
@@ -169,7 +181,9 @@ export class GoodsIssueComponent {
       }
 
       this.isLoading = true;
-      this.spinner.show();
+      if(showProgress === true) {
+        this.spinner.show();
+      }
       await this.goodsIssueService.getByAdvanceSearch({
         order: this.order[table],
         columnDef: this.filter[table],

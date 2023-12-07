@@ -118,6 +118,7 @@ export class CustomSocket extends Socket {
     super({
       url: environment.apiBaseUrl.replace('/api/v1', ''),
       options: {
+        transports: environment.production ? ["websocket"] : null,
         extraHeaders: {
           userId: storage.getLoginProfile()?.userId,
         }

@@ -1,10 +1,12 @@
 import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { Notifications } from "src/db/entities/Notifications";
 import { Repository } from "typeorm";
+import { PusherService } from "./pusher.service";
 export declare class NotificationsService {
     private readonly notificationsRepo;
     private chatGateway;
-    constructor(notificationsRepo: Repository<Notifications>, chatGateway: ChatGateway);
+    private pusherService;
+    constructor(notificationsRepo: Repository<Notifications>, chatGateway: ChatGateway, pusherService: PusherService);
     getPagination({ pageSize, pageIndex, order, columnDef }: {
         pageSize: any;
         pageIndex: any;

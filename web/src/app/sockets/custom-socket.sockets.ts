@@ -119,8 +119,13 @@ export class CustomSocket extends Socket {
       url: environment.apiBaseUrl.replace('/api/v1', ''),
       options: {
         path: '/socket.io',
-        secure: environment.production,
-        transports: environment.production ? ["websocket"] : null,
+        secure: true,
+        transports: ['websocket',
+        'flashsocket',
+        'htmlfile',
+        'xhr-polling',
+        'jsonp-polling',
+        'polling'],
         extraHeaders: {
           userId: storage.getLoginProfile()?.userId,
         }

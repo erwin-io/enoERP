@@ -34,6 +34,7 @@ import { SelectItemDialogComponent } from './shared/select-item-dialog/select-it
 import { NotificationWindowComponent } from './shared/notification-window/notification-window.component';
 import { TimeagoClock, TimeagoFormatter, TimeagoIntl, TimeagoModule } from 'ngx-timeago';
 import { Observable, interval } from 'rxjs';
+import { PusherService } from './services/pusher.service';
 export class MyClock extends TimeagoClock {
   tick(then: number): Observable<number> {
     return interval(1000);
@@ -69,6 +70,7 @@ export class MyClock extends TimeagoClock {
     })
   ],
   providers: [
+    PusherService,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500} },
     {
       provide : APP_INITIALIZER,

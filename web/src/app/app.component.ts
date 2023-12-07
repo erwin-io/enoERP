@@ -10,6 +10,7 @@ import io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { CustomSocket } from './sockets/custom-socket.sockets';
 import { StorageService } from './services/storage.service';
+import { PusherService } from './services/pusher.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,7 +28,8 @@ export class AppComponent {
     private appconfig: AppConfigService,
     private storageService: StorageService,
     private routeService: RouteService,
-    private socket: CustomSocket) {
+    private socket: CustomSocket,
+    private pusher: PusherService) {
       if(this.storageService.getLoginProfile()?.userId) {
         this.socket.init();
       }
@@ -67,6 +69,16 @@ export class AppComponent {
         }
       }
     this.setupTitleListener();
+  }
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+
+    const channel = this.pusher.init('test');
+    channel.bind('test', ({ userId, title, description }) => {
+      // this.snackBar.open(title);
+      console.log("pusher worked! ", title);
+    });
   }
   private setupTitleListener() {
     this.router.events.pipe(filter(e => e instanceof ResolveEnd)).subscribe((e: any) => {

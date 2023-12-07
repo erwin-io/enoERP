@@ -33,7 +33,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     poolSize?: number;
     synchronize?: boolean;
@@ -87,7 +87,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     poolSize?: number;
     synchronize?: boolean;
@@ -136,7 +136,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     poolSize?: number;
     synchronize?: boolean;
@@ -182,7 +182,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -267,7 +267,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -318,7 +318,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -365,7 +365,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     poolSize?: number;
     synchronize?: boolean;
@@ -409,7 +409,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -448,7 +448,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -482,7 +482,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -520,7 +520,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -614,7 +614,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     poolSize?: number;
     synchronize?: boolean;
@@ -659,7 +659,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -711,7 +711,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -744,7 +744,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -786,7 +786,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -822,7 +822,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;
@@ -877,7 +877,7 @@ export declare const getDbConnectionOptions: (connectionName?: string) => Promis
     metadataTableName?: string;
     namingStrategy?: import("typeorm").NamingStrategyInterface;
     logging?: import("typeorm").LoggerOptions;
-    logger?: "advanced-console" | "simple-console" | "file" | "debug" | import("typeorm").Logger;
+    logger?: "debug" | "advanced-console" | "simple-console" | "file" | import("typeorm").Logger;
     maxQueryExecutionTime?: number;
     synchronize?: boolean;
     migrationsRun?: boolean;

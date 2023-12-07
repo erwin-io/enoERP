@@ -24,6 +24,7 @@ import { GoodsIssueModule } from "./controller/goods-issue/goods-issue.module";
 import { SalesInvoiceModule } from "./controller/sales-invoice/sales-invoice.module";
 import { NotificationsModule } from "./controller/notifications/notifications.module";
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
+
 @Module({
   imports: [
     ConfigModule.forRoot({

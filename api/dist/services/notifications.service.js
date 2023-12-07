@@ -70,7 +70,7 @@ let NotificationsService = class NotificationsService {
         });
     }
     async test({ userId, title, description }) {
-        this.pusherService.sendNotif(userId, title, description);
+        this.pusherService.sendNotif([userId], title, description);
     }
 };
 NotificationsService = __decorate([

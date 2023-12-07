@@ -3,14 +3,12 @@ import { GoodsReceiptController } from "./goods-receipt.controller";
 import { GoodsReceipt } from "src/db/entities/GoodsReceipt";
 import { GoodsReceiptService } from "src/services/goods-receipt.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
-import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
-import { GatewayConnectedUsersService } from "src/services/gateway-connected-users.service";
+import { PusherService } from "src/services/pusher.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GoodsReceipt, GatewayConnectedUsers])],
+  imports: [TypeOrmModule.forFeature([GoodsReceipt])],
   controllers: [GoodsReceiptController],
-  providers: [GoodsReceiptService, ChatGateway, GatewayConnectedUsersService],
-  exports: [GoodsReceiptService, ChatGateway, GatewayConnectedUsersService],
+  providers: [GoodsReceiptService, PusherService],
+  exports: [GoodsReceiptService, PusherService],
 })
 export class GoodsReceiptModule {}

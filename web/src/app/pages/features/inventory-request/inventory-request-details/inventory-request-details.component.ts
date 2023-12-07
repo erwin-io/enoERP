@@ -17,7 +17,7 @@ import { InventoryRequestItemComponent } from '../inventory-request-items/invent
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
-import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
+import { PusherService } from 'src/app/services/pusher.service';
 export class UpdateStatusModel {
   status: "CANCELLED";
   notes: string;
@@ -68,7 +68,7 @@ export class InventoryRequestDetailsComponent {
     private route: ActivatedRoute,
     public router: Router,
     private formBuilder: FormBuilder,
-    private socket: CustomSocket
+    private pusherService: PusherService
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     const { isNew, edit } = this.route.snapshot.data;
@@ -92,7 +92,8 @@ export class InventoryRequestDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.socket.fromEvent('inventoryRequestChanges').subscribe(async res => {
+    const channel = this.pusherService.init(this.currentUserProfile.userId);
+    channel.bind('inventoryRequestChanges', (res: any) => {
       this.snackBar.open("Someone has updated this document.", "",{
         announcementMessage: "Someone has updated this document.",
         verticalPosition: "top"

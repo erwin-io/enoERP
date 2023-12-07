@@ -1,13 +1,13 @@
 import { CreateGoodsReceiptDto } from "src/core/dto/goods-receipt/goods-receipt.create.dto";
 import { UpdateGoodsReceiptDto, UpdateGoodsReceiptStatusDto } from "src/core/dto/goods-receipt/goods-receipt.update.dto";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { GoodsReceipt } from "src/db/entities/GoodsReceipt";
 import { Users } from "src/db/entities/Users";
 import { EntityManager, Repository } from "typeorm";
+import { PusherService } from "./pusher.service";
 export declare class GoodsReceiptService {
     private readonly goodsReceiptRepo;
-    private chatGateway;
-    constructor(goodsReceiptRepo: Repository<GoodsReceipt>, chatGateway: ChatGateway);
+    private pusherService;
+    constructor(goodsReceiptRepo: Repository<GoodsReceipt>, pusherService: PusherService);
     getPagination({ pageSize, pageIndex, order, columnDef }: {
         pageSize: any;
         pageIndex: any;

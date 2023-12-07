@@ -8,11 +8,11 @@ import { Users } from 'src/app/model/users';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
+import { PusherService } from 'src/app/services/pusher.service';
 import { RouteService } from 'src/app/services/route.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { AlertDialogModel } from 'src/app/shared/alert-dialog/alert-dialog-model';
 import { AlertDialogComponent } from 'src/app/shared/alert-dialog/alert-dialog.component';
-import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 
 @Component({
   selector: 'app-features',
@@ -41,7 +41,7 @@ export class FeaturesComponent {
     private router: Router,
     private route: ActivatedRoute,
     private routeService: RouteService,
-    private socket: CustomSocket
+    private pusherService: PusherService
     ) {
       this.profile = this.storageService.getLoginProfile();
       this.onResize();
@@ -51,7 +51,8 @@ export class FeaturesComponent {
       });
   }
   async ngOnInit(): Promise<void> {
-    this.socket.fromEvent('notifAdded').subscribe((res: any)=> {
+    const channel = this.pusherService.init(this.profile.userId);
+    channel.bind('notifAdded', (res) => {
       const { unRead } = res;
       this.notificationsService.getUnreadByUser(this.profile.userId).subscribe(async res=> {
         await this.getNotifCount();

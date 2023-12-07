@@ -19,9 +19,7 @@ import {
   UpdateGoodsReceiptDto,
   UpdateGoodsReceiptStatusDto,
 } from "src/core/dto/goods-receipt/goods-receipt.update.dto";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { PageAccess } from "src/core/models/api-response.model";
-import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
 import { GoodsReceipt } from "src/db/entities/GoodsReceipt";
 import { GoodsReceiptItem } from "src/db/entities/GoodsReceiptItem";
 import { Item } from "src/db/entities/Item";
@@ -30,6 +28,7 @@ import { Supplier } from "src/db/entities/Supplier";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
 import { EntityManager, Not, Repository } from "typeorm";
+import { PusherService } from "./pusher.service";
 
 const deafaultGoodsReceiptSelect = {
   goodsReceiptId: true,
@@ -76,7 +75,7 @@ export class GoodsReceiptService {
   constructor(
     @InjectRepository(GoodsReceipt)
     private readonly goodsReceiptRepo: Repository<GoodsReceipt>,
-    private chatGateway: ChatGateway
+    private pusherService: PusherService
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -272,7 +271,7 @@ export class GoodsReceiptService {
           NOTIF_TITLE.GOODS_RECEIPT_CREATED,
           goodsReceipt.description
         );
-        await this.chatGateway.reSync("GOODS_RECEIPT", null);
+        await this.pusherService.reSync("GOODS_RECEIPT", null);
         return goodsReceipt;
       }
     );
@@ -593,7 +592,7 @@ export class GoodsReceiptService {
       } as Notifications);
     }
     await entityManager.save(Notifications, notifications);
-    await this.chatGateway.sendNotif(
+    await this.pusherService.sendNotif(
       users.map((x) => x.userId),
       title,
       description
@@ -601,26 +600,18 @@ export class GoodsReceiptService {
   }
 
   async syncRealTime(goodsReceipt: GoodsReceipt) {
-    const users = await this.goodsReceiptRepo.manager.find(
-      GatewayConnectedUsers,
-      {
-        where: {
-          user: {
-            userId: Not(goodsReceipt.lastUpdatedByUser.userId),
-            active: true,
-            branch: {
-              isMainBranch: true,
-              active: true,
-            },
-          },
+    const users = await this.goodsReceiptRepo.manager.find(Users, {
+      where: {
+        userId: Not(goodsReceipt.lastUpdatedByUser.userId),
+        active: true,
+        branch: {
+          isMainBranch: true,
+          active: true,
         },
-        relations: {
-          user: true,
-        },
-      }
-    );
-    await this.chatGateway.goodsReceiptChanges(
-      users.map((x) => x.user.userId),
+      },
+    });
+    await this.pusherService.goodsReceiptChanges(
+      users.map((x) => x.userId),
       goodsReceipt
     );
   }

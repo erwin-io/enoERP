@@ -19,7 +19,7 @@ import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { Access, AccessPages } from 'src/app/model/access';
 import { SupplierService } from 'src/app/services/supplier.service';
-import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
+import { PusherService } from 'src/app/services/pusher.service';
 export class UpdateStatusModel {
   status: "REJECTED"
   | "COMPLETED"
@@ -84,7 +84,7 @@ export class GoodsReceiptDetailsComponent {
     private route: ActivatedRoute,
     public router: Router,
     private formBuilder: FormBuilder,
-    private socket: CustomSocket
+    private pusherService: PusherService
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     const { isNew, edit } = this.route.snapshot.data;
@@ -108,8 +108,8 @@ export class GoodsReceiptDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.socket.fromEvent('goodsReceiptChanges').subscribe(async res => {
-      const newChanges = res as GoodsReceipt;
+    const channel = this.pusherService.init(this.currentUserProfile.userId);
+    channel.bind('goodsReceiptChanges', (res: any) => {
       this.snackBar.open("Someone has updated this document.", "",{
         announcementMessage: "Someone has updated this document.",
         verticalPosition: "top"

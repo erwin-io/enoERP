@@ -16,14 +16,12 @@ exports.NotificationsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const utils_1 = require("../common/utils/utils");
-const chat_gateway_1 = require("../core/gateway/chat.gateway");
 const Notifications_1 = require("../db/entities/Notifications");
 const typeorm_2 = require("typeorm");
 const pusher_service_1 = require("./pusher.service");
 let NotificationsService = class NotificationsService {
-    constructor(notificationsRepo, chatGateway, pusherService) {
+    constructor(notificationsRepo, pusherService) {
         this.notificationsRepo = notificationsRepo;
-        this.chatGateway = chatGateway;
         this.pusherService = pusherService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -72,15 +70,13 @@ let NotificationsService = class NotificationsService {
         });
     }
     async test({ userId, title, description }) {
-        this.chatGateway.sendNotif(userId, title, description);
-        this.pusherService.trigger("test", "test", { userId, title, description });
+        this.pusherService.sendNotif(userId, title, description);
     }
 };
 NotificationsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(Notifications_1.Notifications)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        chat_gateway_1.ChatGateway,
         pusher_service_1.PusherService])
 ], NotificationsService);
 exports.NotificationsService = NotificationsService;

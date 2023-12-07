@@ -27,7 +27,6 @@
     "ng-http-loader": "^13.0.0",
     "ngx-hide-on-scroll": "^0.2.1",
     "ngx-skeleton-loader": "^5.0.0",
-    "ngx-socket-io": "^4.4.0",
     "ngx-timeago": "^2.0.0",
     "pusher": "^5.1.2",
     "pusher-js": "^8.0.2",

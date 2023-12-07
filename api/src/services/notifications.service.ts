@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { columnDefToTypeORMCondition } from "src/common/utils/utils";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { Notifications } from "src/db/entities/Notifications";
 import { Repository } from "typeorm";
 import { PusherService } from "./pusher.service";
@@ -11,7 +10,6 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notifications)
     private readonly notificationsRepo: Repository<Notifications>,
-    private chatGateway: ChatGateway,
     private pusherService: PusherService
   ) {}
 
@@ -68,7 +66,6 @@ export class NotificationsService {
   }
 
   async test({ userId, title, description }) {
-    this.chatGateway.sendNotif(userId, title, description);
-    this.pusherService.trigger("test", "test", { userId, title, description });
+    this.pusherService.sendNotif(userId, title, description);
   }
 }

@@ -14,7 +14,7 @@ import { convertNotationToObject } from 'src/app/shared/utility/utility';
 import { IncomingInventoryRequestTableColumn } from 'src/app/shared/utility/table';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
-import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
+import { PusherService } from 'src/app/services/pusher.service';
 
 @Component({
   selector: 'app-incoming-inventory-request',
@@ -94,7 +94,7 @@ export class IncomingInventoryRequestComponent {
     private titleService: Title,
     private _location: Location,
     public router: Router,
-    private socket: CustomSocket) {
+    private pusherService: PusherService) {
       this.tabIndex = this.route.snapshot.data["tab"];
       if(this.route.snapshot.data) {
         // this.pageIncomingInventoryRequest = {
@@ -106,10 +106,8 @@ export class IncomingInventoryRequestComponent {
     }
 
   ngOnInit(): void {
-    const profile = this.storageService.getLoginProfile();
-    // this.currentUserId = profile && profile.userId;
-    this.socket.removeListener('inventoryRequestChanges');
-    this.socket.fromEvent('reSync').subscribe(async (res: any) => {
+    const channel = this.pusherService.init("all");
+    channel.bind("reSync", (res: any) => {
       const { type, data } = res;
       if(type && type === "INVENTORY_REQUEST") {
         this.getIncomingInventoryRequestPaginated("pending", false);

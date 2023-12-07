@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GOODSISSUE_ERROR_NOT_FOUND } from "src/common/constant/goods-issue.constant";
-import { NOTIF_TITLE, NOTIF_TYPE } from "src/common/constant/notifications.constant";
+import {
+  NOTIF_TITLE,
+  NOTIF_TYPE,
+} from "src/common/constant/notifications.constant";
 import { CONST_QUERYCURRENT_TIMESTAMP } from "src/common/constant/timestamp.constant";
 import { USER_ERROR_USER_NOT_FOUND } from "src/common/constant/user-error.constant";
 import { WAREHOUSE_ERROR_NOT_FOUND } from "src/common/constant/warehouse.constant";
@@ -14,9 +17,7 @@ import {
   UpdateGoodsIssueDto,
   UpdateGoodsIssueStatusDto,
 } from "src/core/dto/goods-issue/goods-issue.update.dto";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { PageAccess } from "src/core/models/api-response.model";
-import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
 import { GoodsIssue } from "src/db/entities/GoodsIssue";
 import { GoodsIssueItem } from "src/db/entities/GoodsIssueItem";
 import { Item } from "src/db/entities/Item";
@@ -25,6 +26,7 @@ import { Notifications } from "src/db/entities/Notifications";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
 import { EntityManager, Not, Repository } from "typeorm";
+import { PusherService } from "./pusher.service";
 
 const deafaultGoodsIssueSelect = {
   goodsIssueId: true,
@@ -72,7 +74,7 @@ export class GoodsIssueService {
   constructor(
     @InjectRepository(GoodsIssue)
     private readonly goodsIssueRepo: Repository<GoodsIssue>,
-    private chatGateway: ChatGateway
+    private pusherService: PusherService
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -279,7 +281,7 @@ export class GoodsIssueService {
           NOTIF_TITLE.GOODS_ISSUE_CREATED,
           goodsIssue.description
         );
-        await this.chatGateway.reSync("GOODS_ISSUE", null);
+        await this.pusherService.reSync("GOODS_ISSUE", null);
         return goodsIssue;
       }
     );
@@ -667,7 +669,7 @@ export class GoodsIssueService {
       } as Notifications);
     }
     await entityManager.save(Notifications, notifications);
-    await this.chatGateway.sendNotif(
+    await this.pusherService.sendNotif(
       users.map((x) => x.userId),
       title,
       description
@@ -675,26 +677,18 @@ export class GoodsIssueService {
   }
 
   async syncRealTime(goodsIssue: GoodsIssue) {
-    const users = await this.goodsIssueRepo.manager.find(
-      GatewayConnectedUsers,
-      {
-        where: {
-          user: {
-            userId: Not(goodsIssue.lastUpdatedByUser.userId),
-            active: true,
-            branch: {
-              isMainBranch: true,
-              active: true,
-            },
-          },
+    const users = await this.goodsIssueRepo.manager.find(Users, {
+      where: {
+        userId: Not(goodsIssue.lastUpdatedByUser.userId),
+        active: true,
+        branch: {
+          isMainBranch: true,
+          active: true,
         },
-        relations: {
-          user: true,
-        },
-      }
-    );
-    await this.chatGateway.goodsIssueChanges(
-      users.map((x) => x.user.userId),
+      },
+    });
+    await this.pusherService.goodsIssueChanges(
+      users.map((x) => x.userId),
       goodsIssue
     );
   }

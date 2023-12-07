@@ -8,7 +8,6 @@ import { SpinnerVisibilityService } from 'ng-http-loader';
 import { Users } from 'src/app/model/users';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { CustomSocket } from 'src/app/sockets/custom-socket.sockets';
 import { environment } from 'src/environments/environment.prod';
 
 @Component({
@@ -36,7 +35,6 @@ export class LoginComponent {
     private authService: AuthService,
     private storageService: StorageService,
     private snackBar: MatSnackBar,
-    private socket: CustomSocket,
     private router: Router) {
       // redirect to home if already logged in
 
@@ -59,7 +57,6 @@ export class LoginComponent {
         .subscribe(async res => {
           if (res.success) {
             this.storageService.saveLoginProfile(res.data);
-            this.socket.init();
             this.authService.redirectToPage(false);
           } else {
             this.error = Array.isArray(res.message) ? res.message[0] : res.message;

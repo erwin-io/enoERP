@@ -21,10 +21,8 @@ import {
   ProcessInventoryRequestStatusDto,
   UpdateInventoryRequestDto,
 } from "src/core/dto/inventory-request/inventory-request.update.dto";
-import { ChatGateway } from "src/core/gateway/chat.gateway";
 import { PageAccess } from "src/core/models/api-response.model";
 import { Branch } from "src/db/entities/Branch";
-import { GatewayConnectedUsers } from "src/db/entities/GatewayConnectedUsers";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
 import { InventoryRequestItem } from "src/db/entities/InventoryRequestItem";
 import { InventoryRequestRate } from "src/db/entities/InventoryRequestRate";
@@ -35,6 +33,7 @@ import { Notifications } from "src/db/entities/Notifications";
 import { Users } from "src/db/entities/Users";
 import { Warehouse } from "src/db/entities/Warehouse";
 import { EntityManager, In, Not, Repository } from "typeorm";
+import { PusherService } from "./pusher.service";
 
 const deafaultInventoryRequestSelect = {
   inventoryRequestId: true,
@@ -84,7 +83,7 @@ export class InventoryRequestService {
   constructor(
     @InjectRepository(InventoryRequest)
     private readonly inventoryRequestRepo: Repository<InventoryRequest>,
-    private chatGateway: ChatGateway
+    private pusherService: PusherService
   ) {}
 
   async getPagination({ pageSize, pageIndex, order, columnDef }) {
@@ -325,7 +324,7 @@ export class InventoryRequestService {
           NOTIF_TITLE.INVENTORY_REQUEST_CREATED,
           inventoryRequest.description
         );
-        await this.chatGateway.reSync("INVENTORY_REQUEST", null);
+        await this.pusherService.reSync("INVENTORY_REQUEST", null);
         return inventoryRequest;
       }
     );
@@ -880,7 +879,7 @@ export class InventoryRequestService {
       } as Notifications);
     }
     await entityManager.save(Notifications, notifications);
-    await this.chatGateway.sendNotif(
+    await this.pusherService.sendNotif(
       users.map((x) => x.userId),
       title,
       description
@@ -888,26 +887,18 @@ export class InventoryRequestService {
   }
 
   async syncRealTime(inventoryRequest: InventoryRequest) {
-    const users = await this.inventoryRequestRepo.manager.find(
-      GatewayConnectedUsers,
-      {
-        where: {
-          user: {
-            userId: Not(inventoryRequest.lastUpdatedByUser.userId),
-            active: true,
-            branch: {
-              isMainBranch: true,
-              active: true,
-            },
-          },
+    const users = await this.inventoryRequestRepo.manager.find(Users, {
+      where: {
+        userId: Not(inventoryRequest.lastUpdatedByUser.userId),
+        active: true,
+        branch: {
+          isMainBranch: true,
+          active: true,
         },
-        relations: {
-          user: true,
-        },
-      }
-    );
-    await this.chatGateway.inventoryRequestChanges(
-      users.map((x) => x.user.userId),
+      },
+    });
+    await this.pusherService.inventoryRequestChanges(
+      users.map((x) => x.userId),
       inventoryRequest
     );
   }

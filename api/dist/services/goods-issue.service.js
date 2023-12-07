@@ -21,8 +21,6 @@ const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
-const chat_gateway_1 = require("../core/gateway/chat.gateway");
-const GatewayConnectedUsers_1 = require("../db/entities/GatewayConnectedUsers");
 const GoodsIssue_1 = require("../db/entities/GoodsIssue");
 const GoodsIssueItem_1 = require("../db/entities/GoodsIssueItem");
 const Item_1 = require("../db/entities/Item");
@@ -31,6 +29,7 @@ const Notifications_1 = require("../db/entities/Notifications");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
+const pusher_service_1 = require("./pusher.service");
 const deafaultGoodsIssueSelect = {
     goodsIssueId: true,
     goodsIssueCode: true,
@@ -73,9 +72,9 @@ const deafaultGoodsIssueSelect = {
     issueType: true,
 };
 let GoodsIssueService = class GoodsIssueService {
-    constructor(goodsIssueRepo, chatGateway) {
+    constructor(goodsIssueRepo, pusherService) {
         this.goodsIssueRepo = goodsIssueRepo;
-        this.chatGateway = chatGateway;
+        this.pusherService = pusherService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -248,7 +247,7 @@ let GoodsIssueService = class GoodsIssueService {
                 x.access.some((x) => x.rights && x.rights.some((r) => r === "Approval")))
                 .map((x) => x.user);
             await this.logNotification(getUsersToBeNotified, goodsIssue, entityManager, notifications_constant_1.NOTIF_TITLE.GOODS_ISSUE_CREATED, goodsIssue.description);
-            await this.chatGateway.reSync("GOODS_ISSUE", null);
+            await this.pusherService.reSync("GOODS_ISSUE", null);
             return goodsIssue;
         });
     }
@@ -569,32 +568,27 @@ let GoodsIssueService = class GoodsIssueService {
             });
         }
         await entityManager.save(Notifications_1.Notifications, notifications);
-        await this.chatGateway.sendNotif(users.map((x) => x.userId), title, description);
+        await this.pusherService.sendNotif(users.map((x) => x.userId), title, description);
     }
     async syncRealTime(goodsIssue) {
-        const users = await this.goodsIssueRepo.manager.find(GatewayConnectedUsers_1.GatewayConnectedUsers, {
+        const users = await this.goodsIssueRepo.manager.find(Users_1.Users, {
             where: {
-                user: {
-                    userId: (0, typeorm_2.Not)(goodsIssue.lastUpdatedByUser.userId),
+                userId: (0, typeorm_2.Not)(goodsIssue.lastUpdatedByUser.userId),
+                active: true,
+                branch: {
+                    isMainBranch: true,
                     active: true,
-                    branch: {
-                        isMainBranch: true,
-                        active: true,
-                    },
                 },
             },
-            relations: {
-                user: true,
-            },
         });
-        await this.chatGateway.goodsIssueChanges(users.map((x) => x.user.userId), goodsIssue);
+        await this.pusherService.goodsIssueChanges(users.map((x) => x.userId), goodsIssue);
     }
 };
 GoodsIssueService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(GoodsIssue_1.GoodsIssue)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        chat_gateway_1.ChatGateway])
+        pusher_service_1.PusherService])
 ], GoodsIssueService);
 exports.GoodsIssueService = GoodsIssueService;
 //# sourceMappingURL=goods-issue.service.js.map

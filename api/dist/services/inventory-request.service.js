@@ -23,9 +23,7 @@ const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
-const chat_gateway_1 = require("../core/gateway/chat.gateway");
 const Branch_1 = require("../db/entities/Branch");
-const GatewayConnectedUsers_1 = require("../db/entities/GatewayConnectedUsers");
 const InventoryRequest_1 = require("../db/entities/InventoryRequest");
 const InventoryRequestItem_1 = require("../db/entities/InventoryRequestItem");
 const InventoryRequestRate_1 = require("../db/entities/InventoryRequestRate");
@@ -36,6 +34,7 @@ const Notifications_1 = require("../db/entities/Notifications");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
+const pusher_service_1 = require("./pusher.service");
 const deafaultInventoryRequestSelect = {
     inventoryRequestId: true,
     inventoryRequestCode: true,
@@ -80,9 +79,9 @@ const deafaultInventoryRequestSelect = {
     fromWarehouse: true,
 };
 let InventoryRequestService = class InventoryRequestService {
-    constructor(inventoryRequestRepo, chatGateway) {
+    constructor(inventoryRequestRepo, pusherService) {
         this.inventoryRequestRepo = inventoryRequestRepo;
-        this.chatGateway = chatGateway;
+        this.pusherService = pusherService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -282,7 +281,7 @@ let InventoryRequestService = class InventoryRequestService {
                 x.access.some((x) => x.page === "Inventory Request"))
                 .map((x) => x.user);
             await this.logNotification(getUsersToBeNotified, inventoryRequest, entityManager, notifications_constant_1.NOTIF_TITLE.INVENTORY_REQUEST_CREATED, inventoryRequest.description);
-            await this.chatGateway.reSync("INVENTORY_REQUEST", null);
+            await this.pusherService.reSync("INVENTORY_REQUEST", null);
             return inventoryRequest;
         });
     }
@@ -716,32 +715,27 @@ let InventoryRequestService = class InventoryRequestService {
             });
         }
         await entityManager.save(Notifications_1.Notifications, notifications);
-        await this.chatGateway.sendNotif(users.map((x) => x.userId), title, description);
+        await this.pusherService.sendNotif(users.map((x) => x.userId), title, description);
     }
     async syncRealTime(inventoryRequest) {
-        const users = await this.inventoryRequestRepo.manager.find(GatewayConnectedUsers_1.GatewayConnectedUsers, {
+        const users = await this.inventoryRequestRepo.manager.find(Users_1.Users, {
             where: {
-                user: {
-                    userId: (0, typeorm_2.Not)(inventoryRequest.lastUpdatedByUser.userId),
+                userId: (0, typeorm_2.Not)(inventoryRequest.lastUpdatedByUser.userId),
+                active: true,
+                branch: {
+                    isMainBranch: true,
                     active: true,
-                    branch: {
-                        isMainBranch: true,
-                        active: true,
-                    },
                 },
             },
-            relations: {
-                user: true,
-            },
         });
-        await this.chatGateway.inventoryRequestChanges(users.map((x) => x.user.userId), inventoryRequest);
+        await this.pusherService.inventoryRequestChanges(users.map((x) => x.userId), inventoryRequest);
     }
 };
 InventoryRequestService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(InventoryRequest_1.InventoryRequest)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        chat_gateway_1.ChatGateway])
+        pusher_service_1.PusherService])
 ], InventoryRequestService);
 exports.InventoryRequestService = InventoryRequestService;
 //# sourceMappingURL=inventory-request.service.js.map

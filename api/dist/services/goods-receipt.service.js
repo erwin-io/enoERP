@@ -23,8 +23,6 @@ const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
 const warehouse_constant_1 = require("../common/constant/warehouse.constant");
 const utils_1 = require("../common/utils/utils");
-const chat_gateway_1 = require("../core/gateway/chat.gateway");
-const GatewayConnectedUsers_1 = require("../db/entities/GatewayConnectedUsers");
 const GoodsReceipt_1 = require("../db/entities/GoodsReceipt");
 const GoodsReceiptItem_1 = require("../db/entities/GoodsReceiptItem");
 const Item_1 = require("../db/entities/Item");
@@ -33,6 +31,7 @@ const Supplier_1 = require("../db/entities/Supplier");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
+const pusher_service_1 = require("./pusher.service");
 const deafaultGoodsReceiptSelect = {
     goodsReceiptId: true,
     goodsReceiptCode: true,
@@ -74,9 +73,9 @@ const deafaultGoodsReceiptSelect = {
     supplier: true,
 };
 let GoodsReceiptService = class GoodsReceiptService {
-    constructor(goodsReceiptRepo, chatGateway) {
+    constructor(goodsReceiptRepo, pusherService) {
         this.goodsReceiptRepo = goodsReceiptRepo;
-        this.chatGateway = chatGateway;
+        this.pusherService = pusherService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -244,7 +243,7 @@ let GoodsReceiptService = class GoodsReceiptService {
                 x.access.some((x) => x.rights && x.rights.some((r) => r === "Approval")))
                 .map((x) => x.user);
             await this.logNotification(getUsersToBeNotified, goodsReceipt, entityManager, notifications_constant_1.NOTIF_TITLE.GOODS_RECEIPT_CREATED, goodsReceipt.description);
-            await this.chatGateway.reSync("GOODS_RECEIPT", null);
+            await this.pusherService.reSync("GOODS_RECEIPT", null);
             return goodsReceipt;
         });
     }
@@ -506,32 +505,27 @@ let GoodsReceiptService = class GoodsReceiptService {
             });
         }
         await entityManager.save(Notifications_1.Notifications, notifications);
-        await this.chatGateway.sendNotif(users.map((x) => x.userId), title, description);
+        await this.pusherService.sendNotif(users.map((x) => x.userId), title, description);
     }
     async syncRealTime(goodsReceipt) {
-        const users = await this.goodsReceiptRepo.manager.find(GatewayConnectedUsers_1.GatewayConnectedUsers, {
+        const users = await this.goodsReceiptRepo.manager.find(Users_1.Users, {
             where: {
-                user: {
-                    userId: (0, typeorm_2.Not)(goodsReceipt.lastUpdatedByUser.userId),
+                userId: (0, typeorm_2.Not)(goodsReceipt.lastUpdatedByUser.userId),
+                active: true,
+                branch: {
+                    isMainBranch: true,
                     active: true,
-                    branch: {
-                        isMainBranch: true,
-                        active: true,
-                    },
                 },
             },
-            relations: {
-                user: true,
-            },
         });
-        await this.chatGateway.goodsReceiptChanges(users.map((x) => x.user.userId), goodsReceipt);
+        await this.pusherService.goodsReceiptChanges(users.map((x) => x.userId), goodsReceipt);
     }
 };
 GoodsReceiptService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(GoodsReceipt_1.GoodsReceipt)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        chat_gateway_1.ChatGateway])
+        pusher_service_1.PusherService])
 ], GoodsReceiptService);
 exports.GoodsReceiptService = GoodsReceiptService;
 //# sourceMappingURL=goods-receipt.service.js.map

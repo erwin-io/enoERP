@@ -6,9 +6,6 @@ import { filter } from 'rxjs';
 import { RouteService } from './services/route.service';
 import { AppConfigService } from './services/app-config.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import io from 'socket.io-client';
-import { environment } from 'src/environments/environment';
-import { CustomSocket } from './sockets/custom-socket.sockets';
 import { StorageService } from './services/storage.service';
 import { PusherService } from './services/pusher.service';
 @Component({
@@ -28,24 +25,22 @@ export class AppComponent {
     private appconfig: AppConfigService,
     private storageService: StorageService,
     private routeService: RouteService,
-    private socket: CustomSocket,
     private pusher: PusherService) {
       if(this.storageService.getLoginProfile()?.userId) {
-        this.socket.init();
+        const { userId } = this.storageService.getLoginProfile();
+        const channel = this.pusher.init(userId);
+        channel.bind('notifAdded', ({ userId, title, description }) => {
+          if(this.grantNotif) {
+            const notify = new Notification(title, {
+              body: description,
+              icon: '../assets/img/banner.png'
+            });
+          }
+          else {
+            this.snackBar.open(title);
+          }
+        });
       }
-      this.socket.fromEvent('notifAdded').subscribe(res => {
-        const { userId, title, description, unRead } = res as any;
-        if(this.grantNotif) {
-          const notify = new Notification(title, {
-            body: description,
-            icon: '../assets/img/banner.png'
-          });
-        }
-        else {
-          this.snackBar.open(title);
-        }
-        this.storageService.saveUnreadNotificationCount(unRead);
-      });
       if (!window.Notification) {
         console.log('Browser does not support notifications.')
       } else {
@@ -71,14 +66,6 @@ export class AppComponent {
     this.setupTitleListener();
   }
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-
-    const channel = this.pusher.init('test');
-    channel.bind('test', ({ userId, title, description }) => {
-      // this.snackBar.open(title);
-      console.log("pusher worked! ", title);
-    });
   }
   private setupTitleListener() {
     this.router.events.pipe(filter(e => e instanceof ResolveEnd)).subscribe((e: any) => {

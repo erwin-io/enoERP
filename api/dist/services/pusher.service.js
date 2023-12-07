@@ -20,6 +20,71 @@ let PusherService = class PusherService {
     trigger(channel, event, data) {
         pusher.trigger(channel, event, data);
     }
+    async reSync(type, data) {
+        try {
+            pusher.trigger("all", "reSync", { type, data });
+        }
+        catch (ex) {
+            throw ex;
+        }
+    }
+    async inventoryRequestChanges(userIds, inventoryRequest) {
+        try {
+            if (userIds && userIds.length > 0) {
+                for (const userId of userIds) {
+                    pusher.trigger(userId, "inventoryRequestChanges", inventoryRequest);
+                }
+            }
+            pusher.trigger("all", "reSync", {
+                type: "INVENTORY_REQUEST",
+                data: null,
+            });
+        }
+        catch (ex) {
+            throw ex;
+        }
+    }
+    async goodsIssueChanges(userIds, goodsIssue) {
+        try {
+            if (userIds && userIds.length > 0) {
+                for (const userId of userIds) {
+                    pusher.trigger(userId, "goodsIssueChanges", goodsIssue);
+                }
+            }
+            pusher.trigger("all", "reSync", { type: "GOODS_ISSUE", data: null });
+        }
+        catch (ex) {
+            throw ex;
+        }
+    }
+    async goodsReceiptChanges(userIds, goodsReceipt) {
+        try {
+            if (userIds && userIds.length > 0) {
+                for (const userId of userIds) {
+                    pusher.trigger(userId, "goodsReceiptChanges", goodsReceipt);
+                }
+            }
+            pusher.trigger("all", "reSync", { type: "GOODS_RECEIPT", data: null });
+        }
+        catch (ex) {
+            throw ex;
+        }
+    }
+    async sendNotif(userIds, title, description) {
+        try {
+            if (userIds && userIds.length > 0) {
+                for (const userId of userIds) {
+                    pusher.trigger(userId, "notifAdded", {
+                        title,
+                        description,
+                    });
+                }
+            }
+        }
+        catch (ex) {
+            throw ex;
+        }
+    }
 };
 PusherService = __decorate([
     (0, common_1.Injectable)()

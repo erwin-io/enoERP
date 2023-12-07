@@ -12,17 +12,15 @@ const goods_issue_controller_1 = require("./goods-issue.controller");
 const GoodsIssue_1 = require("../../db/entities/GoodsIssue");
 const goods_issue_service_1 = require("../../services/goods-issue.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const chat_gateway_1 = require("../../core/gateway/chat.gateway");
-const GatewayConnectedUsers_1 = require("../../db/entities/GatewayConnectedUsers");
-const gateway_connected_users_service_1 = require("../../services/gateway-connected-users.service");
+const pusher_service_1 = require("../../services/pusher.service");
 let GoodsIssueModule = class GoodsIssueModule {
 };
 GoodsIssueModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([GoodsIssue_1.GoodsIssue, GatewayConnectedUsers_1.GatewayConnectedUsers])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([GoodsIssue_1.GoodsIssue])],
         controllers: [goods_issue_controller_1.GoodsIssueController],
-        providers: [goods_issue_service_1.GoodsIssueService, chat_gateway_1.ChatGateway, gateway_connected_users_service_1.GatewayConnectedUsersService],
-        exports: [goods_issue_service_1.GoodsIssueService, chat_gateway_1.ChatGateway, gateway_connected_users_service_1.GatewayConnectedUsersService],
+        providers: [goods_issue_service_1.GoodsIssueService, pusher_service_1.PusherService],
+        exports: [goods_issue_service_1.GoodsIssueService, pusher_service_1.PusherService],
     })
 ], GoodsIssueModule);
 exports.GoodsIssueModule = GoodsIssueModule;

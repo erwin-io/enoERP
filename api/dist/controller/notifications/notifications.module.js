@@ -12,28 +12,15 @@ const notifications_controller_1 = require("./notifications.controller");
 const Notifications_1 = require("../../db/entities/Notifications");
 const notifications_service_1 = require("../../services/notifications.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const chat_gateway_1 = require("../../core/gateway/chat.gateway");
-const GatewayConnectedUsers_1 = require("../../db/entities/GatewayConnectedUsers");
-const gateway_connected_users_service_1 = require("../../services/gateway-connected-users.service");
 const pusher_service_1 = require("../../services/pusher.service");
 let NotificationsModule = class NotificationsModule {
 };
 NotificationsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([Notifications_1.Notifications, GatewayConnectedUsers_1.GatewayConnectedUsers])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([Notifications_1.Notifications])],
         controllers: [notifications_controller_1.NotificationsController],
-        providers: [
-            notifications_service_1.NotificationsService,
-            chat_gateway_1.ChatGateway,
-            gateway_connected_users_service_1.GatewayConnectedUsersService,
-            pusher_service_1.PusherService,
-        ],
-        exports: [
-            notifications_service_1.NotificationsService,
-            chat_gateway_1.ChatGateway,
-            gateway_connected_users_service_1.GatewayConnectedUsersService,
-            pusher_service_1.PusherService,
-        ],
+        providers: [notifications_service_1.NotificationsService, pusher_service_1.PusherService],
+        exports: [notifications_service_1.NotificationsService, pusher_service_1.PusherService],
     })
 ], NotificationsModule);
 exports.NotificationsModule = NotificationsModule;

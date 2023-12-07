@@ -5,24 +5,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PusherService = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const Pusher = require("pusher");
-const pusher = new Pusher({
-    appId: "1720928",
-    key: "1ad4b93854243ae307e6",
-    secret: "e8cf7208e15a53279f1a",
-    cluster: "ap1",
-    useTLS: true,
-});
 let PusherService = class PusherService {
+    constructor(config) {
+        this.config = config;
+        this.pusher = new Pusher({
+            appId: this.config.get("PUSHER_APPID"),
+            key: this.config.get("PUSHER_KEY"),
+            secret: this.config.get("PUSHER_SECRET"),
+            cluster: this.config.get("PUSHER_CLUSTER"),
+            useTLS: this.config
+                .get("PUSHER_USE_TLS")
+                .toLowerCase()
+                .includes("true"),
+        });
+    }
     trigger(channel, event, data) {
-        pusher.trigger(channel, event, data);
+        this.pusher.trigger(channel, event, data);
     }
     async reSync(type, data) {
         try {
-            pusher.trigger("all", "reSync", { type, data });
+            this.pusher.trigger("all", "reSync", { type, data });
         }
         catch (ex) {
             throw ex;
@@ -32,10 +42,10 @@ let PusherService = class PusherService {
         try {
             if (userIds && userIds.length > 0) {
                 for (const userId of userIds) {
-                    pusher.trigger(userId, "inventoryRequestChanges", inventoryRequest);
+                    this.pusher.trigger(userId, "inventoryRequestChanges", inventoryRequest);
                 }
             }
-            pusher.trigger("all", "reSync", {
+            this.pusher.trigger("all", "reSync", {
                 type: "INVENTORY_REQUEST",
                 data: null,
             });
@@ -48,10 +58,10 @@ let PusherService = class PusherService {
         try {
             if (userIds && userIds.length > 0) {
                 for (const userId of userIds) {
-                    pusher.trigger(userId, "goodsIssueChanges", goodsIssue);
+                    this.pusher.trigger(userId, "goodsIssueChanges", goodsIssue);
                 }
             }
-            pusher.trigger("all", "reSync", { type: "GOODS_ISSUE", data: null });
+            this.pusher.trigger("all", "reSync", { type: "GOODS_ISSUE", data: null });
         }
         catch (ex) {
             throw ex;
@@ -61,10 +71,13 @@ let PusherService = class PusherService {
         try {
             if (userIds && userIds.length > 0) {
                 for (const userId of userIds) {
-                    pusher.trigger(userId, "goodsReceiptChanges", goodsReceipt);
+                    this.pusher.trigger(userId, "goodsReceiptChanges", goodsReceipt);
                 }
             }
-            pusher.trigger("all", "reSync", { type: "GOODS_RECEIPT", data: null });
+            this.pusher.trigger("all", "reSync", {
+                type: "GOODS_RECEIPT",
+                data: null,
+            });
         }
         catch (ex) {
             throw ex;
@@ -74,7 +87,7 @@ let PusherService = class PusherService {
         try {
             if (userIds && userIds.length > 0) {
                 for (const userId of userIds) {
-                    pusher.trigger(userId, "notifAdded", {
+                    this.pusher.trigger(userId, "notifAdded", {
                         title,
                         description,
                     });
@@ -87,7 +100,8 @@ let PusherService = class PusherService {
     }
 };
 PusherService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [config_1.ConfigService])
 ], PusherService);
 exports.PusherService = PusherService;
 //# sourceMappingURL=pusher.service.js.map

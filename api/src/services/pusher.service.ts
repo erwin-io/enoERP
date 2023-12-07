@@ -1,27 +1,34 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { GoodsIssue } from "src/db/entities/GoodsIssue";
 import { GoodsReceipt } from "src/db/entities/GoodsReceipt";
 import { InventoryRequest } from "src/db/entities/InventoryRequest";
 
 const Pusher = require("pusher");
 
-const pusher = new Pusher({
-  appId: "1720928",
-  key: "1ad4b93854243ae307e6",
-  secret: "e8cf7208e15a53279f1a",
-  cluster: "ap1",
-  useTLS: true,
-});
 @Injectable()
 export class PusherService {
+  pusher;
+  constructor(private readonly config: ConfigService) {
+    this.pusher = new Pusher({
+      appId: this.config.get<string>("PUSHER_APPID"),
+      key: this.config.get<string>("PUSHER_KEY"),
+      secret: this.config.get<string>("PUSHER_SECRET"),
+      cluster: this.config.get<string>("PUSHER_CLUSTER"),
+      useTLS: this.config
+        .get<string>("PUSHER_USE_TLS")
+        .toLowerCase()
+        .includes("true"),
+    });
+  }
   trigger(channel, event, data: any) {
-    pusher.trigger(channel, event, data);
+    this.pusher.trigger(channel, event, data);
   }
 
   async reSync(type: string, data: any) {
     try {
-      pusher.trigger("all", "reSync", { type, data });
+      this.pusher.trigger("all", "reSync", { type, data });
     } catch (ex) {
       throw ex;
     }
@@ -34,10 +41,14 @@ export class PusherService {
     try {
       if (userIds && userIds.length > 0) {
         for (const userId of userIds) {
-          pusher.trigger(userId, "inventoryRequestChanges", inventoryRequest);
+          this.pusher.trigger(
+            userId,
+            "inventoryRequestChanges",
+            inventoryRequest
+          );
         }
       }
-      pusher.trigger("all", "reSync", {
+      this.pusher.trigger("all", "reSync", {
         type: "INVENTORY_REQUEST",
         data: null,
       });
@@ -50,10 +61,10 @@ export class PusherService {
     try {
       if (userIds && userIds.length > 0) {
         for (const userId of userIds) {
-          pusher.trigger(userId, "goodsIssueChanges", goodsIssue);
+          this.pusher.trigger(userId, "goodsIssueChanges", goodsIssue);
         }
       }
-      pusher.trigger("all", "reSync", { type: "GOODS_ISSUE", data: null });
+      this.pusher.trigger("all", "reSync", { type: "GOODS_ISSUE", data: null });
     } catch (ex) {
       throw ex;
     }
@@ -63,10 +74,13 @@ export class PusherService {
     try {
       if (userIds && userIds.length > 0) {
         for (const userId of userIds) {
-          pusher.trigger(userId, "goodsReceiptChanges", goodsReceipt);
+          this.pusher.trigger(userId, "goodsReceiptChanges", goodsReceipt);
         }
       }
-      pusher.trigger("all", "reSync", { type: "GOODS_RECEIPT", data: null });
+      this.pusher.trigger("all", "reSync", {
+        type: "GOODS_RECEIPT",
+        data: null,
+      });
     } catch (ex) {
       throw ex;
     }
@@ -76,7 +90,7 @@ export class PusherService {
     try {
       if (userIds && userIds.length > 0) {
         for (const userId of userIds) {
-          pusher.trigger(userId, "notifAdded", {
+          this.pusher.trigger(userId, "notifAdded", {
             title,
             description,
           });

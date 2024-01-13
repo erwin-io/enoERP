@@ -9,7 +9,8 @@ import { GoodsReceiptItemTableColumn } from 'src/app/shared/utility/table';
   styleUrls: ['./goods-receipt-form.component.scss']
 })
 export class GoodsReceiptFormComponent {
-
+  goodsReceipt!: GoodsReceipt;
+  items!: GoodsReceiptItemTableColumn[]
   form: FormGroup;
   @Input() isReadOnly: any;
   @Input() warehouseCode: any;
@@ -23,6 +24,8 @@ export class GoodsReceiptFormComponent {
   }
 
   public setFormValue(value: GoodsReceipt, items: GoodsReceiptItemTableColumn[]) {
+    this.goodsReceipt = value;
+    this.items = items;
     if(this.form) {
       this.form.controls["description"].setValue(value?.description ? value?.description : "");
       this.form.controls["goodsReceiptItems"].setValue(items);

@@ -59,8 +59,8 @@ __decorate([
     __metadata("design:type", Array)
 ], Branch.prototype, "users", void 0);
 Branch = __decorate([
-    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("u_branch_name", ["active", "name"], { unique: true }),
+    (0, typeorm_1.Index)("u_branch_branchCode", ["active", "branchCode"], { unique: true }),
     (0, typeorm_1.Index)("Branch_pkey", ["branchId"], { unique: true }),
     (0, typeorm_1.Entity)("Branch", { schema: "dbo" })
 ], Branch);

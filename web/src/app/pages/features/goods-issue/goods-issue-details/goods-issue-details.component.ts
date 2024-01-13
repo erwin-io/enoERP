@@ -18,6 +18,7 @@ import { GoodsIssueItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { Access, AccessPages } from 'src/app/model/access';
+import { PusherService } from 'src/app/services/pusher.service';
 export class UpdateStatusModel {
   status: "REJECTED"
   | "COMPLETED"
@@ -76,7 +77,8 @@ export class GoodsIssueDetailsComponent {
     private storageService: StorageService,
     private route: ActivatedRoute,
     public router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private pusherService: PusherService
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     const { isNew, edit } = this.route.snapshot.data;
@@ -100,6 +102,16 @@ export class GoodsIssueDetailsComponent {
   }
 
   ngOnInit(): void {
+    const channel = this.pusherService.init(this.currentUserProfile.userId);
+    channel.bind('goodsIssueChanges', (res: any) => {
+      this.snackBar.open("Someone has updated this document.", "",{
+        announcementMessage: "Someone has updated this document.",
+        verticalPosition: "top"
+      });
+      if(this.isReadOnly) {
+        this.initDetails();
+      }
+    });
   }
 
   async ngAfterViewInit() {
@@ -109,6 +121,7 @@ export class GoodsIssueDetailsComponent {
     if(!this.isNew) {
       this.initDetails();
     } else {
+      this.isLoading = false;
       this.canAddEdit = true;
     }
 
@@ -241,6 +254,10 @@ export class GoodsIssueDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
+        params = {
+          ...params,
+          updatedByUserId: this.currentUserProfile.userId,
+        } as any;
         let res = await this.goodsIssueService.updateStatus(this.goodsIssueCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
@@ -311,6 +328,10 @@ export class GoodsIssueDetailsComponent {
           }
           res = await this.goodsIssueService.create(formData).toPromise();
         } else {
+          formData = {
+            ...formData,
+            updatedByUserId: this.currentUserProfile.userId,
+          }
           res = await this.goodsIssueService.update(this.goodsIssueCode, formData).toPromise();
         }
         if (res.success) {

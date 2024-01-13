@@ -21,7 +21,9 @@ export const routes: Routes = [
     path: 'pending',
     pathMatch: 'full',
     component: GoodsIssueComponent,
-    data: { title: "Goods Issue", tab: 0 }
+    data: { title: "Goods Issue", tab: 0 },
+    resolve: ()=>  {
+    }
   },
   {
     path: 'completed',

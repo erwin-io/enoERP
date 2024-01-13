@@ -44,6 +44,14 @@ export class UserService implements IServices {
     );
   }
 
+  updateProfile(userCode: string, data: any): Observable<ApiResponse<Users>> {
+    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.user.updateProfile + userCode, data)
+    .pipe(
+      tap(_ => this.log('user')),
+      catchError(this.handleError('user', []))
+    );
+  }
+
   updateUsers(id: string, data: any): Observable<ApiResponse<Users>> {
     return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.user.updateUsers + id, data)
     .pipe(
@@ -52,8 +60,8 @@ export class UserService implements IServices {
     );
   }
 
-  resetUserPassword(data: any): Observable<ApiResponse<Users>> {
-    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.user.resetUserPassword + "resetPassword", data)
+  resetUserPassword(userCode: string, data: any): Observable<ApiResponse<Users>> {
+    return this.http.put<any>(environment.apiBaseUrl + this.appconfig.config.apiEndPoints.user.resetUserPassword + userCode + "/resetPassword", data)
     .pipe(
       tap(_ => this.log('user')),
       catchError(this.handleError('user', []))

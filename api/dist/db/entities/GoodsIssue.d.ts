@@ -13,6 +13,7 @@ export declare class GoodsIssue {
     active: boolean;
     notes: string | null;
     createdByUser: Users;
+    lastUpdatedByUser: Users;
     warehouse: Warehouse;
     goodsIssueItems: GoodsIssueItem[];
     inventoryAdjustmentReports: InventoryAdjustmentReport[];

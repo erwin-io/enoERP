@@ -65,6 +65,11 @@ __decorate([
     __metadata("design:type", Users_1.Users)
 ], GoodsIssue.prototype, "createdByUser", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => Users_1.Users, (users) => users.goodsIssues2),
+    (0, typeorm_1.JoinColumn)([{ name: "LastUpdatedByUserId", referencedColumnName: "userId" }]),
+    __metadata("design:type", Users_1.Users)
+], GoodsIssue.prototype, "lastUpdatedByUser", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Warehouse_1.Warehouse, (warehouse) => warehouse.goodsIssues),
     (0, typeorm_1.JoinColumn)([{ name: "WarehouseId", referencedColumnName: "warehouseId" }]),
     __metadata("design:type", Warehouse_1.Warehouse)

@@ -65,6 +65,20 @@ let UsersController = class UsersController {
             return res;
         }
     }
+    async updateProfile(userCode, updateUserProfileDto) {
+        const res = {};
+        try {
+            res.data = await this.userService.updateProfile(userCode, updateUserProfileDto);
+            res.success = true;
+            res.message = `User ${api_response_constant_1.UPDATE_SUCCESS}`;
+            return res;
+        }
+        catch (e) {
+            res.success = false;
+            res.message = e.message !== undefined ? e.message : e;
+            return res;
+        }
+    }
     async update(userCode, updateUserDto) {
         const res = {};
         try {
@@ -143,6 +157,14 @@ __decorate([
     __metadata("design:paramtypes", [users_create_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)("/updateProfile/:userCode"),
+    __param(0, (0, common_1.Param)("userCode")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, users_update_dto_1.UpdateUserProfileDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateProfile", null);
 __decorate([
     (0, common_1.Put)("/:userCode"),
     __param(0, (0, common_1.Param)("userCode")),

@@ -1,4 +1,4 @@
-import { SalesInvoiceItem } from './../entities/SalesInvoiceItem';
+import { SalesInvoiceItem } from "./../entities/SalesInvoiceItem";
 import { InventoryRequestItem } from "./../entities/InventoryRequestItem";
 import { InventoryRequest } from "./../entities/InventoryRequest";
 import { Users } from "../entities/Users";
@@ -20,8 +20,10 @@ import { GoodsReceiptItem } from "../entities/GoodsReceiptItem";
 import { Supplier } from "../entities/Supplier";
 import { InventoryAdjustmentReport } from "../entities/InventoryAdjustmentReport";
 import { InventoryAdjustmentReportItem } from "../entities/InventoryAdjustmentReportItem";
-import { SalesInvoice } from '../entities/SalesInvoice';
-import { SalesInvoicePayments } from '../entities/SalesInvoicePayments';
+import { SalesInvoice } from "../entities/SalesInvoice";
+import { SalesInvoicePayments } from "../entities/SalesInvoicePayments";
+import { Notifications } from "../entities/Notifications";
+import { GatewayConnectedUsers } from "../entities/GatewayConnectedUsers";
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -59,6 +61,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         SalesInvoice,
         SalesInvoiceItem,
         SalesInvoicePayments,
+        Notifications,
+        GatewayConnectedUsers,
       ],
       synchronize: false, // never use TRUE in production!
       ssl: ssl.toLocaleLowerCase().includes("true"),

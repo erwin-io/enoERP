@@ -15,6 +15,7 @@ export declare class InventoryRequest {
     inventoryAdjustmentReports: InventoryAdjustmentReport[];
     branch: Branch;
     fromWarehouse: Warehouse;
+    lastUpdatedByUser: Users;
     requestedByUser: Users;
     inventoryRequestItems: InventoryRequestItem[];
 }

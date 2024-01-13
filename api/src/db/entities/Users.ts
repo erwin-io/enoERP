@@ -7,17 +7,19 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { GatewayConnectedUsers } from "./GatewayConnectedUsers";
 import { GoodsIssue } from "./GoodsIssue";
 import { GoodsReceipt } from "./GoodsReceipt";
 import { InventoryAdjustmentReport } from "./InventoryAdjustmentReport";
 import { InventoryRequest } from "./InventoryRequest";
+import { Notifications } from "./Notifications";
 import { SalesInvoice } from "./SalesInvoice";
 import { Access } from "./Access";
 import { Branch } from "./Branch";
 
-@Index("u_user", ["active", "userName"], { unique: true })
 @Index("u_user_number", ["active", "mobileNumber"], { unique: true })
 @Index("u_user_email", ["active", "email"], { unique: true })
+@Index("u_user", ["active", "userName"], { unique: true })
 @Index("pk_users_1557580587", ["userId"], { unique: true })
 @Entity("Users", { schema: "dbo" })
 export class Users {
@@ -57,11 +59,26 @@ export class Users {
   @Column("character varying", { name: "Address", default: () => "'NA'" })
   address: string;
 
+  @OneToMany(
+    () => GatewayConnectedUsers,
+    (gatewayConnectedUsers) => gatewayConnectedUsers.user
+  )
+  gatewayConnectedUsers: GatewayConnectedUsers[];
+
   @OneToMany(() => GoodsIssue, (goodsIssue) => goodsIssue.createdByUser)
   goodsIssues: GoodsIssue[];
 
+  @OneToMany(() => GoodsIssue, (goodsIssue) => goodsIssue.lastUpdatedByUser)
+  goodsIssues2: GoodsIssue[];
+
   @OneToMany(() => GoodsReceipt, (goodsReceipt) => goodsReceipt.createdByUser)
   goodsReceipts: GoodsReceipt[];
+
+  @OneToMany(
+    () => GoodsReceipt,
+    (goodsReceipt) => goodsReceipt.lastUpdatedByUser
+  )
+  goodsReceipts2: GoodsReceipt[];
 
   @OneToMany(
     () => InventoryAdjustmentReport,
@@ -71,9 +88,18 @@ export class Users {
 
   @OneToMany(
     () => InventoryRequest,
-    (inventoryRequest) => inventoryRequest.requestedByUser
+    (inventoryRequest) => inventoryRequest.lastUpdatedByUser
   )
   inventoryRequests: InventoryRequest[];
+
+  @OneToMany(
+    () => InventoryRequest,
+    (inventoryRequest) => inventoryRequest.requestedByUser
+  )
+  inventoryRequests2: InventoryRequest[];
+
+  @OneToMany(() => Notifications, (notifications) => notifications.user)
+  notifications: Notifications[];
 
   @OneToMany(() => SalesInvoice, (salesInvoice) => salesInvoice.createdByUser)
   salesInvoices: SalesInvoice[];

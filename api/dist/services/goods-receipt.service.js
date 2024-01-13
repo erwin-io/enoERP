@@ -13,9 +13,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoodsReceiptService = void 0;
+const Notifications_1 = require("./../db/entities/Notifications");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const goods_receipt_constant_1 = require("../common/constant/goods-receipt.constant");
+const notifications_constant_1 = require("../common/constant/notifications.constant");
 const supplier_constant_1 = require("../common/constant/supplier.constant");
 const timestamp_constant_1 = require("../common/constant/timestamp.constant");
 const user_error_constant_1 = require("../common/constant/user-error.constant");
@@ -29,6 +31,7 @@ const Supplier_1 = require("../db/entities/Supplier");
 const Users_1 = require("../db/entities/Users");
 const Warehouse_1 = require("../db/entities/Warehouse");
 const typeorm_2 = require("typeorm");
+const pusher_service_1 = require("./pusher.service");
 const deafaultGoodsReceiptSelect = {
     goodsReceiptId: true,
     goodsReceiptCode: true,
@@ -70,8 +73,9 @@ const deafaultGoodsReceiptSelect = {
     supplier: true,
 };
 let GoodsReceiptService = class GoodsReceiptService {
-    constructor(goodsReceiptRepo) {
+    constructor(goodsReceiptRepo, pusherService) {
         this.goodsReceiptRepo = goodsReceiptRepo;
+        this.pusherService = pusherService;
     }
     async getPagination({ pageSize, pageIndex, order, columnDef }) {
         const skip = Number(pageIndex) > 0 ? Number(pageIndex) * Number(pageSize) : 0;
@@ -210,6 +214,36 @@ let GoodsReceiptService = class GoodsReceiptService {
                 },
             });
             delete goodsReceipt.createdByUser.password;
+            let getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                where: {
+                    userId: (0, typeorm_2.Not)(goodsReceipt.createdByUser.userId),
+                    branch: {
+                        isMainBranch: true,
+                        active: true,
+                    },
+                    access: {
+                        active: true,
+                    },
+                    active: true,
+                },
+                relations: {
+                    branch: true,
+                    access: true,
+                },
+            });
+            getUsersToBeNotified = getUsersToBeNotified
+                .map((x) => {
+                return {
+                    user: x,
+                    access: x.access.accessPages,
+                };
+            })
+                .filter((x) => x.access.length > 0 &&
+                x.access.some((x) => x.page === "Goods Receipt") &&
+                x.access.some((x) => x.rights && x.rights.some((r) => r === "Approval")))
+                .map((x) => x.user);
+            await this.logNotification(getUsersToBeNotified, goodsReceipt, entityManager, notifications_constant_1.NOTIF_TITLE.GOODS_RECEIPT_CREATED, goodsReceipt.description);
+            await this.pusherService.reSync("GOODS_RECEIPT", null);
             return goodsReceipt;
         });
     }
@@ -234,6 +268,16 @@ let GoodsReceiptService = class GoodsReceiptService {
             if (goodsReceipt.status !== "PENDING") {
                 throw Error("Not allowed to update goods receipt, goods receipt was already being - processed");
             }
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            goodsReceipt.lastUpdatedByUser = lastUpdatedByUser;
             const supplier = await entityManager.findOne(Supplier_1.Supplier, {
                 where: {
                     supplierCode: dto.supplierCode,
@@ -308,9 +352,14 @@ let GoodsReceiptService = class GoodsReceiptService {
                         },
                     },
                     supplier: true,
+                    lastUpdatedByUser: {
+                        branch: true,
+                    },
                 },
             });
             delete goodsReceipt.createdByUser.password;
+            delete goodsReceipt.lastUpdatedByUser.password;
+            await this.syncRealTime(goodsReceipt);
             return goodsReceipt;
         });
     }
@@ -367,6 +416,16 @@ let GoodsReceiptService = class GoodsReceiptService {
                 return res[0]["timestamp"];
             });
             goodsReceipt.dateLastUpdated = timestamp;
+            const lastUpdatedByUser = await entityManager.findOne(Users_1.Users, {
+                where: {
+                    userId: dto.updatedByUserId,
+                    active: true,
+                },
+            });
+            if (!lastUpdatedByUser) {
+                throw Error(user_error_constant_1.USER_ERROR_USER_NOT_FOUND);
+            }
+            goodsReceipt.lastUpdatedByUser = lastUpdatedByUser;
             goodsReceipt = await entityManager.save(GoodsReceipt_1.GoodsReceipt, goodsReceipt);
             goodsReceipt = await entityManager.findOne(GoodsReceipt_1.GoodsReceipt, {
                 where: {
@@ -383,9 +442,13 @@ let GoodsReceiptService = class GoodsReceiptService {
                         },
                     },
                     supplier: true,
+                    lastUpdatedByUser: {
+                        branch: true,
+                    },
                 },
             });
             delete goodsReceipt.createdByUser.password;
+            delete goodsReceipt.lastUpdatedByUser.password;
             if (status === "COMPLETED") {
                 for (const item of goodsReceipt.goodsReceiptItems) {
                     let itemWarehouse = await entityManager.findOne(ItemWarehouse_1.ItemWarehouse, {
@@ -401,14 +464,68 @@ let GoodsReceiptService = class GoodsReceiptService {
                     itemWarehouse = await entityManager.save(ItemWarehouse_1.ItemWarehouse, itemWarehouse);
                 }
             }
+            const getUsersToBeNotified = await entityManager.find(Users_1.Users, {
+                where: {
+                    userId: goodsReceipt.createdByUser.userId,
+                    access: {
+                        active: true,
+                    },
+                    active: true,
+                },
+                relations: {
+                    branch: true,
+                    access: true,
+                },
+            });
+            let title = "Goods receipt";
+            let description = "Goods receipt description";
+            if (status === "COMPLETED") {
+                title = notifications_constant_1.NOTIF_TITLE.GOODS_RECEIPT_COMPLETED;
+                description = `Goods receipt #${goodsReceipt.goodsReceiptCode} is now completed`;
+            }
+            else if (status === "REJECTED") {
+                title = notifications_constant_1.NOTIF_TITLE.GOODS_RECEIPT_REJECTED;
+                description = `Goods receipt #${goodsReceipt.goodsReceiptCode} was rejected`;
+            }
+            await this.logNotification(getUsersToBeNotified, goodsReceipt, entityManager, title, description);
+            await this.syncRealTime(goodsReceipt);
             return goodsReceipt;
         });
+    }
+    async logNotification(users, goodsReceipt, entityManager, title, description) {
+        const notifications = [];
+        for (const user of users) {
+            notifications.push({
+                title,
+                description,
+                type: notifications_constant_1.NOTIF_TYPE.GOODS_RECEIPT.toString(),
+                referenceId: goodsReceipt.goodsReceiptCode.toString(),
+                isRead: false,
+                user: user,
+            });
+        }
+        await entityManager.save(Notifications_1.Notifications, notifications);
+        await this.pusherService.sendNotif(users.map((x) => x.userId), title, description);
+    }
+    async syncRealTime(goodsReceipt) {
+        const users = await this.goodsReceiptRepo.manager.find(Users_1.Users, {
+            where: {
+                userId: (0, typeorm_2.Not)(goodsReceipt.lastUpdatedByUser.userId),
+                active: true,
+                branch: {
+                    isMainBranch: true,
+                    active: true,
+                },
+            },
+        });
+        await this.pusherService.goodsReceiptChanges(users.map((x) => x.userId), goodsReceipt);
     }
 };
 GoodsReceiptService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(GoodsReceipt_1.GoodsReceipt)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        pusher_service_1.PusherService])
 ], GoodsReceiptService);
 exports.GoodsReceiptService = GoodsReceiptService;
 //# sourceMappingURL=goods-receipt.service.js.map

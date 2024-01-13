@@ -46,6 +46,7 @@ export interface AppConfig {
       user: {
         getByCode: string;
         createUsers: string;
+        updateProfile: string;
         updateUsers: string;
         getUsersByAdvanceSearch: string;
         resetUserPassword: string;
@@ -144,6 +145,11 @@ export interface AppConfig {
         getByCode: string;
         create: string;
         void: string;
+      };
+      notifications: {
+        getByAdvanceSearch: string;
+        getUnreadByUser: string;
+        marAsRead: string;
       };
       dashboard: {};
       message: { create: string };

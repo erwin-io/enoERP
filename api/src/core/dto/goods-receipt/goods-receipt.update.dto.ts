@@ -2,7 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsIn, IsUppercase } from "class-validator";
 import { DefaultGoodsReceiptDto } from "./goods-receipt-base.dto";
 
-export class UpdateGoodsReceiptDto extends DefaultGoodsReceiptDto {}
+export class UpdateGoodsReceiptDto extends DefaultGoodsReceiptDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  updatedByUserId: string;
+}
 
 export class UpdateGoodsReceiptStatusDto {
   @ApiProperty({
@@ -19,4 +23,8 @@ export class UpdateGoodsReceiptStatusDto {
   })
   @IsNotEmpty()
   notes: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  updatedByUserId: string;
 }

@@ -3,3 +3,9 @@ export declare class ApiResponseModel<T> {
     message?: string;
     success?: boolean;
 }
+export declare class PageAccess {
+    page?: string;
+    view?: boolean;
+    modify?: boolean;
+    rights: [];
+}

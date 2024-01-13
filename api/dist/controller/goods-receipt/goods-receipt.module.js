@@ -12,14 +12,15 @@ const goods_receipt_controller_1 = require("./goods-receipt.controller");
 const GoodsReceipt_1 = require("../../db/entities/GoodsReceipt");
 const goods_receipt_service_1 = require("../../services/goods-receipt.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const pusher_service_1 = require("../../services/pusher.service");
 let GoodsReceiptModule = class GoodsReceiptModule {
 };
 GoodsReceiptModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([GoodsReceipt_1.GoodsReceipt])],
         controllers: [goods_receipt_controller_1.GoodsReceiptController],
-        providers: [goods_receipt_service_1.GoodsReceiptService],
-        exports: [goods_receipt_service_1.GoodsReceiptService],
+        providers: [goods_receipt_service_1.GoodsReceiptService, pusher_service_1.PusherService],
+        exports: [goods_receipt_service_1.GoodsReceiptService, pusher_service_1.PusherService],
     })
 ], GoodsReceiptModule);
 exports.GoodsReceiptModule = GoodsReceiptModule;

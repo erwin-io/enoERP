@@ -16,6 +16,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { InventoryRequestItemComponent } from '../../inventory-request/inventory-request-items/inventory-request-items.component';
 import { InventoryRequestItemTableColumn } from 'src/app/shared/utility/table';
 import { Users } from 'src/app/model/users';
+import { PusherService } from 'src/app/services/pusher.service';
 export class UpdateStatusModel {
   notes: string;
   status:  "PENDING"
@@ -57,7 +58,8 @@ export class IncomingInventoryRequestDetailsComponent {
     private storageService: StorageService,
     private route: ActivatedRoute,
     public router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private pusherService: PusherService
   ) {
     this.currentUserProfile = this.storageService.getLoginProfile();
     this.inventoryRequestCode = this.route.snapshot.paramMap.get('inventoryRequestCode');
@@ -78,6 +80,14 @@ export class IncomingInventoryRequestDetailsComponent {
   }
 
   ngOnInit(): void {
+    const channel = this.pusherService.init(this.currentUserProfile.userId);
+    channel.bind('inventoryRequestChanges', (res: any) => {
+      this.snackBar.open("Someone has updated this document.", "",{
+        announcementMessage: "Someone has updated this document.",
+        verticalPosition: "top"
+      });
+      this.initDetails();
+    });
   }
 
   ngAfterViewInit() {
@@ -198,7 +208,11 @@ export class IncomingInventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
-        let res = await this.inventoryRequestService.processStatus(this.inventoryRequestCode, { status }).toPromise();
+        const params = {
+          status,
+          updatedByUserId: this.currentUserProfile.userId,
+        } as any;
+        let res = await this.inventoryRequestService.processStatus(this.inventoryRequestCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {
             panelClass: ['style-success'],
@@ -264,6 +278,10 @@ export class IncomingInventoryRequestDetailsComponent {
       this.isProcessing = true;
       dialogRef.componentInstance.isProcessing = this.isProcessing;
       try {
+        params = {
+          ...params,
+          updatedByUserId: this.currentUserProfile.userId,
+        } as any;
         let res = await this.inventoryRequestService.closeRequest(this.inventoryRequestCode, params).toPromise();
         if (res.success) {
           this.snackBar.open('Saved!', 'close', {

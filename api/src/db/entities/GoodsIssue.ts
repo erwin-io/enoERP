@@ -52,6 +52,10 @@ export class GoodsIssue {
   @JoinColumn([{ name: "CreatedByUserId", referencedColumnName: "userId" }])
   createdByUser: Users;
 
+  @ManyToOne(() => Users, (users) => users.goodsIssues2)
+  @JoinColumn([{ name: "LastUpdatedByUserId", referencedColumnName: "userId" }])
+  lastUpdatedByUser: Users;
+
   @ManyToOne(() => Warehouse, (warehouse) => warehouse.goodsIssues)
   @JoinColumn([{ name: "WarehouseId", referencedColumnName: "warehouseId" }])
   warehouse: Warehouse;

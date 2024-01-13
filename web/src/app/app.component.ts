@@ -5,6 +5,9 @@ import { Spinkit, SpinnerVisibilityService } from 'ng-http-loader';
 import { filter } from 'rxjs';
 import { RouteService } from './services/route.service';
 import { AppConfigService } from './services/app-config.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { StorageService } from './services/storage.service';
+import { PusherService } from './services/pusher.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,13 +16,56 @@ import { AppConfigService } from './services/app-config.service';
 export class AppComponent {
   public spinkit = Spinkit;
   title;
+  grantNotif = false;
   constructor(
     private titleService:Title,
     private spinner: SpinnerVisibilityService,
     private router: Router,
+    private snackBar:MatSnackBar,
     private appconfig: AppConfigService,
-    private routeService: RouteService) {
+    private storageService: StorageService,
+    private routeService: RouteService,
+    private pusher: PusherService) {
+      if(this.storageService.getLoginProfile()?.userId) {
+        const { userId } = this.storageService.getLoginProfile();
+        const channel = this.pusher.init(userId);
+        channel.bind('notifAdded', ({ userId, title, description }) => {
+          if(this.grantNotif) {
+            const notify = new Notification(title, {
+              body: description,
+              icon: '../assets/img/banner.png'
+            });
+          }
+          else {
+            this.snackBar.open(title);
+          }
+        });
+      }
+      if (!window.Notification) {
+        console.log('Browser does not support notifications.')
+      } else {
+        // check if permission is already granted
+        if (Notification.permission === 'granted') {
+          // show notification here
+          this.grantNotif = true;
+        } else {
+          // request permission from the user
+          Notification.requestPermission()
+            .then(function (p) {
+              if (p === 'granted') {
+                // show notification here
+              } else {
+                console.log('User blocked notifications.')
+              }
+            })
+            .catch(function (err) {
+              console.error(err)
+            })
+        }
+      }
     this.setupTitleListener();
+  }
+  ngOnInit(): void {
   }
   private setupTitleListener() {
     this.router.events.pipe(filter(e => e instanceof ResolveEnd)).subscribe((e: any) => {
@@ -32,7 +78,7 @@ export class AppComponent {
       this.navigationInterceptor(e);
     });
   }
-  
+
   getDeepestChildSnapshot(snapshot: ActivatedRouteSnapshot) {
     let deepestChild = snapshot.firstChild;
     while (deepestChild?.firstChild) {

@@ -1127,6 +1127,7 @@
     "user": {
       "getByCode": "/users/",
       "createUsers": "/users/",
+      "updateProfile": "/users/updateProfile/",
       "updateUsers": "/users/",
       "getUsersByAdvanceSearch": "/users/page/",
       "resetUserPassword": "/users/",
@@ -1225,6 +1226,11 @@
       "getByCode": "/salesInvoice/",
       "create": "/salesInvoice/",
       "void": "/salesInvoice/void/"
+    },
+    "notifications": {
+      "getByAdvanceSearch": "/notifications/page/",
+      "getUnreadByUser": "/notifications/getUnreadByUser/",
+      "marAsRead": "/notifications/marAsRead/"
     },
     "dashboard": {},
     "message": {

@@ -12,6 +12,13 @@
   <span class="toolbar-item-spacer"></span>
   <div class="toolbar-action">
     <button
+      *ngIf="!isNew && isReadOnly"
+      mat-flat-button
+      matTooltip="Change pasword"
+      (click)="openChangePasswordDialog()">
+      Update pasword
+    </button>
+    <button
       mat-raised-button
       color="primary"
       matTooltip="Edit"

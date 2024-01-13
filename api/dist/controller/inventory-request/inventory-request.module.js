@@ -12,14 +12,18 @@ const inventory_request_controller_1 = require("./inventory-request.controller")
 const InventoryRequest_1 = require("../../db/entities/InventoryRequest");
 const inventory_request_service_1 = require("../../services/inventory-request.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const GatewayConnectedUsers_1 = require("../../db/entities/GatewayConnectedUsers");
+const pusher_service_1 = require("../../services/pusher.service");
 let InventoryRequestModule = class InventoryRequestModule {
 };
 InventoryRequestModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([InventoryRequest_1.InventoryRequest])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([InventoryRequest_1.InventoryRequest, GatewayConnectedUsers_1.GatewayConnectedUsers]),
+        ],
         controllers: [inventory_request_controller_1.InventoryRequestController],
-        providers: [inventory_request_service_1.InventoryRequestService],
-        exports: [inventory_request_service_1.InventoryRequestService],
+        providers: [inventory_request_service_1.InventoryRequestService, pusher_service_1.PusherService],
+        exports: [inventory_request_service_1.InventoryRequestService, pusher_service_1.PusherService],
     })
 ], InventoryRequestModule);
 exports.InventoryRequestModule = InventoryRequestModule;

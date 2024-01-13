@@ -2,7 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsIn, IsUppercase } from "class-validator";
 import { DefaultInventoryRequestDto } from "./inventory-request-base.dto";
 
-export class UpdateInventoryRequestDto extends DefaultInventoryRequestDto {}
+export class UpdateInventoryRequestDto extends DefaultInventoryRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  updatedByUserId: string;
+}
 export class ProcessInventoryRequestStatusDto {
   @ApiProperty({
     type: String,
@@ -27,6 +31,10 @@ export class ProcessInventoryRequestStatusDto {
     | "COMPLETED"
     | "CANCELLED"
     | "PARTIALLY-FULFILLED";
+
+  @ApiProperty()
+  @IsNotEmpty()
+  updatedByUserId: string;
 }
 
 export class CloseInventoryRequestStatusDto {
@@ -60,4 +68,8 @@ export class CloseInventoryRequestStatusDto {
   })
   @IsNotEmpty()
   notes: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  updatedByUserId: string;
 }

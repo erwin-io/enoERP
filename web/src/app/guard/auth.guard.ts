@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router, private storageService: StorageService) {}
+  constructor(private router: Router, private storageService: StorageService,
+    private spinner: SpinnerVisibilityService) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,

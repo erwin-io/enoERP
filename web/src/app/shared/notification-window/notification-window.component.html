@@ -1,0 +1,16 @@
+
+<div class="notification-panel">
+  <div class="notification-panel-content">
+    <h3 class="notification-title">Notifications</h3>
+    <div class="notification-list">
+      <a mat-button class="notification-item" (click)="onNotificationItemClick(notification)" [ngClass]="{ 'isRead': notification.isRead }" *ngFor="let notification of notifcations">
+        <h4 class="notification-item-title">{{notification.title}}</h4>
+        <h4 class="notification-item-desc">{{notification.description}}</h4>
+        <h5 class="notification-item-time" >{{dateAgo(notification.date)}}</h5>
+      </a>
+      <a mat-button class="notification-item" *ngIf="notifcations.length < total">
+        <h5 class="notification-item-title" (click)="loadMore()">Load more</h5>
+      </a>
+    </div>
+  </div>
+</div>
